@@ -4,8 +4,8 @@ package services
 import (
 	"log"
 
-	"github.com/joho/godotenv"
 	"xi/app/global"
+	"github.com/joho/godotenv"
 )
 
 func InitEnv() {

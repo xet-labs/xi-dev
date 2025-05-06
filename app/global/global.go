@@ -2,6 +2,7 @@
 package global
 
 var (
-	EnvInitialized 	bool
-	DBInitialized 	bool
+	EnvInitialized 		bool
+	DBInitialized 		bool
+	ServerInitialized 	bool
 )

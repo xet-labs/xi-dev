@@ -4,8 +4,8 @@ package models
 import (
 	"time"
 
-	"gorm.io/gorm"
 	"xi/app/services"
+	"gorm.io/gorm"
 )
 
 // Blog represents the blog data model

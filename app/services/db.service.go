@@ -1,4 +1,4 @@
-// services/db.go
+// services/db
 package services
 
 import (
@@ -32,6 +32,7 @@ func InitDB() {
 
 		//- DBUser fallback 
 		if conf.User == "" { conf.User = conf.Database + "_u" }
+		if conf.Pass == "" { conf.Pass = utils.Env("DB_PASS") }
 
 		var (
 			db  *gorm.DB

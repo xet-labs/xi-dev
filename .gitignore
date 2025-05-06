@@ -3,6 +3,7 @@
 *.exe
 *.out
 *.test
+*.log
 xi
 
 # Dependency files
@@ -10,12 +11,10 @@ xi
 /tmp/
 /vendor/bin
 
-# IDEs/editors
+# OS/IDE's
 .vscode/
 .idea/
 *.swp
-
-# OS junk
 .DS_Store
 Thumbs.db
 
