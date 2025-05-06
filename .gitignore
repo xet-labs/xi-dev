@@ -1,0 +1,24 @@
+# Go build
+/build/
+*.exe
+*.out
+*.test
+xi
+
+# Dependency files
+/bin/
+/tmp/
+/vendor/bin
+
+# IDEs/editors
+.vscode/
+.idea/
+*.swp
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Config
+.env
+*.local
