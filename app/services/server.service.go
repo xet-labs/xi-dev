@@ -12,7 +12,7 @@ import (
 func InitServer(router *gin.Engine) error {
 	serverPort := utils.Env("APP_PORT", "5000")
 
-	log.Printf("\033[1;94mServer running \033[0;34m'http://localhost:%s'%s\033[0m\n", serverPort,
+	log.Printf("\a\033[1;94mServer running \033[0;34m'http://localhost:%s'%s\033[0m\n", serverPort,
 	func() string {
 		if u := utils.Env("APP_URL"); u != "" {
 			return ", 'http://" + u + "'"

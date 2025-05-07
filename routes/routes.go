@@ -6,12 +6,12 @@ import (
 
 	"xi/app/cntr"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/gzip"
+	// "github.com/gin-contrib/gzip"
 )
 
 func Init(r *gin.Engine) {
 	
-	r.Use(gzip.Gzip(gzip.DefaultCompression))
+	// r.Use(gzip.Gzip(gzip.DefaultCompression))
 	
 	r.GET("/", cntr.Root)
 	

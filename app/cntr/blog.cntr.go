@@ -5,27 +5,27 @@ import (
 	"net/http"
 	"time"
 
+	"xi/app/models"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"xi/app/models"
 )
 
 type BlogCntr struct {
-	blog  	models.Blog
-	blogs 	[]models.Blog
-	db		*gorm.DB
+	blog  models.Blog
+	blogs []models.Blog
+	db    *gorm.DB
 }
 
 var Blog = &BlogCntr{
-	blog: 	models.Blog{},
-	blogs: 	[]models.Blog{},
+	blog:  models.Blog{},
+	blogs: []models.Blog{},
+	db:    (&models.Blog{}).DB().Debug(),
 }
 
-func init(){
-	Blog.db=Blog.blog.DB()
-}
+var db = Blog.db
 
-// GET /blogs
+// GET /blog
 func (b *BlogCntr) Index(c *gin.Context) {
 	if err := b.db.Preload("User").Find(&b.blogs).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch blogs"})
@@ -34,27 +34,28 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	c.JSON(http.StatusOK, b.blogs)
 }
 
-
-// GET /blogs/:id
+// GET /blog/:id
 func (b *BlogCntr) Show(c *gin.Context) {
-	
-	if err := b.db.First(&b.blog, c.Param("id")).Error; err != nil {
+
+	var blog models.Blog
+
+	if err := db.Joins("User").First(&blog, c.Param("id")).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
 		return
 	}
-	c.JSON(http.StatusOK, b.blog)
+	c.JSON(http.StatusOK, blog)
 }
 
-// POST /blogs
+// POST /blog
 func (b *BlogCntr) Post(c *gin.Context) {
-	
+
 	if err := c.ShouldBindJSON(&b.blog); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
 	now := time.Now()
 	b.blog.CreatedAt = &now
-	
+
 	if err := b.db.Create(&b.blog).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create blog"})
 		return
@@ -62,9 +63,9 @@ func (b *BlogCntr) Post(c *gin.Context) {
 	c.JSON(http.StatusCreated, b.blog)
 }
 
-// PUT /blogs/:id
+// PUT /blog/:id
 func (b *BlogCntr) Put(c *gin.Context) {
-	
+
 	if err := b.db.First(&b.blog, c.Param("id")).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
 		return
@@ -83,9 +84,9 @@ func (b *BlogCntr) Put(c *gin.Context) {
 	c.JSON(http.StatusOK, b.blog)
 }
 
-// DELETE /blogs/:id
+// DELETE /blog/:id
 func (b *BlogCntr) Delete(c *gin.Context) {
-	
+
 	if err := b.db.Delete(&models.Blog{}, c.Param("id")).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not delete blog"})
 		return

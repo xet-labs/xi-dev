@@ -3,7 +3,7 @@ package models
 
 import (
 	"time"
-	
+
 	"gorm.io/gorm"
 	"xi/app/services"
 	"xi/app/utils"
@@ -11,25 +11,25 @@ import (
 
 // User represents a user in the system
 type User struct {
-	UID        string    `gorm:"primaryKey;type:varchar(255)"`
-	Username   string    `gorm:"type:varchar(255);uniqueIndex"`
-	Email      string    `gorm:"type:varchar(255);uniqueIndex"`
-	Password   string    `gorm:"type:varchar(255)" json:"-"` // Hide password from JSON
-	Name       string    `gorm:"type:varchar(255)"`
-	NameL      string    `gorm:"type:varchar(255)"`
+	UID        uint64   `gorm:"primaryKey"`
+	Status     string `gorm:"type:varchar(50)"`
+	Username   string `gorm:"type:varchar(255);uniqueIndex"`
+	Name       string `gorm:"type:varchar(255)"`
+	Email      string `gorm:"type:varchar(255);uniqueIndex"`
+	ProfileImg string `gorm:"type:varchar(255)"`
+	Role       string `gorm:"type:varchar(50)"`
 	Verified   bool
-	Role       string    `gorm:"type:varchar(50)"`
+	LastLogin  *time.Time
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
-	LastLogin  *time.Time
-	Status     string    `gorm:"type:varchar(50)"`
-	ProfileImg string    `gorm:"type:varchar(255)"`
-	Address    string    `gorm:"type:text"`
-	PhoneNo    string    `gorm:"type:varchar(20)"`
 	DOB        *time.Time
+	Address    string `gorm:"type:text"`
+	PhoneNo    string `gorm:"type:varchar(20)"`
+	Password   string `gorm:"type:varchar(255)" json:"-"` // Hide password from JSON
 
 	// Relationships
-	Blogs      []Blog    `gorm:"foreignKey:UID;references:UID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
+	Blogs []Blog `gorm:"foreignKey:UID;references:UID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
+	
 }
 
 // DB returns default DB or a given DB if passed
