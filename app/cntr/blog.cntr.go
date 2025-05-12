@@ -2,94 +2,165 @@
 package cntr
 
 import (
+	"context"
+	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
 	"xi/app/models"
+	"xi/app/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 type BlogCntr struct {
-	blog  models.Blog
-	blogs []models.Blog
-	db    *gorm.DB
+	db  *gorm.DB
+	rdb *redis.Client
+	ctx context.Context
 }
 
+// Singleton controller
 var Blog = &BlogCntr{
-	blog:  models.Blog{},
-	blogs: []models.Blog{},
-	db:    (&models.Blog{}).DB().Debug(),
+	db:  services.DB(),
+	rdb: services.Redis(),
+	ctx: context.Background(),
 }
 
+// Alias to reduce verbosity (optional)
 var db = Blog.db
 
 // GET /blog
 func (b *BlogCntr) Index(c *gin.Context) {
-	if err := b.db.Preload("User").Find(&b.blogs).Error; err != nil {
+	var blogs []models.Blog
+	cacheKey := "blogs:all"
+
+	// Try Redis cache
+	if cached, err := b.rdb.Get(b.ctx, cacheKey).Result(); err == nil {
+		if err := json.Unmarshal([]byte(cached), &blogs); err == nil {
+			c.JSON(http.StatusOK, blogs)
+			return
+		}
+	}
+
+	// Cache miss or error - load from DB
+	if err := db.Preload("User").Find(&blogs).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch blogs"})
 		return
 	}
-	c.JSON(http.StatusOK, b.blogs)
+
+	// Set cache asynchronously
+	go func(data []models.Blog) {
+		if jsonData, err := json.Marshal(data); err == nil {
+			if err := b.rdb.Set(b.ctx, cacheKey, jsonData, 10*time.Minute).Err(); err != nil {
+				log.Println("Redis SET error (Index):", err)
+			}
+		}
+	}(blogs)
+
+	c.JSON(http.StatusOK, blogs)
 }
 
 // GET /blog/:id
 func (b *BlogCntr) Show(c *gin.Context) {
-
+	id := c.Param("id")
+	cacheKey := "blogs:id:" + id
 	var blog models.Blog
 
-	if err := db.Joins("User").First(&blog, c.Param("id")).Error; err != nil {
+	// Try Redis
+	if cached, err := b.rdb.Get(b.ctx, cacheKey).Result(); err == nil {
+		if err := json.Unmarshal([]byte(cached), &blog); err == nil {
+			c.JSON(http.StatusOK, blog)
+			return
+		}
+	}
+
+	// Cache miss - load from DB
+	if err := db.Preload("User").First(&blog, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
 		return
 	}
+
+	// Cache the result
+	go func(data models.Blog) {
+		if jsonData, err := json.Marshal(data); err == nil {
+			if err := b.rdb.Set(b.ctx, cacheKey, jsonData, 10*time.Minute).Err(); err != nil {
+				log.Println("Redis SET error (Show):", err)
+			}
+		}
+	}(blog)
+
 	c.JSON(http.StatusOK, blog)
 }
 
 // POST /blog
 func (b *BlogCntr) Post(c *gin.Context) {
+	var blog models.Blog
 
-	if err := c.ShouldBindJSON(&b.blog); err != nil {
+	if err := c.ShouldBindJSON(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	now := time.Now()
-	b.blog.CreatedAt = &now
 
-	if err := b.db.Create(&b.blog).Error; err != nil {
+	blog.CreatedAt = ptrTime(time.Now())
+
+	if err := db.Create(&blog).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create blog"})
 		return
 	}
-	c.JSON(http.StatusCreated, b.blog)
+
+	// Invalidate blog list cache
+	b.rdb.Del(b.ctx, "blogs:all")
+
+	c.JSON(http.StatusCreated, blog)
 }
 
 // PUT /blog/:id
 func (b *BlogCntr) Put(c *gin.Context) {
+	id := c.Param("id")
+	var blog models.Blog
 
-	if err := b.db.First(&b.blog, c.Param("id")).Error; err != nil {
+	if err := db.First(&blog, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
 		return
 	}
 
-	if err := c.ShouldBindJSON(&b.blog); err != nil {
+	if err := c.ShouldBindJSON(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-	now := time.Now()
-	b.blog.UpdatedAt = &now
-	if err := b.db.Save(&b.blog).Error; err != nil {
+
+	blog.UpdatedAt = ptrTime(time.Now())
+
+	if err := db.Save(&blog).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update blog"})
 		return
 	}
-	c.JSON(http.StatusOK, b.blog)
+
+	// Invalidate caches
+	b.rdb.Del(b.ctx, "blogs:all", "blogs:id:"+id)
+
+	c.JSON(http.StatusOK, blog)
 }
 
 // DELETE /blog/:id
 func (b *BlogCntr) Delete(c *gin.Context) {
+	id := c.Param("id")
 
-	if err := b.db.Delete(&models.Blog{}, c.Param("id")).Error; err != nil {
+	if err := db.Delete(&models.Blog{}, id).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not delete blog"})
 		return
 	}
+
+	// Invalidate caches
+	b.rdb.Del(b.ctx, "blogs:all", "blogs:id:"+id)
+
 	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted"})
+}
+
+// Utility: return pointer to time
+func ptrTime(t time.Time) *time.Time {
+	return &t
 }

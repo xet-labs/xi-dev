@@ -3,15 +3,10 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
-	"xi/app/services"
-	"xi/app/utils"
 )
 
-// User represents a user in the system
 type User struct {
-	UID        uint64   `gorm:"primaryKey"`
+	UID        uint64 `gorm:"primaryKey"`
 	Status     string `gorm:"type:varchar(50)"`
 	Username   string `gorm:"type:varchar(255);uniqueIndex"`
 	Name       string `gorm:"type:varchar(255)"`
@@ -25,21 +20,10 @@ type User struct {
 	DOB        *time.Time
 	Address    string `gorm:"type:text"`
 	PhoneNo    string `gorm:"type:varchar(20)"`
-	Password   string `gorm:"type:varchar(255)" json:"-"` // Hide password from JSON
+	Password   string `gorm:"type:varchar(255)" json:"-"`
 
 	// Relationships
 	Blogs []Blog `gorm:"foreignKey:UID;references:UID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
-	
-}
-
-// DB returns default DB or a given DB if passed
-func (u *User) DB(db ...*gorm.DB) *gorm.DB {
-	if len(db) > 0 && db[0] != nil {
-		return db[0]
-	}
-	defaultDB := utils.Env("DB_DEFAULT", "XI")
-
-	return services.DB(defaultDB)
 }
 
 // TableName returns the table name for User

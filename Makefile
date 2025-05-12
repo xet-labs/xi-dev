@@ -1,7 +1,10 @@
+# makefile
+
 mod:
 	go mod tidy -v                   
 	go mod download
 	go mod vendor
+
 
 run:
 	@AppBin="${PWD}/vendor/bin"; \
@@ -15,9 +18,11 @@ run:
 	\
 	$$AppBin/air
 
+
 build:
 	go mod vendor
 	go build -mod=vendor -o xi
+
 
 exe:
 	go build -o xi && ./xi

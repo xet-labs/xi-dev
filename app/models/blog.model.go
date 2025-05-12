@@ -3,12 +3,8 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
-	"xi/app/services"
 )
 
-// Blog represents the blog data model
 type Blog struct {
 	ID           uint       `gorm:"primaryKey;column:id"`
 	UID          uint64     `gorm:"column:uid;index"`
@@ -28,10 +24,4 @@ type Blog struct {
 
 	// Relation with User
 	User *User `gorm:"foreignKey:UID;references:UID"`
-}
-
-// DB returns default DB or a given DB if passed
-// In Blog model
-func (b *Blog) DB(db ...string) *gorm.DB {
-	return services.DB(db...)
 }

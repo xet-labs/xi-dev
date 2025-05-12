@@ -39,6 +39,14 @@ var DB = map[string]DBParam{
 		Engine:        "",
 		Enable:        true,
 	},
+	"Redis": {
+		Driver:   "redis",
+		Database: utils.Env("DB_REDIS", "0"),
+		Host:     utils.Env("DB_REDIS_HOST", "127.0.0.1"),
+		Port:     utils.Env("DB_REDIS_PORT", "6379"),
+		Pass:     utils.Env("DB_REDIS_PASS", ""),
+		Enable:   true,
+	},
 	"App": {
 		Driver:    utils.Env("DB_APP_DRIVER", "sqlite"),
 		Database:  utils.Env("DB_APP_NAME", "app"),
