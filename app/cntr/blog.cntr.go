@@ -17,9 +17,11 @@ import (
 )
 
 type BlogCntr struct {
-	db  *gorm.DB
-	rdb *redis.Client
-	ctx context.Context
+	db    *gorm.DB
+	rdb   *redis.Client
+	ctx   context.Context
+	blog  models.Blog
+	blogs []models.Blog
 }
 
 // Singleton controller
@@ -27,6 +29,9 @@ var Blog = &BlogCntr{
 	db:  services.DB(),
 	rdb: services.Redis(),
 	ctx: context.Background(),
+
+	blog:  models.Blog{},
+	blogs: []models.Blog{},
 }
 
 // Alias to reduce verbosity (optional)
@@ -36,7 +41,7 @@ var db = Blog.db
 func (b *BlogCntr) Index(c *gin.Context) {
 	var blogs []models.Blog
 	cacheKey := "blogs:all"
-
+	
 	// Try Redis cache
 	if cached, err := b.rdb.Get(b.ctx, cacheKey).Result(); err == nil {
 		if err := json.Unmarshal([]byte(cached), &blogs); err == nil {
