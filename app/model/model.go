@@ -3,7 +3,7 @@ package models
 
 import (
 	"gorm.io/gorm"
-	"xi/app/services"
+	"xi/app/service"
 )
 
 // DB returns default DB or a given DB if exists

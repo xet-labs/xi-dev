@@ -12,7 +12,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"xi/app/global"
-	"xi/app/utils"
+	"xi/app/util"
 	"xi/config"
 )
 
@@ -35,7 +35,7 @@ func InitDB() {
 
 		//- DBUser fallback 
 		if conf.User == "" { conf.User = conf.Database + "_u" }
-		if conf.Pass == "" { conf.Pass = utils.Env("DB_PASS") }
+		if conf.Pass == "" { conf.Pass = util.Env("DB_PASS") }
 
 		switch conf.Driver {
 		case "mysql", "mariadb":
@@ -94,7 +94,7 @@ func DB(name ...string) *gorm.DB {
 	dbMu.RLock()
 	defer dbMu.RUnlock()
 
-	dbName := utils.Env("DB_DEFAULT", "XI")
+	dbName := util.Env("DB_DEFAULT", "XI")
 	if len(name) > 0 && name[0] != "" {
 		dbName = name[0]
 	}
@@ -115,7 +115,7 @@ func Redis(name ...string) *redis.Client {
 	// dbMu.RLock()
 	// defer dbMu.RUnlock()
 
-	dbName := utils.Env("DB_REDIS_DEFAULT", "Redis")
+	dbName := util.Env("DB_REDIS_DEFAULT", "Redis")
 	if len(name) > 0 && name[0] != "" {
 		dbName = name[0]
 	}

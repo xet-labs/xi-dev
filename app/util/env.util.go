@@ -1,5 +1,5 @@
 // utils/env.go
-package utils
+package util
 
 import (
 	"os"

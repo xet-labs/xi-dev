@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"xi/app/models"
-	"xi/app/services"
+	"xi/app/model"
+	"xi/app/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"

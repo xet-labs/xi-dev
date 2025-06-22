@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"xi/app/services"
-	"xi/app/utils"
+	"xi/app/service"
+	"xi/app/util"
 	"xi/routes"
 )
 
@@ -18,7 +18,7 @@ func init() {
 func main() {
 
 	// Init Gin router
-	gin.SetMode(utils.Env("GIN_MODE", "debug"))
+	gin.SetMode(util.Env("GIN_MODE", "debug"))
 	app := gin.Default()
 
 	// Register routes

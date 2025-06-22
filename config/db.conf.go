@@ -2,7 +2,7 @@
 package config
 
 import (
-	"xi/app/utils"
+	"xi/app/util"
 )
 
 type DBParam struct {
@@ -24,15 +24,15 @@ type DBParam struct {
 
 var DB = map[string]DBParam{
 	"XI": {
-		Database:      utils.Env("DB_XI", "XI"),
-		User:          utils.Env("DB_XI_USER"),
-		Pass:          utils.Env("DB_XI_PASS"),
-		Driver:        utils.Env("DB_XI_DRIVER", "mysql"),
-		Host:          utils.Env("DB_XI_HOST", "127.0.0.1"),
-		Port:          utils.Env("DB_XI_PORT", "3306"),
-		UnixSocket:    utils.Env("DB_SOCKET", ""),
-		Charset:       utils.Env("DB_CHARSET", "utf8mb4"),
-		Collation:     utils.Env("DB_COLLATION", "utf8mb4_unicode_ci"),
+		Database:      util.Env("DB_XI", "XI"),
+		User:          util.Env("DB_XI_USER"),
+		Pass:          util.Env("DB_XI_PASS"),
+		Driver:        util.Env("DB_XI_DRIVER", "mysql"),
+		Host:          util.Env("DB_XI_HOST", "127.0.0.1"),
+		Port:          util.Env("DB_XI_PORT", "3306"),
+		UnixSocket:    util.Env("DB_SOCKET", ""),
+		Charset:       util.Env("DB_CHARSET", "utf8mb4"),
+		Collation:     util.Env("DB_COLLATION", "utf8mb4_unicode_ci"),
 		Prefix:        "",
 		PrefixIndexes: true,
 		Strict:        true,
@@ -41,15 +41,15 @@ var DB = map[string]DBParam{
 	},
 	"Redis": {
 		Driver:   "redis",
-		Database: utils.Env("DB_REDIS", "0"),
-		Host:     utils.Env("DB_REDIS_HOST", "127.0.0.1"),
-		Port:     utils.Env("DB_REDIS_PORT", "6379"),
-		Pass:     utils.Env("DB_REDIS_PASS", ""),
+		Database: util.Env("DB_REDIS", "0"),
+		Host:     util.Env("DB_REDIS_HOST", "127.0.0.1"),
+		Port:     util.Env("DB_REDIS_PORT", "6379"),
+		Pass:     util.Env("DB_REDIS_PASS", ""),
 		Enable:   true,
 	},
 	"App": {
-		Driver:    utils.Env("DB_APP_DRIVER", "sqlite"),
-		Database:  utils.Env("DB_APP_NAME", "app"),
+		Driver:    util.Env("DB_APP_DRIVER", "sqlite"),
+		Database:  util.Env("DB_APP_NAME", "app"),
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_unicode_ci",
 	},
