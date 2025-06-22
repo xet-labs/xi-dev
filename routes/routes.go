@@ -23,8 +23,8 @@ func Init(r *gin.Engine) {
 		blog.DELETE("/:id", cntr.Blog.Delete)
 	}
 	
-	resDir := http.FileServer(http.Dir("./public/res"))
-	r.GET("/res/*filepath", gin.WrapH(http.StripPrefix("/res/", resDir)))
+	resDir := http.FileServer(http.Dir("./public/asset"))
+	r.GET("/res/*filepath", gin.WrapH(http.StripPrefix("/asset/", resDir)))
 
 	// Serve /static/* from ./public/static
 	staticDir := http.FileServer(http.Dir("./public/static"))
