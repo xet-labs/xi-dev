@@ -1,0 +1,41 @@
+pre:has(button.copy-code-btn):has(code) {
+    position: relative;
+}
+pre:has(button.copy-code-btn) code {
+    --code-mask: linear-gradient(to right, rgba(0, 0, 0, 1) 89%, rgba(0, 0, 0, var(--code-mask-opacity, 0)));
+
+    mask-image: var(--code-mask);
+    -webkit-mask-image: var(--code-mask);
+}
+
+button.copy-code-btn.icon {
+    --icon-fill: none;
+    --icon-colr: var(--pre-colr);
+    --icon-hov-colr: inherit;
+    --icon-opacity: .75;
+    --icon-hov-opacity: 1;
+
+    --icon-mr: .488em .44em;
+    --icon-pd: 1.12em 1.12em;
+    --icon-svg-z: 1.4em;
+    --icon-brdr-rad: var(--radius-xs, 4px);
+    --icon-hov-bg-scale: 1.66;
+    --icon-hov-bg: rgba(var(--mono-rgb-100), .075);
+    --icon-active-bg: rgba(var(--mono-rgb-100), .1);
+    /* --icon-hov-brdr-colr: ; */
+
+    position: absolute;
+
+    top: 0; right: 0;
+}
+
+button.copy-code-button svg { stroke-width: var(--cop-btn-stroke, 1.75px); }
+    
+@media screen and (min-width: 680px) {
+    pre:has(button.copy-code-btn):has(code) { --icon-dis: none; }
+    pre:has(button.copy-code-btn):has(code):hover { --icon-dis: flex; }
+}
+pre:has(button.copy-code-btn):has(code:active) {
+    --code-mask-opacity: 1;
+    --icon-dis: none;
+}

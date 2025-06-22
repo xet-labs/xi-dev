@@ -1,0 +1,5 @@
+DROP DATABASE IF EXISTS xi;
+CREATE DATABASE IF NOT EXISTS xi;
+
+USE xi;
+SET foreign_key_checks = 0;

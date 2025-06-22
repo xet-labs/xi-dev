@@ -8,17 +8,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// InitServer starts the web server
-func InitServer(router *gin.Engine) error {
-	serverPort := utils.Env("APP_PORT", "5000")
+// InitServer start the web server
+func InitServer(app *gin.Engine) error {
+	appPort := utils.Env("APP_PORT", "5000")
 
-	log.Printf("\a\033[1;94mServer running \033[0;34m'http://localhost:%s'%s\033[0m\n", serverPort,
+	log.Printf("\a\033[1;94mServer running \033[0;34m'http://localhost:%s'%s\033[0m\n", appPort,
 	func() string {
-		if u := utils.Env("APP_URL"); u != "" {
-			return ", 'http://" + u + "'"
+		if url := utils.Env("APP_URL"); url != "" {
+			return ", 'http://" + url + "'"
 		}
 		return ""
 	}())
 
-	return router.Run(":" + serverPort) //&& { global.ServerInitialized = true}
+	// Start Web-Server
+	return app.Run(":" + appPort) //&& { global.ServerInitialized = true}
 }

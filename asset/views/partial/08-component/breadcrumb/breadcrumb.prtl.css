@@ -1,0 +1,22 @@
+.breadcrumb {
+    display: flex;
+    display: none;
+    padding: 1rem;
+    align-items: center;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 1.25rem;
+    font-size: 12px;
+    color: #4b5563;
+}
+.breadcrumb span {
+    color: #6b7280;
+}
+
+.breadcrumb .active {
+    color: rgb(37 99 235 / 1);
+}
+
+.breadcrumb a:hover {
+    text-decoration-line: underline;
+}

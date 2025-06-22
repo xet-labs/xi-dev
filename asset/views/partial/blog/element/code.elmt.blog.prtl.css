@@ -1,0 +1,75 @@
+:root {
+    --pre-pd: (var(--pre-pd-y, .75em) var(--pre-pd-x, 1em));
+}
+
+code {
+    -webkit-box-decoration-break: clone;
+
+    padding: 0.15em 0.3em;
+    font-size: var(--code-font-z, 0.875em);
+    
+    font-family: var(--font-monospace);
+    color: var(--code-colr, var(--colr-txt));
+    background: var(--code-bg, var(--bg-05));
+    border-radius: var(--code-brdr-radius, var(--radius-xs));
+    /* border: var(--code-brdr, var(--code-brdr-z, 1px) solid var(--code-brdr-colr, var(--bg-05))); */
+
+}
+
+pre[class*="lang"],
+code[class*="lang"] {
+    scrollbar-width: none;
+    direction: ltr;
+    text-align: left;
+    white-space: pre;
+    /* white-space: pre-wrap; */
+    word-wrap: break-word;
+    word-break: normal;
+    word-spacing: normal;
+    hyphens: none;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+
+    font-family: var(--font-monospace);
+    line-height: var(--pre-lineh, inherit);
+}
+
+pre,
+pre[class*="lang"] {
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: relative;
+    white-space: var(--pre-white-space, unset);
+
+    /* max-width: 200px; */
+    margin: var(--pre-mr-y, calc(var(--p-space) * 1.25 )) var(--pre-mr-x, 0);
+    padding: var(--pre-pd, 0);
+    font-size: var(--pre-fontz, 0.875em);
+
+    color: var(--pre-colr, var(--colr-txt));
+    background: var(--pre-bg, var(--bg-05));
+    border-radius: var(--pre-brdr-rad, var(--radius-s));
+    border: var(--pre-brdr, var(--pre-brdr-z, 1px) solid var(--pre-brdr-colr, transparent));
+}
+
+pre code,
+pre code[class*="lang"] {
+    font-size: var(--code-fontz, 1em);
+    margin-right: var(--pre-pd-x);
+    padding: 0;
+    padding: var(--pre-pd);
+
+    color: inherit;
+    background: transparent;
+    border-radius: 0;
+    border: none;
+
+    mask-image: var(--code-mask);
+    -webkit-mask-image: var(--code-mask);
+}
+
+pre:has(code),
+pre:has(code[class*="lang"]) {
+    padding: 0;
+}

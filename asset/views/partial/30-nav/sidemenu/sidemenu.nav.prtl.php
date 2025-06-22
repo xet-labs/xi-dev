@@ -1,0 +1,38 @@
+<?php 
+    use xet\Loc;
+?>
+
+<section class="nav-sidemenu-wrap">
+
+    <input type="checkbox" name="nav-sidemenu-btn-grp" id="id-nav-sidemenuOpen-btn" class="underlay-show-btn">
+    <label for="id-nav-sidemenuOpen-btn" class="icon" tabindex="0" title="Menu">
+        <svg  width="20px" class="feather feather-menu" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+    </label>
+    <label for="id-nav-sidemenuOpen-btn" class="underlay" title="Close"></label>
+
+    <div class="nav-sidemenu">
+
+        <div class="nav-sidemenu-head">
+            
+            <a href="/#" class="brand"><?php readfile(Loc::FILE('BRAND','brand')); ?></a>
+            <div class="menu">
+                <a href="" style="pointer-events: none;visibility: hidden;">|</a>
+            </div>
+            <label for="id-nav-sidemenuOpen-btn" class="icon" tabindex="0">
+                <svg xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 -960 960 960" width="26"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+            </label>
+            
+        </div>
+        
+        <div class="nav-sidemenu-main">
+            <div class="menu">
+            <?php
+            foreach ($menu_items as $label => $href) { ?>
+                <?php if ($label === $currentMenu) { ?>
+                    <a href="<?= $href; ?>" class="current-menu"><?= $label; ?></a>
+                <?php } else { ?><a href="<?= $href; ?>"><?= $label; ?></a>
+            <?php }} ?>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,127 @@
+:root {
+    --theme-trns: .3s ease;
+    --trns-theme-durn: .3s;
+    --trns-theme-type: ease;
+    --trns-theme: var(--trns-theme-durn) var(--trns-theme-type);
+
+    --trns-brdr-durn: .18s;
+    --trns-brdr: var(--trns-brdr-durn) ease;
+
+    --tag-font-size: .81rem;
+    --tag-color: var(--colr-txt-1);
+    --tag-border-color: var(--colr-txt-1);
+    --tag-hover-color: var(--colr-txt-2-h);
+    --tag-hover-border-color: var(--colr-txt-2-h);
+    --tag-hover-bg: var(--bg-scolor);
+}
+
+*,
+::after,
+::before {
+    transition: background-color var(--trns-theme), border-color var(--trns-theme), color var(--trns-theme-type);
+}
+
+::selection {background-color: var(--selection-bg); color: var(--selection-colr, var(--colr-txt));}
+::-webkit-selection {background-color: var(--selection-bg); color: var(--selection-colr, var(--colr-txt));}
+
+
+::-webkit-scrollbar {
+    background-color: var(--scrollbar-bg);
+    width: 10px;
+    -webkit-border-radius: var(--radius-l);
+    background-color: transparent;
+}
+::-webkit-scrollbar-track {background-color: transparent;}
+::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-bg);
+    -webkit-border-radius: var(--radius-l);
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    min-height: 1.75rem;
+}
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active { background-color: var(--scrollbar-hov-thumb-bg); }
+::-webkit-scrollbar-corner { background: transparent;}
+
+html{
+    position: relative;
+}
+body {
+    /* overflow-x: hidden; */
+    display: var(--body-display, flex);
+    flex-direction: column;
+
+    width: min(var(--body-x, 100%), 100%);
+    max-width: min(var(--body-x-max, 100%), 100%);
+    pointer-events: var(--body-pointer, initial);
+
+    background: var(--bg);
+    color: var(--colr-txt);
+}
+
+main {
+    margin: var(--main-mr, var(--main-mr-y, 0) var(--main-mr-x, auto));
+    padding: var(--main-pd, var(--main-pd-y, 0) var(--main-pd-x, 0));
+    width: min(var(--main-x, 100%), 100%);
+    max-width: min(var(--main-x-max, 100%), 100%);
+    min-height: 100vh;
+    --main-mr-xv: var(--main-mr-x, var(--main-mr-xy));
+    --main-mr-yv: var(--main-mr-y, var(--main-mr-xy));
+    /* --main-mr-x: var(--main-mr-x, 0);
+    --main-mr-y: var(--main-mr-y, 0); */
+    --main-pd-xv: var(--main-pd-x, var(--main-pd-xy));
+    --main-pd-yv: var(--main-pd-y, var(--main-pd-xy));
+    /* --main-pd-x: var(--main-pd-x, 0);--main-pd-y: var(--main-pd-y, 0); */
+
+}
+
+main:has(> .con),
+main:has(> .wrap > .con) {}
+
+.wrap {
+    display: var(--wrap-display, flex);
+    justify-content: center;
+
+    margin: var(--wrap-mr, var(--wrap-mr-yv, 0) var(--wrap-mr-xv, 0));
+    width: min(var(--wrap-x, 100%), 100%);
+    max-width: min(var(--wrap-x-max, 100%), 100%);
+    border-radius: var(--wrap-brdr-radius);
+    --wrap-mr-xv: var(--wrap-mr-x, var(--wrap-mr-xy));
+    --wrap-mr-x: var(--wrap-mr-xv);
+    --wrap-mr-yv: var(--wrap-mr-y, var(--wrap-mr-xy));
+}
+
+.con {
+    --con-pd-xv: var(--con-pd-x, var(--con-pd-xy));
+    --con-pd-yv: var(--con-pd-y, var(--con-pd-xy));
+    width: min(var(--con-x, 100%), 100%);
+    max-width: min(var(--con-x-max, 100%), 100%);
+    padding: var(--con-pd, var(--con-pd-yv, 0) var(--con-pd-xv, 0));
+
+    background: var(--con-bg, transparent);
+    box-shadow: var(--con-shadow);
+    border-radius: var(--con-brdr-rad, var(--radius-xxl));
+    border: var(--con-brdr, 1px solid var(--con-brdr-colr, var(--colr-divider, transparent)));
+}
+
+:root {
+    --main-pd-x: .75em;
+    --main-pd-y: 1em;
+    --con-pd-x: .5em; --con-pd-y: .5em;
+
+}
+@media screen and (min-width: 320px) {:root{ }}
+@media screen and (min-width: 480px) {:root{ 
+        --main-pd-x: 1.5em;
+    }
+}
+@media screen and (min-width: 768px) {:root{ }}
+@media screen and (min-width: 1024px) {:root{
+        --main-pd-x: 1.5em; --main-pd-y: 1.5em;
+        --con-pd-x: 1.5em;
+        --con-pd-y: .5em;
+    }
+}
+@media screen and (min-width: 1280px) {:root{ }}
+@media screen and (min-width: 1440px) {:root{ }}
+@media screen and (min-width: 1920px) {:root{ }}

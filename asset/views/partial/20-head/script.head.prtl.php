@@ -1,0 +1,27 @@
+<!-- Scripts -->
+<!-- Preload Google Tag Manager and Google Analytics -->
+<link rel="preload" href="https://www.googletagmanager.com/gtm.js?id=GTM-P4ZM2NDC" as="script">
+<link rel="preload" href="https://www.googletagmanager.com/gtag/js?id=G-23MMMZRSHB" as="script">
+
+<!-- Google Tag Manager -->
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-P4ZM2NDC"></script>
+<!-- Google Analytics (gtag.js) with deferred load -->
+<script>
+  window.addEventListener('load', function() {
+    var script = document.createElement('script');
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-23MMMZRSHB";
+    script.async = true;
+    script.defer = true;
+    script.onload = function() {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-23MMMZRSHB');
+    };
+    document.head.appendChild(script);
+  });
+</script>
+
+<!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3615660006377319" crossorigin="anonymous"></script> -->
+
+

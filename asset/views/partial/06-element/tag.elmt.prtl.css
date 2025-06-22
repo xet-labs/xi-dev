@@ -1,0 +1,40 @@
+.tag {
+    display: flex;
+    flex-direction: row;
+    gap: .675rem;
+}
+
+.tag>a {
+    display: flex;
+    max-width: 100%;
+    padding: 0.225rem 0.675rem;
+    justify-content: center;
+    align-items: center;
+    align-self: flex-start;
+    border: 1px solid var(--tag-border-color);
+    border-radius: 50rem;
+    gap: 0.2835rem;
+    transition: var(--trns-theme);
+    background: var(--tag-bg);
+    color: var(--tag-color);
+    font-size: var(--tag-font-size);
+    font-weight: 500;
+}
+
+.tag>a img,
+.tag>a svg,
+.tag>a i {
+    display: inline-block;
+    transition-duration: var(--transition-2s);
+    max-height: var(--tag-font-size);
+}
+
+.tag>a:hover,
+.tag>a:hover img,
+.tag>a:hover svg,
+.tag>a:hover i {
+    --tag-bg: var(--tag-hover-bg);
+    --tag-color: var(--tag-hover-color);
+    --tag-border-color: var(--tag-hover-border-color);
+    opacity: 1;
+}

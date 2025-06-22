@@ -1,0 +1,81 @@
+.nodis {display: none;}
+.disflex {display: flex;}
+.disblock {display: block;}
+.flex-row {flex-direction: row;}
+.flex-col {flex-direction: column;}
+.nopointer {pointer-events: none;}
+
+.seperator {
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    align-self: center;
+    display: block;
+    margin: 0px 0.5em;
+    background-color: var(--colr-txt);
+}
+
+/* .button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    cursor: pointer;
+} */
+
+.sep-circle {
+    width: 4px;
+    height: 4px;
+    background-color: #7a7a7a;
+    border-radius: 50px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.filled-circle-avatar {
+    max-height: var(--def-icon-size);
+    max-width: var(--def-icon-size);
+    min-height: var(--def-icon-size);
+    min-width: var(--def-icon-size);
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    overflow: hidden;
+}
+
+.text_underlne {
+    text-decoration: underline;
+}
+
+/* .underline {
+    position: relative;
+} */
+
+/* .underline::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 2px;
+    background-color: #0074D9;
+    transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+} */
+
+.line-x {
+    justify-self: center;
+    margin: var(--linex-mr, auto 0 auto 0);
+    width: min(var(--linex-y, 100%), 100%);
+    height: var(--linex-x, 0px);
+    border-bottom: 1px solid var(--linex-colr, var(--bg-075));
+}
+
+.line-y {
+    align-self: center;
+    margin: var(--liney-mr, 0 auto 0 auto);
+    width: var(--liney-x, 0px);
+    height: var(--liney-y, 1em);
+    border-right: 1px solid var(--liney-colr, var(--bg-075));
+}

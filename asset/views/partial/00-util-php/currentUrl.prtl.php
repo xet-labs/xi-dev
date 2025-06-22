@@ -1,0 +1,1 @@
+<input type="hidden" name="currentUrl" value="<?= htmlspecialchars(URL); ?>">

@@ -1,0 +1,15 @@
+.blog blockquote {
+    margin: 1.8245em 0;
+    margin: 3.249875em 0;
+    padding-left: 1em;
+    padding: 0.15em 0 0.15em 1em;
+    padding: 0.15em 1em;
+    border-radius: .4em;
+    border-left: 3px solid;
+    background-color: #ebeffd;
+    box-shadow: var(--post-img-box-shadow);
+}
+.blog blockquote >*{
+    margin: 0;
+    padding: 0;
+}

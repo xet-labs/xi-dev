@@ -1,0 +1,40 @@
+.underlay {
+    z-index: var(--underlay-z-index, 1000);
+    position: fixed;
+    pointer-events: var(--underlay-pointer, none);
+    display: var(--underlay-display, flex);
+    opacity: var(--underlay-opacity, 0);
+    cursor: var(--underlay-cursor, none);
+    
+    top: 0;bottom: 0;left: 0;right: 0;
+    width: 100vw;
+    height: 100vh;
+    
+    background: var(--underlay-bg, var(--bg-mod-cover));
+    backdrop-filter: blur(var(--underlay-blur, 30px));
+    transition: opacity var(--underlay-trns-durn, 0.16s) ease;
+}
+
+/* body:has(.underlay-show-btn:checked) .underlay, */
+.underlay-show-btn.checked~.underlay,
+.underlay-show-btn:checked~.underlay {
+    pointer-events: var(--underlay-active-pointer, initial);
+    --underlay-display: var(--underlay-active-display, flex);
+    --underlay-opacity: var(--underlay-active-opacity, 1);
+    --underlay-cursor: var(--underlay-active-cursor, crosshair);
+
+    transition: opacity var(--underlay-active-trns-durn, var(--underlay-trns-durn, 0.16s)) ease;
+}
+
+.underlay-show-btn,
+.underlay-hide-btn {
+    display: none;
+    pointer-events: none;
+}
+
+@media screen and (min-width: 768px) {
+    /* body:has(.underlay-show-btn:checked, .underlay-show-btn.checked){
+        overflow: hidden;
+        padding-right: 10px;
+    } */
+}

@@ -1,0 +1,39 @@
+.sticky-social-wrap {
+    display: none;
+    position: absolute;
+    transition-duration: unset;
+}
+
+.sticky-social {
+    z-index: 10;
+    display: grid;
+    position: fixed;
+    min-height: fit-content;
+    top: 48%;
+    transform: translateY(-50%) translateZ(0);
+    margin-left: 3.1em;
+    gap: 3.2em;
+
+    color: var(--colr-txt, inherit);
+    transition: unset;
+}
+
+.sticky-social a.icon {
+    --icon-opacity: 1;
+    --icon-z: 1.56em;
+    --icon-bg-z: 1.8;
+    --icon-colr: var(--colr-txt);
+    --icon-brdr-rad: 40%;
+    --icon-active-outln-opacity: .3;
+}
+.sticky-social a:hover {
+    color: inherit;
+}
+
+@media (min-width: 980px) {
+    .sticky-social-wrap {
+        display: unset;
+    }
+}
+
+

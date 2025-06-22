@@ -1,0 +1,122 @@
+/* -- Bouncy-loader -- */
+@keyframes bouncy-loader {
+    to {
+      opacity: 0.1;
+      transform: translate3d(0, -16px, 0);
+    }
+}
+  
+.bouncy-loader {
+    display: flex;
+    justify-content: center;
+}
+  
+.bouncy-loader > div {
+    width: 1rem;
+    height: 1rem;
+    margin: 2.5rem 0.25rem;
+    background: var(--colr-txt-mute);
+    /* background: var(--colr-txt-faint); */
+    border-radius: 50%;
+    animation: bouncy-loader 0.6s infinite alternate;
+}
+  
+.bouncy-loader > div:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.bouncy-loader > div:nth-child(3) {
+    animation-delay: 0.4s;
+}
+/* -- END Bouncy-loader -- */
+
+
+/* bouncy2 */
+.spinner-wrap{
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2.2em;
+
+    transition: opacity .5s ease;
+}
+
+.spinner{
+    width:150px;
+    height:60px;
+    transform: translate(0%, 0%);
+}
+.circle{
+    width:10px;
+    height:10px;
+    position: absolute;
+    border-radius: 50%;
+    background-color: var(--colr);
+    left:15%;
+    transform-origin: 50%;
+    animation: circle .45s alternate infinite ease;
+}
+
+@keyframes circle {
+    0%{
+        top:60px;
+        height:5px;
+        border-radius: 50px 50px 25px 25px;
+        transform: scaleX(1.7);
+    }
+    40%{
+        height:20px;
+        border-radius: 50%;
+        transform: scaleX(1);
+    }
+    100%{
+        top:0%;
+    }
+}
+.circle:nth-child(2){
+    left:45%;
+    animation-delay: .2s;
+}
+.circle:nth-child(3){
+    left:auto;
+    right:15%;
+    animation-delay: .3s;
+}
+.shadow{
+    width:10px;
+    height:4px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,.5);
+    position: absolute;
+    top:62px;
+    transform-origin: 50%;
+    z-index: -1;
+    left:15%;
+    filter: blur(1px);
+    animation: shadow .5s alternate infinite ease;
+}
+@keyframes shadow{
+    0%{
+        transform: scaleX(1.5);
+    }
+    40%{
+        transform: scaleX(1);
+        opacity: .7;
+    }
+    100%{
+        transform: scaleX(.2);
+        opacity: .4;
+    }
+}
+.shadow:nth-child(4){
+    left: 45%;
+    animation-delay: .2s
+}
+.shadow:nth-child(5){
+    left:auto;
+    right:15%;
+    animation-delay: .3s;
+}
+
+
+/* END bouncy 2 */

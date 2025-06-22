@@ -1,0 +1,101 @@
+:root {
+    --space-xxs: 0.25rem;
+    --space-xs: 0.5rem;
+    --space-s: 0.75rem;
+    --space-m: 1rem;
+    --space-l: 1.5rem;
+    --space-xl: 2rem;
+    --space-xxl: 3rem;
+}
+
+/* -----------------Spacing-Gap----------------- */
+/* General gap */
+body .gap { gap: var(--space-m); }
+body .gap-xxs { gap: var(--space-xxs); }
+body .gap-xs { gap: var(--space-xs); }
+body .gap-s { gap: var(--space-s); }
+body .gap-m { gap: var(--space-m); }
+body .gap-l { gap: var(--space-l); }
+body .gap-xl { gap: var(--space-xl); }
+body .gap-xxl { gap: var(--space-xxl); }
+
+/* Horizontal (X-axis) gap */
+body .gap-x { column-gap: var(--space-m); }
+body .gap-x-xxs { column-gap: var(--space-xxs); }
+body .gap-x-xs { column-gap: var(--space-xs); }
+body .gap-x-s { column-gap: var(--space-s); }
+body .gap-x-m { column-gap: var(--space-m); }
+body .gap-x-l { column-gap: var(--space-l); }
+body .gap-x-xl { column-gap: var(--space-xl); }
+body .gap-x-xxl { column-gap: var(--space-xxl); }
+
+/* Vertical (Y-axis) gap */
+body .gap-y { row-gap: var(--space-m); }
+body .gap-y-xxs { row-gap: var(--space-xxs); }
+body .gap-y-xs { row-gap: var(--space-xs); }
+body .gap-y-s { row-gap: var(--space-s); }
+body .gap-y-m { row-gap: var(--space-m); }
+body .gap-y-l { row-gap: var(--space-l); }
+body .gap-y-xl { row-gap: var(--space-xl); }
+body .gap-y-xxl { row-gap: var(--space-xxl); }
+
+
+
+/* -----------------Spacing-Margin----------------- */
+/* General margin */
+body .m { margin: var(--space-m); }
+body .m-xxs { margin: var(--space-xxs); }
+body .m-xs { margin: var(--space-xs); }
+body .m-s { margin: var(--space-s); }
+body .m-m { margin: var(--space-m); }
+body .m-l { margin: var(--space-l); }
+body .m-xl { margin: var(--space-xl); }
+body .m-xxl { margin: var(--space-xxl); }
+
+/* Horizontal margin */
+body .m-x { margin-left: var(--space-m); margin-right: var(--space-m); }
+body .m-x-xxs { margin-left: var(--space-xxs); margin-right: var(--space-xxs); }
+body .m-x-xs { margin-left: var(--space-xs); margin-right: var(--space-xs); }
+body .m-x-s { margin-left: var(--space-s); margin-right: var(--space-s); }
+body .m-x-l { margin-left: var(--space-l); margin-right: var(--space-l); }
+body .m-x-xl { margin-left: var(--space-xl); margin-right: var(--space-xl); }
+body .m-x-xxl { margin-left: var(--space-xxl); margin-right: var(--space-xxl); }
+
+/* Vertical margin */
+body .m-y { margin-top: var(--space-m); margin-bottom: var(--space-m); }
+body .m-y-xxs { margin-top: var(--space-xxs); margin-bottom: var(--space-xxs); }
+body .m-y-xs { margin-top: var(--space-xs); margin-bottom: var(--space-xs); }
+body .m-y-s { margin-top: var(--space-s); margin-bottom: var(--space-s); }
+body .m-y-l { margin-top: var(--space-l); margin-bottom: var(--space-l); }
+body .m-y-xl { margin-top: var(--space-xl); margin-bottom: var(--space-xl); }
+body .m-y-xxl { margin-top: var(--space-xxl); margin-bottom: var(--space-xxl); }
+
+
+/* -----------------Spacing-Padding----------------- */
+/* General padding */
+body .pd { padding: var(--space-m); }
+body .pd-xxs { padding: var(--space-xxs); }
+body .pd-xs { padding: var(--space-xs); }
+body .pd-s { padding: var(--space-s); }
+body .pd-m { padding: var(--space-m); }
+body .pd-l { padding: var(--space-l); }
+body .pd-xl { padding: var(--space-xl); }
+body .pd-xxl { padding: var(--space-xxl); }
+
+/* Horizontal padding */
+body .pd-x { padding-left: var(--space-m); padding-right: var(--space-m); }
+body .pd-x-xxs { padding-left: var(--space-xxs); padding-right: var(--space-xxs); }
+body .pd-x-xs { padding-left: var(--space-xs); padding-right: var(--space-xs); }
+body .pd-x-s { padding-left: var(--space-s); padding-right: var(--space-s); }
+body .pd-x-l { padding-left: var(--space-l); padding-right: var(--space-l); }
+body .pd-x-xl { padding-left: var(--space-xl); padding-right: var(--space-xl); }
+body .pd-x-xxl { padding-left: var(--space-xxl); padding-right: var(--space-xxl); }
+
+/* Vertical padding */
+body .pd-y { padding-top: var(--space-m); padding-bottom: var(--space-m); }
+body .pd-y-xxs { padding-top: var(--space-xxs); padding-bottom: var(--space-xxs); }
+body .pd-y-xs { padding-top: var(--space-xs); padding-bottom: var(--space-xs); }
+body .pd-y-s { padding-top: var(--space-s); padding-bottom: var(--space-s); }
+body .pd-y-l { padding-top: var(--space-l); padding-bottom: var(--space-l); }
+body .pd-y-xl { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
+body .pd-y-xxl { padding-top: var(--space-xxl); padding-bottom: var(--space-xxl); }

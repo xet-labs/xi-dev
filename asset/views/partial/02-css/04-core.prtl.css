@@ -1,0 +1,119 @@
+*,
+::after,
+::before {
+    box-sizing: border-box;
+    border-style: solid;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    margin: 0;
+    padding: 0;
+    border-width: 0;
+    text-underline-offset: 0.1em !important;    
+    /* text-underline-position: under; */
+    /* text-decoration-thickness: 0.07em !important; */
+}
+
+html,
+body {
+    /* overscroll-behavior: none; */
+    scroll-behavior: smooth;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    
+    margin: 0;
+    padding: 0;
+    font-family: var(--font);
+    font-size: var(--rem);
+    line-height: var(--body-lineh, var(--lineh-m));
+    
+    tab-size: 4;
+    -moz-tab-size: 4;
+    /* -webkit-text-size-adjust: 100%; */
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+input, button {
+    border: none;
+    outline: none;
+}
+button,[type=button], [type=reset], [type=submit],
+input,
+optgroup,
+select,
+textarea {
+    font-family: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    font-size: 100%;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    margin: 0;
+    padding: 0;
+}
+
+
+[type=button],
+[type=submit],
+[type=reset],
+button {
+    appearance: button;
+    -webkit-appearance: button;
+    background: inherit;
+}
+
+[role=button],
+button {
+    cursor: pointer;
+}
+
+embed,
+object,
+canvas,
+iframe,
+img,
+svg,
+audio,
+video {
+    display: block;
+    vertical-align: middle;
+    background: transparent;
+}
+img {
+    text-align: center;
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+
+    font-size: var(--img-font-z, inherit);
+    color: var(--colr-figure, var(--colr-txt-mute));
+    background: var(--img-bg,var(--bg-05));
+}
+figure {
+    color: var(--colr-figure, var(--colr-txt-mute));
+    background: var(--figure-bg, var(--bg-05));
+}
+figure * {
+    width: 100%;
+}
+figure img {
+    --img-bg: transparent;
+
+    object-fit: cover;
+    width: 100%;
+}
+
+
+a:has(img){
+    /* display: block; */
+}
+a {
+    text-decoration: none;
+    font-size: inherit;
+    color: inherit;
+    fill: inherit;
+}
+/* a:hover { color: var(--colr-a-hov); } */

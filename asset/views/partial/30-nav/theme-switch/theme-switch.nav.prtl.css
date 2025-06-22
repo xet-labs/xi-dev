@@ -1,0 +1,7 @@
+.theme-light-icon { display: var(--themeLight-icon-dis, flex); }
+.theme-dark-icon { display: var(--themeDark-icon-dis, none); }
+
+.dark {
+    --themeLight-icon-dis: none;
+    --themeDark-icon-dis: flex;
+}

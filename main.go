@@ -19,13 +19,13 @@ func main() {
 
 	// Init Gin router
 	gin.SetMode(utils.Env("GIN_MODE", "debug"))
-	router := gin.Default()
+	app := gin.Default()
 
 	// Register routes
-	routes.Init(router)
+	routes.Init(app)
 
 	// Init server
-	if err := services.InitServer(router); err != nil {
+	if err := services.InitServer(app); err != nil {
 		log.Fatalf("Error starting server: %v", err)
 	}
 }

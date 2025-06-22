@@ -1,0 +1,171 @@
+.signuplogin-main input[type="radio"] {
+    display: none;
+}
+nav .signuplogin-wrap {
+    /* --underlay-blur: 0px; */
+    display: flex;
+    gap: var(--nav-icons-gap, 1.25em);
+}
+.signuplogin-main {
+    will-change: transform;
+    opacity: 0;
+    pointer-events: none;
+    
+    z-index: 2000;
+    position: fixed;
+    overflow: hidden;
+    display: flex;
+    /* flex-direction: column; */
+
+    width: min(var(--signuplogin-x, 400px), 80%);
+    max-height: min(var(--signuplogin-y-max, 90vh), 100%);
+    left: 50%; top: 50%;
+    transform: translate3d(-50%, -50%, 0) scale(.978);
+
+    background: var(--signuplogin-bg, var(--bg));
+    box-shadow: var(--signuplogin-shadow, 0 8px 32px rgba(var(--mono-rgb-0), 0.1));
+    /* box-shadow: inset 0 0 0 1px var(--nav-sidemenu-shadow, var(--colr-outln, transparent)); */
+    border: 1px solid var(--nav-signuplogin-brdr-colr, var(--colr-outln, transparent));
+    border-radius: var(--radius-xxl);
+    transition: .12s ease;
+}
+body:has(#id-login-btn:checked, #id-signup-btn:checked) .signuplogin-main {
+    opacity: 1;
+    pointer-events: initial;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+    transition: .08s ease;
+}
+.signuplogin {
+    overflow: hidden;
+    overflow-y: unset;
+    text-align: center;
+
+    width: 100%;
+    height: 100%;
+    padding: 2em 1.75em;
+}
+
+.signuplogin .login-wrap,
+.signuplogin .signup-wrap {
+    display: none;
+    pointer-events: none;
+    flex-direction: column;
+
+    color: var(--colr-txt-mute);
+}
+body:has(#id-signup-btn:checked) .signuplogin-main .signup-wrap,
+body:has(#id-login-btn:checked) .signuplogin-main .login-wrap {
+    display: flex;
+    pointer-events: initial;
+}
+
+.signuplogin-brand {
+    display: flex;
+    justify-content: center;
+}
+.signuplogin-brand a:hover {
+    color: unset;
+}
+.signuplogin-brand img,
+.signuplogin-brand svg {
+    object-fit: cover;
+    width: 100%;
+    height: 2.2em;
+    margin: 0; padding: 0;
+}
+
+.signuplogin .title {
+    /* letter-spacing: -0.02em; */
+    margin: .5em 0 0;
+    font: 600 1.6em / 1em var(--font);
+    color: var(--colr-txt);
+}
+
+.signuplogin form {
+    display: flex;
+    flex-direction: column;
+    margin: 1.5em 0 0;
+    gap: 1.25em;
+}
+
+.signuplogin .label-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .25rem;
+}
+.signuplogin .label-wrap >* {
+    font: 550 14px / 1em var(--font);
+}
+.signuplogin .label-wrap a,
+.signuplogin .label-wrap label,
+.signuplogin .label-wrap button{
+    font-weight: 450;
+    color: var(--colr-a);
+    cursor: pointer;
+}
+.signuplogin .tosignuplogin {
+    justify-content: center;
+    margin: 1.125em 0 0.3125em;
+}
+.signuplogin .tosignuplogin >* {
+    font-weight: 450;
+}
+.signuplogin .tosignuplogin a,
+.signuplogin .tosignuplogin label,
+.signuplogin .tosignuplogin button{
+    font-weight: 500;
+}
+.signuplogin input {
+    width: 100%;
+    padding: .75rem .8rem;
+    
+    color: var(--colr-txt);
+    background-color: transparent;
+    border: 1px solid var(--input-brdr-colro, transparent);
+    box-shadow: inset 0 0 0 1px var(--input-brdr-colr, transparent);
+}
+.signuplogin input:focus {
+    border: 1px solid transparent;
+    box-shadow: inset 0 0 0 2px var(--signuplogin-input-focus-brdr-colr, var(--input-focus-brdr-colr, transparent));
+    outline: none;
+}
+.signuplogin input::placeholder {
+    font-size: .9375em;
+}
+.signuplogin form input,
+.signuplogin form button {
+    border-radius: 0.75em;
+    transform: translateZ(0);
+}
+
+.signuplogin .submit-login-btn,
+.signuplogin .submit-signup-btn {
+    display: inline-block;
+    cursor: pointer;
+    padding: .75rem;
+    width: 100%;
+    font-weight: 500;
+    color: var(--colr-inv);
+    background-color: var(--signuplogin-submit-colr, var(--colr-a));
+    transition: box-shadow .20s;
+}
+
+.signuplogin .submit-login-btn:focus,
+.signuplogin .submit-login-btn:hover,
+.signuplogin .submit-signup-btn:focus,
+.signuplogin .submit-signup-btn:hover {
+    box-shadow: 0 4px 24px hsla(230, 75%, 40%, .4);
+    transition: box-shadow .08s;
+}
+
+
+
+@media screen and (max-width: 480px) {
+    :root {
+        /* --underlay-blur: 0px;
+        --underlay-bg: var(--bg);
+        --signuplogin-bg: transparent;
+        --signuplogin-shadow: none; */
+    }
+}

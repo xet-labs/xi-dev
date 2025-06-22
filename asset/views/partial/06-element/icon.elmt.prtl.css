@@ -1,0 +1,104 @@
+.icon {
+    inset-inline-end: 0;
+    position: relative;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+    display: var(--icon-dis, flex);
+    cursor: var(--icon-cursor, pointer);
+
+    opacity: var(--icon-opacity, 1);
+    width: var(--icon-x, var(--icon-z));
+    height: var(--icon-y, var(--icon-z));
+    margin: var(--icon-mr, var(--icon-mr-y, 0) var(--icon-mr-x, 0));
+    padding: var(--icon-pd, var(--icon-pd-y, 0) var(--icon-pd-x, 0));
+    font-size: var(--icon-font-z, inherit);
+    
+    color: var(--icon-colr, var(--colr-txt));
+    background: transparent;
+    border-radius: var(--icon-brdr-rad);
+    transition: color var(--trns-theme);
+}
+/* .icon i, */
+.icon svg,
+.icon img,
+.icon i>* {
+    display: block;
+    position: var(--icon-svg-position, absolute);
+    
+    z-index: 10;
+    opacity: var(--icon-i-opacity, 1);
+    width: var(--icon-svg-x, var(--icon-svg-z, unset));
+    height: var(--icon-svg-y, var(--icon-svg-z, unset));
+    
+    fill: var(--icon-fill, currentColor);
+    transform: translate(0, 0) scale(var(--icon-scale));
+}
+
+.icon::after,
+.icon::before {
+    z-index: 1; content: '';
+    position: absolute;
+    width: calc(var(--icon-x, var(--icon-z)) * var(--icon-bg-z));
+    height: calc(var(--icon-y, var(--icon-z)) * var(--icon-bg-z));
+    
+    top: 50%; left: 50%; 
+    transition: transform var(--icon-bg-trns, 0s ease), background-color var(--icon-bg-trns, 0s ease);
+}
+.icon::before {
+    opacity: var(--icon-bg-opacity, 1);
+    background: var(--icon-bg, transparent);
+    border-radius: var(--icon-bg-brdr-rad, var(--icon-brdr-rad));
+    transform: translate(-50%, -50%) scale(var(--icon-bg-scale));
+}
+.icon::after {
+    opacity: var(--icon-brdr-opacity, 0);
+    border-radius: var(--icon-brdr-rad, var(--icon-bg-brdr-rad));
+    border: var(--icon-brdr, var(--icon-brdr-x, 1.5px) solid var(--icon-brdr-colr, var(--colr-txt)));
+    transform: translate(-50%, -50%) scale(var(--icon-brdr-scale, var(--icon-bg-scale)));
+    transition: transform var(--icon-brdr-trns, 0.08s ease);
+
+}
+.icon.hover,
+.icon:hover {
+    opacity: var(--icon-hov-opacity, 1);
+    --icon-brdr-opacity: var(--icon-hov-brdr-opacity, var(--icon-brdr-opacity, 0));
+    --icon-scale: var(--icon-hov-scale, 1);
+    --icon-bg-scale: var(--icon-hov-bg-scale, 1);
+    --icon-brdr-scale: var(--icon-hov-brdr-scale, var(--icon-bg-scale, 1));
+
+    --icon-colr: var(--icon-hov-colr, var(--icon-colr, var(--colr-txt)));
+    --icon-bg: var(--icon-hov-bg, var(--icon-bg, transparent));
+    --icon-brdr-colr: var(--icon-hov-brdr-colr, --icon-brdr-colr);
+    transition: transform var(--icon-hov-bg-scale-durn, 0.08s)
+}
+.icon.hover::before,
+.icon:hover::before { background: var(--icon-hov-bg, var(--icon-bg)); }
+.icon.active, 
+.icon:active {
+    opacity: var(--icon-active-opacity, var(--icon-hov-opacity, 1));
+    --icon-brdr-opacity: var(--icon-active-brdr-opacity, .34);
+    --icon-scale: var(--icon-active-scale, 1);
+    --icon-bg-scale: var(--icon-active-bg-scale, var(--icon-hov-bg-scale, 1));
+    --icon-brdr-scale: var(--icon-active-brdr-scale, var(--icon-bg-scale, 1));
+
+    --icon-colr: var(--icon-active-colr, var(--icon-hov-colr, var(--icon-colr, var(--colr-txt))));
+    --icon-bg: var(--icon-active-bg, var(--icon-hov-bg, var(--icon-bg, transparent)));
+    --icon-brdr-colr: var(--icon-active-brdr-colr, var(--icon-hov-brdr-colr, var(--icon-brdr-colr)));
+}
+
+.icon.active::before,
+.icon:active::before { background: var(--icon-active-bg, var(--icon-hov-bg, var(--icon-bg))); }
+:root{
+    --icon-z: 1em;
+    --icon-bg-z: 1.35;
+    --icon-bg-scale: 1;
+    /* --icon-bg: var(--bg-05); */
+    --icon-hov-bg: var(--bg-05);
+    --icon-active-bg: var(--bg-075);
+
+    /* --icon-hov-bg: var(--bg-075);
+    --icon-active-bg: var(--bg-1); */
+
+    --icon-brdr-rad: var(--radius-s);
+}

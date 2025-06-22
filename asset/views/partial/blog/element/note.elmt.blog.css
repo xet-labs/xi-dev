@@ -1,0 +1,29 @@
+.blog-cnt .note {
+    --note-background: var(--background-information);
+    --note-theme: var(--icon-information);
+    background-color: var(--note-background);
+    border-left: 2px solid var(--note-theme);
+    border-radius: var(--elem-radius);
+    box-shadow: var(--shadow-01);
+    margin: 1rem 0;
+    padding: 1rem 1rem 1rem 3rem;
+    position: relative;
+}
+.blog-cnt .note:before {
+    background-color: var(--note-theme);
+    content: "";
+    display: block;
+    height: 1rem;
+    left: 1rem;
+    -webkit-mask-image: url(/static/media/note-info.0eafb6e….svg);
+    mask-image: url(/static/media/note-info.0eafb6e….svg);
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    position: absolute;
+    top: 1.35rem;
+    width: 1rem;
+}
