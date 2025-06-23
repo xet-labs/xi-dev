@@ -1,5 +1,5 @@
 // services/db
-package services
+package service
 
 import (
 	"context"
@@ -26,7 +26,8 @@ var (
 func InitDB() {
 	if global.DBInitialized { return }
 
-	log.Println("Init databases...")
+	log.Println("✅ Init database..")
+	
 	for name, conf := range config.DB {
 		if !conf.Enable {
 			log.Printf("⚠️  DB '%s' skipped", name)

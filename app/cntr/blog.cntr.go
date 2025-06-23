@@ -26,8 +26,8 @@ type BlogCntr struct {
 
 // Singleton controller
 var Blog = &BlogCntr{
-	db:  services.DB(),
-	rdb: services.Redis(),
+	db:  service.DB(),
+	rdb: service.Redis(),
 	ctx: context.Background(),
 
 	blog:  models.Blog{},

@@ -8,6 +8,6 @@ import (
 
 // DB returns default DB or a given DB if exists
 func DB(db ...string) *gorm.DB {
-	return services.DB(db...)
+	return service.DB(db...)
 }
 

@@ -1,5 +1,5 @@
 // services/server
-package services
+package service
 
 import (
 	"log"
