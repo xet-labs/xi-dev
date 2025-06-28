@@ -6,37 +6,41 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"xi/app/util"
+	"xi/config"
+	"xi/lib"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"xi/app/global"
-	"xi/app/util"
-	"xi/config"
 )
 
 var (
-	DBs         = make(map[string]*gorm.DB)
-	dbMu        sync.RWMutex
-	RedisClients = make(map[string]*redis.Client)
+	DBs       = make(map[string]*gorm.DB)
+	RedisClis = lib.RedisClis
+	dbLock    sync.RWMutex
 )
 
 // Init initializes all enabled databases based on the config
 func InitDB() {
-	if global.DBInitialized { return }
+	if util.EnvBool("DBInitialized") {
+		return
+	}
 
-	log.Println("✅ Init database..")
-	
 	for name, conf := range config.DB {
 		if !conf.Enable {
-			log.Printf("⚠️  DB '%s' skipped", name)
+			// log.Printf("⚠️  DB '%s' skipped", name)
 			continue
 		}
 
-		//- DBUser fallback 
-		if conf.User == "" { conf.User = conf.Database + "_u" }
-		if conf.Pass == "" { conf.Pass = util.Env("DB_PASS") }
+		//- DBUser fallback
+		if conf.User == "" {
+			conf.User = conf.Database + "_u"
+		}
+		if conf.Pass == "" {
+			conf.Pass = util.Env("DB_PASS")
+		}
 
 		switch conf.Driver {
 		case "mysql", "mariadb":
@@ -46,10 +50,10 @@ func InitDB() {
 			if err != nil {
 				log.Fatalf("❌ Could not connect to %s DB: %v", name, err)
 			}
-			dbMu.Lock()
+			dbLock.Lock()
 			DBs[name] = db
-			dbMu.Unlock()
-			log.Printf("✅ DB '%s' connected (MySQL)", name)
+			dbLock.Unlock()
+			log.Printf("✅ DB connected '%s' (MySQL)", name)
 			continue
 
 		case "sqlite":
@@ -57,24 +61,24 @@ func InitDB() {
 			if err != nil {
 				log.Fatalf("❌ Could not connect to %s DB: %v", name, err)
 			}
-			dbMu.Lock()
+			dbLock.Lock()
 			DBs[name] = db
-			dbMu.Unlock()
-			log.Printf("✅ DB '%s' connected (SQLite)", name)
+			dbLock.Unlock()
+			log.Printf("✅ DB connected '%s' (SQLite)", name)
 			continue
 
 		case "redis":
 			rdb := redis.NewClient(&redis.Options{
 				Addr:     conf.Host + ":" + conf.Port,
 				Password: conf.Pass,
-				DB:       0,
+				DB:       conf.RedisDB,
 			})
 			if err := rdb.Ping(context.Background()).Err(); err != nil {
 				log.Fatalf("❌ Could not connect to Redis DB: %v", err)
 			}
 
-			RedisClients[name] = rdb
-			log.Printf("✅ DB '%s' connected (Redis)", name)
+			RedisClis[name] = rdb
+			log.Printf("✅ DB connected '%s' (Redis)", name)
 			continue
 
 		default:
@@ -83,19 +87,27 @@ func InitDB() {
 		}
 	}
 
-	global.DBInitialized = true
+	lib.RedisPrefix = util.Env("APP_ABBR", "redis")
+	lib.RedisDefRdb = util.Env("DB_REDIS_DEFAULT", "redis")
+	if rdb, ok := lib.RedisClis[lib.RedisDefRdb]; ok {
+		lib.RedisDefCli = rdb
+	}
+
+	util.EnvSet("DBInitialized", true)
 }
 
 // DB safely returns the DB instance by name
 func DB(name ...string) *gorm.DB {
 
-	if !global.DBInitialized { InitDB() }
+	if !util.EnvBool("DBInitialized") {
+		InitDB()
+	}
 
 	// Use read lock to safely access DB map
-	dbMu.RLock()
-	defer dbMu.RUnlock()
+	dbLock.RLock()
+	defer dbLock.RUnlock()
 
-	dbName := util.Env("DB_DEFAULT", "XI")
+	dbName := util.Env("DB_DEFAULT", "sql")
 	if len(name) > 0 && name[0] != "" {
 		dbName = name[0]
 	}
@@ -107,25 +119,3 @@ func DB(name ...string) *gorm.DB {
 	log.Printf("⚠️  Requested unknown DB '%s'", dbName)
 	return nil
 }
-
-func Redis(name ...string) *redis.Client {
-	if !global.DBInitialized {
-		InitDB()
-	}
-
-	// dbMu.RLock()
-	// defer dbMu.RUnlock()
-
-	dbName := util.Env("DB_REDIS_DEFAULT", "Redis")
-	if len(name) > 0 && name[0] != "" {
-		dbName = name[0]
-	}
-
-	if rdb, ok := RedisClients[dbName]; ok {
-		return rdb
-	}
-
-	log.Printf("⚠️  Requested unknown Redis client '%s'", dbName)
-	return nil
-}
-

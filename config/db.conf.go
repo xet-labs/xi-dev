@@ -7,6 +7,7 @@ import (
 
 type DBParam struct {
 	Database      string
+	RedisDB      int
 	User          string
 	Pass          string
 	Driver        string
@@ -23,7 +24,7 @@ type DBParam struct {
 }
 
 var DB = map[string]DBParam{
-	"XI": {
+	"sql": {
 		Database:      util.Env("DB_XI", "XI"),
 		User:          util.Env("DB_XI_USER"),
 		Pass:          util.Env("DB_XI_PASS"),
@@ -39,15 +40,15 @@ var DB = map[string]DBParam{
 		Engine:        "",
 		Enable:        true,
 	},
-	"Redis": {
+	"redis": {
 		Driver:   "redis",
-		Database: util.Env("DB_REDIS", "0"),
+		RedisDB: util.EnvInt("DB_REDIS", 0),
 		Host:     util.Env("DB_REDIS_HOST", "127.0.0.1"),
 		Port:     util.Env("DB_REDIS_PORT", "6379"),
 		Pass:     util.Env("DB_REDIS_PASS", ""),
 		Enable:   true,
 	},
-	"App": {
+	"app": {
 		Driver:    util.Env("DB_APP_DRIVER", "sqlite"),
 		Database:  util.Env("DB_APP_NAME", "app"),
 		Charset:   "utf8mb4",

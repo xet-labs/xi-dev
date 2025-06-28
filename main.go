@@ -2,12 +2,11 @@
 package main
 
 import (
-	"log"
-
-	"github.com/gin-gonic/gin"
 	"xi/app/service"
 	"xi/app/util"
 	"xi/routes"
+
+	"github.com/gin-gonic/gin"
 )
 
 func init() {
@@ -16,7 +15,6 @@ func init() {
 }
 
 func main() {
-
 	// Init Gin router
 	gin.SetMode(util.Env("GIN_MODE", "debug"))
 	app := gin.Default()
@@ -25,7 +23,5 @@ func main() {
 	routes.Init(app)
 
 	// Init server
-	if err := service.InitServer(app); err != nil {
-		log.Fatalf("Error starting server: %v", err)
-	}
+	service.InitServer(app)
 }

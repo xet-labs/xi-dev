@@ -3,28 +3,20 @@ package util
 import (
 	"log"
 	"os"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/joho/godotenv"
 )
 
 var (
-	envVar        = make(map[string]interface{})
-	envLock       = sync.RWMutex{}
+	envVar         = make(map[string]interface{})
 	envInitialized = false
+	envLock        sync.RWMutex
 )
 
-// splitEnv safely splits "KEY=VALUE" into [key, value]
-func splitEnv(kv string) []string {
-	for i := 0; i < len(kv); i++ {
-		if kv[i] == '=' {
-			return []string{kv[:i], kv[i+1:]}
-		}
-	}
-	return []string{kv}
-}
-
-// InitEnv loads .env file and populates envVar map
+// InitEnv loads the .env file and populates the envVar map.
 func InitEnv() {
 	envLock.Lock()
 	defer envLock.Unlock()
@@ -33,16 +25,15 @@ func InitEnv() {
 		return
 	}
 
-	// Load .env from project root
 	if err := godotenv.Load(); err != nil {
 		log.Println("⚠️  .env file not found or couldn't be loaded")
 	} else {
-		log.Println("✅ Init env..")
+		log.Println("✅ Env loaded..")
 	}
 
-	// Read all env keys/values into map
+	// Populate envVar from os.Environ
 	for _, kv := range os.Environ() {
-		parts := splitEnv(kv)
+		parts := strings.SplitN(kv, "=", 2)
 		if len(parts) == 2 {
 			envVar[parts[0]] = parts[1]
 		}
@@ -51,7 +42,7 @@ func InitEnv() {
 	envInitialized = true
 }
 
-// Env returns the value of an env variable, with optional fallback
+// Env returns a string value from the environment or fallback.
 func Env(key string, fallback ...string) string {
 	InitEnv()
 
@@ -63,15 +54,13 @@ func Env(key string, fallback ...string) string {
 			return str
 		}
 	}
-
 	if len(fallback) > 0 {
 		return fallback[0]
 	}
-
 	return ""
 }
 
-// EnvGet returns value as interface{} (or nil if not found)
+// EnvGet returns a value from the envVar map as interface{}.
 func EnvGet(key string) interface{} {
 	InitEnv()
 
@@ -80,38 +69,72 @@ func EnvGet(key string) interface{} {
 	return envVar[key]
 }
 
-// EnvSet sets or updates an environment variable in the map
+// EnvSet sets a value into the envVar map.
 func EnvSet(key string, value interface{}) {
 	InitEnv()
 
 	envLock.Lock()
 	defer envLock.Unlock()
 	envVar[key] = value
-	os.Setenv(key, ToStr(value))
 }
 
-// EnvUnset removes the key from the map and unsets it from real env
+// EnvUnset removes a key from envVar.
 func EnvUnset(key string) {
 	InitEnv()
 
 	envLock.Lock()
 	defer envLock.Unlock()
 	delete(envVar, key)
-	os.Unsetenv(key)
 }
 
-// EnvAll returns a copy of the full envVar map
+// EnvBool returns a boolean environment variable.
+func EnvBool(key string, fallback ...bool) bool {
+	val := EnvGet(key)
+
+	switch v := val.(type) {
+	case bool:
+		return v
+	case string:
+		if b, err := strconv.ParseBool(v); err == nil {
+			return b
+		}
+	case int:
+		return v != 0
+	case float64:
+		return v != 0.0
+	}
+
+	if len(fallback) > 0 {
+		return fallback[0]
+	}
+	return false
+}
+
+// EnvInt returns an integer environment variable.
+func EnvInt(key string, fallback int) int {
+	val := EnvGet(key)
+
+	switch v := val.(type) {
+	case int:
+		return v
+	case string:
+		if i, err := strconv.Atoi(v); err == nil {
+			return i
+		}
+	}
+	return fallback
+}
+
+// EnvAll returns a copy of the environment variables.
 func EnvAll() map[string]interface{} {
 	InitEnv()
 
 	envLock.RLock()
 	defer envLock.RUnlock()
 
-	copied := make(map[string]interface{}, len(envVar))
+	copyMap := make(map[string]interface{}, len(envVar))
 	for k, v := range envVar {
-		copied[k] = v
+		copyMap[k] = v
 	}
-	return copied
+	return copyMap
 }
-
-

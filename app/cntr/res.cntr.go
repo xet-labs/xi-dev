@@ -1,12 +1,14 @@
+// cntr/res
 package cntr
 
 import (
-	"net/http"
+	"xi/app/cntr/res"
+	
 	"github.com/gin-gonic/gin"
 )
 
-func Page(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"Page": "home",
-	})
+var Res = struct {
+	Css gin.HandlerFunc
+}{
+	Css: res.Css,
 }
