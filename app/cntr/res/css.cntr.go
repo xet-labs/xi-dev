@@ -1,7 +1,6 @@
 package res
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -10,83 +9,75 @@ import (
 	"sync"
 	"time"
 
-	"xi/lib"
-	// "xi/app/util"
+	"xi/app/lib"
+
+	"github.com/gin-gonic/gin"
 )
 
 var (
-	cssCache string
-	once     sync.Once
-	redisKey = lib.Redis.Key("res:app.css")
-	cacheTTL = time.Hour * 12
+	CssDir      = "views/partial/"
+	CssRedisKey = "res:app.css"
+	CssRedisTTL = 12 * time.Hour
+	filesOnce   sync.Once
+	cssFiles    []string
 )
 
-// getCSSFiles recursively finds all .css files in the partials folder
-func getCSSFiles() []string {
-	dir := "views/partial/"
-	var files []string
-
-	_ = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+// loadCSSFiles caches the list of CSS files on first use
+func loadCSSFiles() {
+	_ = filepath.Walk(CssDir, func(path string, info os.FileInfo, err error) error {
 		if err == nil && !info.IsDir() && strings.HasSuffix(info.Name(), ".css") {
-			files = append(files, path)
+			cssFiles = append(cssFiles, path)
 		}
 		return nil
 	})
 
-	return files
 }
 
-// mergeFiles reads and combines all CSS files with start/end banners
+// mergeFiles reads and combines all CSS file content
 func mergeFiles(files []string) string {
 	var sb strings.Builder
-
 	for _, file := range files {
-		data, err := os.ReadFile(file)
-		if err != nil {
-			continue
+		if data, err := os.ReadFile(file); err == nil {
+			sb.Write(data)
 		}
-		// name := filepath.Base(file)
-		// sb.WriteString(fmt.Sprintf("/* ------ [ STRT - %s ] ------ */\n", name))
-		sb.Write(data)
-		// sb.WriteString(fmt.Sprintf("\n/* ------ [ ENDS - %s ] ------ */\n\n", name))
 	}
 	return sb.String()
 }
 
-// minifyCSS removes comments, newlines, and excessive spaces
+// minifyCSS removes comments and compresses whitespace
 func minifyCSS(css string) string {
-	// Remove /* comments */
-	reComments := regexp.MustCompile(`(?s)/\*.*?\*/`)
-	css = reComments.ReplaceAllString(css, "")
-
-	// Remove spaces around selectors, braces, colons, semicolons
-	reSpaces := regexp.MustCompile(`\s*([{}:;,])\s*`)
-	css = reSpaces.ReplaceAllString(css, "$1")
-
-	// Remove unnecessary semicolons before }
+	css = regexp.MustCompile(`(?s)/\*.*?\*/`).ReplaceAllString(css, "")
+	css = regexp.MustCompile(`\s*([{}:;,])\s*`).ReplaceAllString(css, "$1")
 	css = strings.ReplaceAll(css, ";}", "}")
-
-	// Collapse multiple spaces and remove newlines
-	reMultiSpaces := regexp.MustCompile(`\s+`)
-	css = reMultiSpaces.ReplaceAllString(css, " ")
-
+	css = regexp.MustCompile(`\s+`).ReplaceAllString(css, " ")
 	return strings.TrimSpace(css)
 }
 
-// Css handler: merges and serves combined+minified CSS
+// Css handler: serves combined+minified CSS (Redis cached)
 func Css(c *gin.Context) {
 	c.Header("Content-Type", "text/css")
 
-	files := getCSSFiles()
-	if len(files) == 0 {
+	// Try Redis cache
+	if cached, err := lib.Redis.GetString(CssRedisKey); err == nil && cached != "" {
+		c.String(http.StatusOK, cached)
+		return
+	}
+
+	// Cache miss: load + generate
+	filesOnce.Do(func() {
+		loadCSSFiles()
+	})
+
+	if len(cssFiles) == 0 {
 		c.String(http.StatusOK, "// no css files found")
 		return
 	}
 
-	finalCSS := minifyCSS(mergeFiles(files))
+	css := minifyCSS(mergeFiles(cssFiles))
+	c.String(http.StatusOK, css)
 
-	c.String(http.StatusOK, finalCSS)
-
-	// Optional: write minified CSS to disk
-	// _ = os.WriteFile("public/app.css", []byte(finalCSS), 0644)
+	// Store to Redis asynchronously
+	go func(content string) {
+		_ = lib.Redis.SetString(CssRedisKey, content, CssRedisTTL)
+	}(css)
 }

@@ -5,22 +5,16 @@ import (
 	"xi/app/util"
 )
 
-type DBParam struct {
-	Database      string
-	RedisDB      int
-	User          string
-	Pass          string
-	Driver        string
-	Host          string
-	Port          string
-	UnixSocket    string
-	Charset       string
-	Collation     string
-	Prefix        string
-	PrefixIndexes bool
-	Strict        bool
-	Engine        string
-	Enable        bool
+var DbConf = struct {
+	DefDb       string
+	RedisDefRdb string
+	RedisPrefix string
+	MysqlDb     string
+	PostgresDb  string
+}{
+	DefDb:       util.Env("DB_DEFAULT", "sql"),
+	RedisDefRdb: util.Env("DB_REDIS_DEFAULT", "redis"),
+	RedisPrefix: util.Env("APP_ABBR", "redis"),
 }
 
 var DB = map[string]DBParam{
@@ -41,12 +35,12 @@ var DB = map[string]DBParam{
 		Enable:        true,
 	},
 	"redis": {
-		Driver:   "redis",
+		Driver:  "redis",
 		RedisDB: util.EnvInt("DB_REDIS", 0),
-		Host:     util.Env("DB_REDIS_HOST", "127.0.0.1"),
-		Port:     util.Env("DB_REDIS_PORT", "6379"),
-		Pass:     util.Env("DB_REDIS_PASS", ""),
-		Enable:   true,
+		Host:    util.Env("DB_REDIS_HOST", "127.0.0.1"),
+		Port:    util.Env("DB_REDIS_PORT", "6379"),
+		Pass:    util.Env("DB_REDIS_PASS", ""),
+		Enable:  true,
 	},
 	"app": {
 		Driver:    util.Env("DB_APP_DRIVER", "sqlite"),
@@ -54,4 +48,22 @@ var DB = map[string]DBParam{
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_unicode_ci",
 	},
+}
+
+type DBParam struct {
+	Database      string
+	RedisDB       int
+	User          string
+	Pass          string
+	Driver        string
+	Host          string
+	Port          string
+	UnixSocket    string
+	Charset       string
+	Collation     string
+	Prefix        string
+	PrefixIndexes bool
+	Strict        bool
+	Engine        string
+	Enable        bool
 }

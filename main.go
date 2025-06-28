@@ -10,8 +10,7 @@ import (
 )
 
 func init() {
-	service.InitUtil()
-	service.InitDB()
+	service.Init()
 }
 
 func main() {

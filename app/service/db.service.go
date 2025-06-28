@@ -8,7 +8,7 @@ import (
 	"sync"
 	"xi/app/util"
 	"xi/config"
-	"xi/lib"
+	"xi/app/lib"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
@@ -18,6 +18,7 @@ import (
 
 var (
 	DBs       = make(map[string]*gorm.DB)
+	DbDef     = config.DbConf.DefDb
 	RedisClis = lib.RedisClis
 	dbLock    sync.RWMutex
 )
@@ -87,8 +88,8 @@ func InitDB() {
 		}
 	}
 
-	lib.RedisPrefix = util.Env("APP_ABBR", "redis")
-	lib.RedisDefRdb = util.Env("DB_REDIS_DEFAULT", "redis")
+	lib.RedisPrefix = config.DbConf.RedisPrefix
+	lib.RedisDefRdb = config.DbConf.RedisDefRdb
 	if rdb, ok := lib.RedisClis[lib.RedisDefRdb]; ok {
 		lib.RedisDefCli = rdb
 	}
@@ -107,7 +108,7 @@ func DB(name ...string) *gorm.DB {
 	dbLock.RLock()
 	defer dbLock.RUnlock()
 
-	dbName := util.Env("DB_DEFAULT", "sql")
+	dbName := DbDef
 	if len(name) > 0 && name[0] != "" {
 		dbName = name[0]
 	}

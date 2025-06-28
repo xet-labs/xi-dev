@@ -2,14 +2,13 @@
 package cntr
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"time"
 
 	"xi/app/model"
+	"xi/app/lib"
 	"xi/app/service"
-	"xi/lib"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -19,31 +18,27 @@ import (
 type BlogCntr struct {
 	db    *gorm.DB
 	rdb   *redis.Client
-lrdb gin.HandlerFunc
 	blog  models.Blog
 	blogs []models.Blog
 }
 
 // Singleton controller
 var Blog = &BlogCntr{
-	db:   service.DB(),
-	rdb: lib.Redis.Cli(),
+	db:    service.DB(),
+	rdb:   lib.Redis.Cli(),
 	blog:  models.Blog{},
 	blogs: []models.Blog{},
 }
 
-
 // GET /blog
 func (b *BlogCntr) Index(c *gin.Context) {
 	var blogs []models.Blog
-	redisCacheKey := "blogs:all"
+	redisKey := "blogs:all"
 
 	// Try Redis cache
-	if cached, err := lib.Redis.Get(redisCacheKey); err == nil {
-		if err := json.Unmarshal([]byte(cached), &blogs); err == nil {
-			c.JSON(http.StatusOK, blogs)
-			return
-		}
+	if err := lib.Redis.GetJson(redisKey, &blogs); err == nil {
+		c.JSON(http.StatusOK, blogs)
+		return
 	}
 
 	// Cache miss or error - load from DB
@@ -54,9 +49,9 @@ func (b *BlogCntr) Index(c *gin.Context) {
 
 	// Set cache asynchronously
 	go func(data []models.Blog) {
-			if err := lib.Redis.Set(redisCacheKey, data, 10*time.Minute); err != nil {
-				log.Println("Redis SET error (Index):", err)
-			}
+		if err := lib.Redis.SetJson(redisKey, data, 10*time.Minute); err != nil {
+			log.Println("Redis SET error (Index):", err)
+		}
 	}(blogs)
 
 	c.JSON(http.StatusOK, blogs)
@@ -65,15 +60,13 @@ func (b *BlogCntr) Index(c *gin.Context) {
 // GET /blog/:id
 func (b *BlogCntr) Show(c *gin.Context) {
 	id := c.Param("id")
-	redisCacheKey := "blogs:id:" + id
+	redisKey := "blogs:id:" + id
 	var blog models.Blog
 
 	// Try Redis
-	if cached, err := lib.Redis.Get(redisCacheKey); err == nil {
-		if err := json.Unmarshal([]byte(cached), &blog); err == nil {
-			c.JSON(http.StatusOK, blog)
-			return
-		}
+	if err := lib.Redis.GetJson(redisKey, &blog); err == nil {
+		c.JSON(http.StatusOK, blog)
+		return
 	}
 
 	// Cache miss - load from DB
@@ -84,9 +77,9 @@ func (b *BlogCntr) Show(c *gin.Context) {
 
 	// Cache the result
 	go func(data models.Blog) {
-			if err := lib.Redis.Set(redisCacheKey, data, 10*time.Minute); err != nil {
-				log.Println("Redis SET error (Show):", err)
-			}
+		if err := lib.Redis.SetJson(redisKey, data, 10*time.Minute); err != nil {
+			log.Println("Redis SET error (Show):", err)
+		}
 	}(blog)
 
 	c.JSON(http.StatusOK, blog)

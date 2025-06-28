@@ -5,6 +5,7 @@ import (
 	"xi/app/util"
 )
 
-func InitUtil() {
+func Init() {
 	util.InitEnv()
+	InitDB()
 }
