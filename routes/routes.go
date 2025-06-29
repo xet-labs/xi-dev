@@ -26,7 +26,8 @@ func Init(r *gin.Engine) {
 	}
 
 	r.NoRoute(func(c *gin.Context) { c.File("./public" + c.Request.URL.Path) })
+	// r.Static("/assets", "./assets")
 
-	//- debug
+	// debug
 	r.GET("/d", cntr.D)
 }

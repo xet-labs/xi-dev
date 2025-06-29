@@ -1,4 +1,4 @@
-package util
+package lib
 
 import (
 	"log"
@@ -17,7 +17,7 @@ var (
 )
 
 // InitEnv loads the .env file and populates the envVar map.
-func InitEnvForce(){
+func InitEnvForce() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("⚠️  .env file not found or couldn't be loaded")
 	} else {

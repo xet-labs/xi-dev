@@ -2,10 +2,10 @@
 package service
 
 import (
-	"xi/app/util"
+	"xi/app/lib"
 )
 
 func Init() {
-	util.InitEnv()
+	lib.InitEnv()
 	InitDB()
 }

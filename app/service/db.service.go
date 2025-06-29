@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"log"
 	"sync"
-	"xi/app/util"
-	"xi/config"
 	"xi/app/lib"
+	"xi/config"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
@@ -25,7 +24,7 @@ var (
 
 // Init initializes all enabled databases based on the config
 func InitDB() {
-	if util.EnvBool("DBInitialized") {
+	if lib.EnvBool("DBInitialized") {
 		return
 	}
 
@@ -40,7 +39,7 @@ func InitDB() {
 			conf.User = conf.Database + "_u"
 		}
 		if conf.Pass == "" {
-			conf.Pass = util.Env("DB_PASS")
+			conf.Pass = lib.Env("DB_PASS")
 		}
 
 		switch conf.Driver {
@@ -94,13 +93,13 @@ func InitDB() {
 		lib.RedisDefCli = rdb
 	}
 
-	util.EnvSet("DBInitialized", true)
+	lib.EnvSet("DBInitialized", true)
 }
 
 // DB safely returns the DB instance by name
 func DB(name ...string) *gorm.DB {
 
-	if !util.EnvBool("DBInitialized") {
+	if !lib.EnvBool("DBInitialized") {
 		InitDB()
 	}
 
