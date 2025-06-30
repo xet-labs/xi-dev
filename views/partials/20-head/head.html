@@ -1,0 +1,31 @@
+{{ define "prtls/head" }}
+<!DOCTYPE html>
+<html lang="en">
+<script>document.documentElement.classList.add(localStorage.getItem("theme"));</script>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<link rel="icon" type="image/png" sizes="96x96" href="/res/static/brand/favicon-192x192.png" />
+	<link rel="icon" type="image/png" sizes="48x48" href="/res/static/brand/favicon-180x180.png" />
+	<link rel="icon" type="image/png" sizes="16x16" href="/res/static/brand/favicon-48x48.png" />
+	<link rel="apple-touch-icon" href="/res/static/brand/favicon-180x180.png" />
+	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+	<link rel="manifest" href="/manifest.json" />
+	<meta name="theme-color" content="#ff9700">
+
+	<!-- FONTS -->
+	<link rel="preload" href="/res/static/fonts/Inter/Inter-VariableFont_slnt_wght.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+
+	<!-- CSS -->
+	{{ csslink "/res/css/app.css" }}
+	{{ range .PAGE.link }}
+	{{ csslink . }}
+	{{ end }}
+
+
+	<meta name="csrf-token" content="{{ .csrf }}">
+</head>
+{{ end }}

@@ -10,12 +10,12 @@ import (
 
 // InitServer start the web server
 func InitServer(app *gin.Engine) error {
-	appPort := lib.Env("APP_PORT", "5000")
+	appPort := lib.Env.Get("APP_PORT", "5000")
 
 	log.Printf("\a\033[1;94mServer started \033[0;34m'http://localhost:%s'%s\033[0m\n", appPort,
 		func() string {
-			if url := lib.Env("APP_URL"); url != "" {
-				return ", 'http://" + url + "'"
+			if url := lib.Env.Get("APP_URL"); url != "" {
+				return ", '" + url + "'"
 			}
 			return ""
 		}())

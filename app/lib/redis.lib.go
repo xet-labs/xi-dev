@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -13,175 +12,251 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// Shared global Redis clients and lock
 var (
-	RedisPrefix = os.Getenv("APP_ABBR")
-	RedisDefRdb = "redis"
-	RedisDefCli *redis.Client
-
-	RedisClis = make(map[string]*redis.Client)
-	RedisCtx  = context.Background()
-	redisLock sync.RWMutex
+	sharedClients = make(map[string]*redis.Client)
+	// sharedLock    = &sync.RWMutex{}
 )
 
-// RedisLib represents the global redis utility
+// Central utility
 type RedisLib struct {
-	Prefix string
-	DefRdb string
-	DefCli *redis.Client
-	Clis   map[string]*redis.Client
-	Ctx    context.Context
-	Lock   sync.RWMutex
-
-	Cli func(cli ...string) *redis.Client
-
-	GetBytes  func(key string) ([]byte, error)
-	GetString func(key string) (string, error)
-	GetJson   func(key string, target interface{}) error
-	SetBytes  func(key string, value []byte, ttl time.Duration) error
-	SetString func(key string, value string, ttl time.Duration) error
-	SetJson   func(key string, value interface{}, ttl time.Duration) error
-	Del       func(key string) error
-	Exists    func(key string) (bool, error)
-	Key       func(key string) string
-	Keys      func(pattern string) ([]string, error)
-	FlushAll  func() error
-	With      func(cli string) RedisInstc
+	prefix     string
+	defaultCli string
+	cli        *redis.Client
+	clients    map[string]*redis.Client
+	ctx        context.Context
+	rw         sync.RWMutex
+	once       sync.Once
+	lazyInit   func()
 }
 
-// --- Initialization of RedisLib interface
-var Redis = RedisLib{
-	Cli:       redisCli,
-	GetBytes:  RedisGetBytes,
-	GetString: RedisGetString,
-	GetJson:   RedisGetJson,
-	SetBytes:  RedisSetBytes,
-	SetString: RedisSetString,
-	SetJson:   RedisSetJson,
-	Del:       RedisDel,
-	Exists:    RedisExists,
-	Key:       RedisKey,
-	Keys:      RedisKeys,
-	FlushAll:  RedisFlushAll,
-	With: func(cli string) RedisInstc {
-		return RedisInstc{Cli: redisCli(cli)}
-	},
+// Global instance
+var Redis = &RedisLib{
+	prefix:     "app",
+	defaultCli: "redis",
+	clients:    sharedClients,
+	ctx:        context.Background(),
 }
 
-type RedisInstc struct {
-	Cli *redis.Client
+// RegisterLazyInit sets a callback for deferred initialization.
+func (r *RedisLib) RegisterLazyInit(fn func()) {
+	r.lazyInit = fn
 }
 
-// --- Internal redisCli function with optional argument
-func redisCli(cli ...string) *redis.Client {
-	redisLock.RLock()
-	defer redisLock.RUnlock()
+// New creates a new RedisLib instance
+func (r *RedisLib) New(defaultCli string, opts ...interface{}) *RedisLib {
+	r.once.Do(func() {
+		if r.lazyInit != nil {
+			r.lazyInit()
+		}
+	})
+	cli := r.GetCli(defaultCli)
 
-	name := RedisDefRdb
-	if len(cli) > 0 && strings.TrimSpace(cli[0]) != "" {
-		name = cli[0]
+	prefix := r.prefix
+	ctx := r.ctx
+
+	for _, opt := range opts {
+		switch v := opt.(type) {
+		case string:
+			if strings.TrimSpace(v) != "" {
+				prefix = v
+			}
+		case context.Context:
+			ctx = v
+		}
 	}
 
-	if RedisDefCli, ok := RedisClis[name]; ok {
-		return RedisDefCli
+	return &RedisLib{
+		prefix:     prefix,
+		defaultCli: defaultCli,
+		cli:        cli,
+		clients:    sharedClients,
+		ctx:        ctx,
+		// rw:         sharedLock,
 	}
-
-	available := make([]string, 0, len(RedisClis))
-	for k := range RedisClis {
-		available = append(available, k)
-	}
-
-	log.Printf("❌ Redis client '%s' not found", name)
-	log.Printf("🧩 Available Redis clients: %s", strings.Join(available, ", "))
-	return nil
 }
 
-// --- Key prefixing
-func RedisKey(key string) string {
-	return RedisPrefix + ":" + key
-}
+// SetCli registers a new redis client
+func (r *RedisLib) SetCli(name string, cli *redis.Client) {
+	r.rw.Lock()
+	defer r.rw.Unlock()
 
-// Get []byte value
-func RedisGetBytes(key string) ([]byte, error) {
-	if RedisDefCli == nil {
-		return nil, redis.ErrClosed
+	// Check if client name already exists
+	if _, exists := r.clients[name]; exists {
+		log.Printf("⚠️  Redis client name '%s' already exists", name)
 	}
-	return RedisDefCli.Get(RedisCtx, RedisKey(key)).Bytes()
+
+	// Check if cli pointer is already stored under another name
+	for n, c := range r.clients {
+		if c == cli {
+			log.Printf("⚠️  Redis client instance already registered as '%s'", n)
+			break
+		}
+	}
+
+	r.clients[name] = cli
+
+	// Set as default if unset, or if default name matches, or default name is empty
+	if Redis.cli == nil || Redis.defaultCli == name || strings.TrimSpace(Redis.defaultCli) == "" {
+		Redis.cli = cli
+		Redis.defaultCli = name
+	}
 }
 
-// Get string value
-func RedisGetString(key string) (string, error) {
-	if RedisDefCli == nil {
+// GetCli returns client by name or default
+func (r *RedisLib) GetCli(name ...string) *redis.Client {
+	r.once.Do(func() {
+		if r.lazyInit != nil {
+			r.lazyInit()
+		}
+	})
+	r.rw.RLock()
+	defer r.rw.RUnlock()
+
+	key := r.defaultCli
+	if len(name) > 0 && strings.TrimSpace(name[0]) != "" {
+		key = name[0]
+	}
+	return r.clients[key]
+}
+
+// SetPrefix updates the Redis key prefix
+func (r *RedisLib) SetPrefix(prefix string) {
+	r.rw.Lock()
+	defer r.rw.Unlock()
+	r.prefix = strings.TrimSpace(prefix)
+}
+
+// GetPrefix returns the current Redis key prefix
+func (r *RedisLib) GetPrefix() string {
+	r.rw.RLock()
+	defer r.rw.RUnlock()
+	return r.prefix
+}
+
+// SetDefault sets the default Redis client by name
+func (r *RedisLib) SetDefault(name string) {
+	r.rw.Lock()
+	defer r.rw.Unlock()
+
+	// If no clients have been added yet
+	if len(r.clients) == 0 {
+		r.defaultCli = name
+		// log.Printf("⚠️  Redis client map empty, set default to '%s'", name)
+		return
+	}
+
+	// If client with given name exists
+	if cli, ok := r.clients[name]; ok {
+		r.defaultCli = name
+		r.cli = cli
+		log.Printf("✅ Redis default: client set to '%s'", name)
+	} else {
+		log.Printf("⚠️  Redis default: client '%s' not found", name)
+	}
+}
+
+// GetDefault returns the name of the default Redis client
+func (r *RedisLib) GetDefault() string {
+	r.rw.RLock()
+	defer r.rw.RUnlock()
+	return r.defaultCli
+}
+
+// SetCtx updates the Redis context
+func (r *RedisLib) SetCtx(ctx context.Context) {
+	r.rw.Lock()
+	defer r.rw.Unlock()
+	r.ctx = ctx
+}
+
+// GetCtx returns the current Redis context
+func (r *RedisLib) GetCtx() context.Context {
+	r.rw.RLock()
+	defer r.rw.RUnlock()
+	return r.ctx
+}
+
+// With returns new instance bound to given client name
+func (r *RedisLib) With(cliName string) *RedisLib {
+	return r.New(cliName, r.prefix)
+}
+
+// ---- Redis command wrappers ----
+
+func (r *RedisLib) key(k string) string {
+	return r.prefix + ":" + k
+}
+
+func (r *RedisLib) Get(k string) (string, error) {
+	if r.cli == nil {
 		return "", redis.ErrClosed
 	}
-	return RedisDefCli.Get(RedisCtx, RedisKey(key)).Result()
+	return r.cli.Get(r.ctx, r.key(k)).Result()
 }
 
-// Get and unmarshal JSON into target (pass pointer)
-func RedisGetJson(key string, target interface{}) error {
-	if RedisDefCli == nil {
+func (r *RedisLib) Set(k, val string, ttl time.Duration) error {
+	if r.cli == nil {
 		return redis.ErrClosed
 	}
+	return r.cli.Set(r.ctx, r.key(k), val, ttl).Err()
+}
 
-	data, err := RedisDefCli.Get(RedisCtx, RedisKey(key)).Bytes()
+func (r *RedisLib) GetBytes(k string) ([]byte, error) {
+	if r.cli == nil {
+		return nil, redis.ErrClosed
+	}
+	return r.cli.Get(r.ctx, r.key(k)).Bytes()
+}
+
+func (r *RedisLib) SetBytes(k string, data []byte, ttl time.Duration) error {
+	if r.cli == nil {
+		return redis.ErrClosed
+	}
+	return r.cli.Set(r.ctx, r.key(k), data, ttl).Err()
+}
+
+func (r *RedisLib) GetJson(k string, out interface{}) error {
+	data, err := r.GetBytes(k)
 	if err != nil {
 		return err
 	}
-
-	return json.Unmarshal(data, target)
+	return json.Unmarshal(data, out)
 }
 
-func RedisSetBytes(key string, value []byte, ttl time.Duration) error {
-	if RedisDefCli == nil {
-		return redis.ErrClosed
-	}
-	return RedisDefCli.Set(RedisCtx, RedisKey(key), value, ttl).Err()
-}
-
-func RedisSetString(key string, value string, ttl time.Duration) error {
-	if RedisDefCli == nil {
-		return redis.ErrClosed
-	}
-	return RedisDefCli.Set(RedisCtx, RedisKey(key), value, ttl).Err()
-}
-
-func RedisSetJson(key string, value interface{}, ttl time.Duration) error {
-	if RedisDefCli == nil {
-		return redis.ErrClosed
-	}
-
-	data, err := json.Marshal(value)
+func (r *RedisLib) SetJson(k string, val interface{}, ttl time.Duration) error {
+	data, err := json.Marshal(val)
 	if err != nil {
 		return fmt.Errorf("json marshal failed: %w", err)
 	}
-
-	return RedisDefCli.Set(RedisCtx, RedisKey(key), data, ttl).Err()
+	return r.SetBytes(k, data, ttl)
 }
 
-func RedisDel(key string) error {
-	if RedisDefCli == nil {
-		return redis.ErrClosed
-	}
-	return RedisDefCli.Del(RedisCtx, RedisKey(key)).Err()
-}
-
-func RedisExists(key string) (bool, error) {
-	if RedisDefCli == nil {
+func (r *RedisLib) Exists(k string) (bool, error) {
+	if r.cli == nil {
 		return false, redis.ErrClosed
 	}
-	n, err := RedisDefCli.Exists(RedisCtx, RedisKey(key)).Result()
+	n, err := r.cli.Exists(r.ctx, r.key(k)).Result()
 	return n > 0, err
 }
 
-func RedisKeys(pattern string) ([]string, error) {
-	if RedisDefCli == nil {
-		return nil, redis.ErrClosed
-	}
-	return RedisDefCli.Keys(RedisCtx, RedisKey(pattern)).Result()
-}
-
-func RedisFlushAll() error {
-	if RedisDefCli == nil {
+func (r *RedisLib) Del(k string) error {
+	if r.cli == nil {
 		return redis.ErrClosed
 	}
-	return RedisDefCli.FlushAll(RedisCtx).Err()
+	return r.cli.Del(r.ctx, r.key(k)).Err()
+}
+
+func (r *RedisLib) Keys(pattern string) ([]string, error) {
+	if r.cli == nil {
+		return nil, redis.ErrClosed
+	}
+	return r.cli.Keys(r.ctx, r.key(pattern)).Result()
+}
+
+func (r *RedisLib) FlushAll() error {
+	if r.cli == nil {
+		return redis.ErrClosed
+	}
+	return r.cli.FlushAll(r.ctx).Err()
 }

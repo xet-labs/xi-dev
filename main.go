@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+var Env = lib.Env
 
 func init() {
 	service.Init()
@@ -15,7 +16,7 @@ func init() {
 
 func main() {
 	// Init Gin router
-	gin.SetMode(lib.Env("GIN_MODE", "debug"))
+	gin.SetMode(Env.Get("APP_MODE", "debug"))
 	app := gin.Default()
 
 	// Register routes

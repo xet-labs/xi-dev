@@ -5,6 +5,8 @@ import (
 	"xi/app/lib"
 )
 
+var Env = lib.Env
+
 var DbConf = struct {
 	DefDb       string
 	RedisDefRdb string
@@ -12,39 +14,39 @@ var DbConf = struct {
 	MysqlDb     string
 	PostgresDb  string
 }{
-	DefDb:       lib.Env("DB_DEFAULT", "sql"),
-	RedisDefRdb: lib.Env("DB_REDIS_DEFAULT", "redis"),
-	RedisPrefix: lib.Env("APP_ABBR", "redis"),
+	DefDb:       Env.Get("DB_DEFAULT", "DB"),
+	RedisDefRdb: Env.Get("DB_REDIS_DEFAULT", "eeefeef"),
+	RedisPrefix: Env.Get("APP_ABBR", "redis"),
 }
 
 var DB = map[string]DBParam{
-	"sql": {
-		Database:      lib.Env("DB_XI", "XI"),
-		User:          lib.Env("DB_XI_USER"),
-		Pass:          lib.Env("DB_XI_PASS"),
-		Driver:        lib.Env("DB_XI_DRIVER", "mysql"),
-		Host:          lib.Env("DB_XI_HOST", "127.0.0.1"),
-		Port:          lib.Env("DB_XI_PORT", "3306"),
-		UnixSocket:    lib.Env("DB_SOCKET", ""),
-		Charset:       lib.Env("DB_CHARSET", "utf8mb4"),
-		Collation:     lib.Env("DB_COLLATION", "utf8mb4_unicode_ci"),
+	"DB": {
+		Database:      Env.Get("DB_XI", "XI"),
+		User:          Env.Get("DB_XI_USER"),
+		Pass:          Env.Get("DB_XI_PASS"),
+		Driver:        Env.Get("DB_XI_DRIVER", "mysql"),
+		Host:          Env.Get("DB_XI_HOST", "127.0.0.1"),
+		Port:          Env.Get("DB_XI_PORT", "3306"),
+		UnixSocket:    Env.Get("DB_SOCKET", ""),
+		Charset:       Env.Get("DB_CHARSET", "utf8mb4"),
+		Collation:     Env.Get("DB_COLLATION", "utf8mb4_unicode_ci"),
 		Prefix:        "",
 		PrefixIndexes: true,
 		Strict:        true,
 		Engine:        "",
 		Enable:        true,
 	},
-	"redis": {
+	"RDB": {
 		Driver:  "redis",
-		RedisDB: lib.EnvInt("DB_REDIS", 0),
-		Host:    lib.Env("DB_REDIS_HOST", "127.0.0.1"),
-		Port:    lib.Env("DB_REDIS_PORT", "6379"),
-		Pass:    lib.Env("DB_REDIS_PASS", ""),
+		RedisDB: Env.Int("DB_REDIS", 0),
+		Host:    Env.Get("DB_REDIS_HOST", "127.0.0.1"),
+		Port:    Env.Get("DB_REDIS_PORT", "6379"),
+		Pass:    Env.Get("DB_REDIS_PASS", ""),
 		Enable:  true,
 	},
 	"app": {
-		Driver:    lib.Env("DB_APP_DRIVER", "sqlite"),
-		Database:  lib.Env("DB_APP_NAME", "app"),
+		Driver:    Env.Get("DB_APP_DRIVER", "sqlite"),
+		Database:  Env.Get("DB_APP_NAME", "app"),
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_unicode_ci",
 	},

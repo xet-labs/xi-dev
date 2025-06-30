@@ -1,0 +1,9 @@
+{{ define "prtls/body.script" }}
+
+{{ with .PAGE.jsInc }}
+  {{ range . }}
+    {{ jslink . }}
+  {{ end }}
+{{ end }}
+
+{{ end }}

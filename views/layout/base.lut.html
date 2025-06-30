@@ -1,0 +1,26 @@
+{{ define "layout/base" }}
+
+{{ template "prtls/head" . }}
+
+<body>
+
+	{{ template "prtls/body.lib" . }}
+	{{ template "prtls/body.script" . }}
+	{{ template "prtls/nav" . }}
+	<!-- !empty($PAGE->prtl_stickySocial) ? require(Loc::file('PRTL','sticky-social')) : ''; -->
+
+
+	<main>
+		
+		{{ block "content" . }}{{ end }}
+
+	</main>
+
+	{{ template "prtls/footer" . }}
+	{{ template "prtls/body.script99" . }}
+	{{ template "prtls/body.lib99" . }}
+	
+</body>
+
+</html>
+{{ end }}

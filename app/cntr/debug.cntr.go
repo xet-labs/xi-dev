@@ -9,7 +9,7 @@ import (
 
 func D(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"name":   lib.Env("APP_NAME", "--"),
+		"name":   lib.Env.Get("APP_NAME", "--"),
 		"status": "up",
 	})
 }

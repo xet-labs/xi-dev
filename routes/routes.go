@@ -3,6 +3,7 @@ package routes
 
 import (
 	"xi/app/cntr"
+	"xi/util"
 
 	"github.com/gin-gonic/gin"
 	// "github.com/gin-contrib/gzip"
@@ -10,9 +11,12 @@ import (
 
 func Init(r *gin.Engine) {
 
+	// load templates and funcs
+	r.SetHTMLTemplate(util.LoadTemplates("views", ".html"))
+
 	// r.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	r.GET("/", cntr.Root)
+	r.GET("/", cntr.Home)
 
 	r.GET("/res/css/app.css", cntr.Res.Css)
 
