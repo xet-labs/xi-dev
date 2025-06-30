@@ -12,22 +12,19 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// Shared global Redis clients and lock
-var (
-	sharedClients = make(map[string]*redis.Client)
-	// sharedLock    = &sync.RWMutex{}
-)
+// Shared global Redis clients
+var sharedClients = make(map[string]*redis.Client)
 
-// Central utility
+// RedisLib wraps Redis client management and access
 type RedisLib struct {
 	prefix     string
 	defaultCli string
 	cli        *redis.Client
 	clients    map[string]*redis.Client
 	ctx        context.Context
-	rw         sync.RWMutex
-	once       sync.Once
-	lazyInit   func()
+	rw       sync.RWMutex
+	once     sync.Once
+	lazyInit func()
 }
 
 // Global instance
@@ -38,28 +35,21 @@ var Redis = &RedisLib{
 	ctx:        context.Background(),
 }
 
-// RegisterLazyInit sets a callback for deferred initialization.
+// RegisterLazyInit allows deferred initialization
 func (r *RedisLib) RegisterLazyInit(fn func()) {
 	r.lazyInit = fn
 }
 
-// New creates a new RedisLib instance
+// New returns a new RedisLib instance with optional prefix/context
 func (r *RedisLib) New(defaultCli string, opts ...interface{}) *RedisLib {
-	r.once.Do(func() {
-		if r.lazyInit != nil {
-			r.lazyInit()
-		}
-	})
-	cli := r.GetCli(defaultCli)
+	r.initIfNeeded()
 
-	prefix := r.prefix
-	ctx := r.ctx
-
+	prefix, ctx := r.prefix, r.ctx
 	for _, opt := range opts {
 		switch v := opt.(type) {
 		case string:
-			if strings.TrimSpace(v) != "" {
-				prefix = v
+			if s := strings.TrimSpace(v); s != "" {
+				prefix = s
 			}
 		case context.Context:
 			ctx = v
@@ -69,47 +59,37 @@ func (r *RedisLib) New(defaultCli string, opts ...interface{}) *RedisLib {
 	return &RedisLib{
 		prefix:     prefix,
 		defaultCli: defaultCli,
-		cli:        cli,
+		cli:        r.GetCli(defaultCli),
 		clients:    sharedClients,
 		ctx:        ctx,
-		// rw:         sharedLock,
 	}
 }
 
-// SetCli registers a new redis client
+// SetCli registers a new Redis client
 func (r *RedisLib) SetCli(name string, cli *redis.Client) {
 	r.rw.Lock()
 	defer r.rw.Unlock()
 
-	// Check if client name already exists
 	if _, exists := r.clients[name]; exists {
-		log.Printf("⚠️  Redis client name '%s' already exists", name)
+		log.Printf("⚠️  Redis client '%s' already exists", name)
 	}
-
-	// Check if cli pointer is already stored under another name
 	for n, c := range r.clients {
 		if c == cli {
-			log.Printf("⚠️  Redis client instance already registered as '%s'", n)
+			log.Printf("⚠️  Redis client already registered as '%s'", n)
 			break
 		}
 	}
 
 	r.clients[name] = cli
-
-	// Set as default if unset, or if default name matches, or default name is empty
-	if Redis.cli == nil || Redis.defaultCli == name || strings.TrimSpace(Redis.defaultCli) == "" {
-		Redis.cli = cli
-		Redis.defaultCli = name
+	if r.cli == nil || r.defaultCli == name || strings.TrimSpace(r.defaultCli) == "" {
+		r.cli = cli
+		r.defaultCli = name
 	}
 }
 
-// GetCli returns client by name or default
+// GetCli returns a Redis client by name or default
 func (r *RedisLib) GetCli(name ...string) *redis.Client {
-	r.once.Do(func() {
-		if r.lazyInit != nil {
-			r.lazyInit()
-		}
-	})
+	r.initIfNeeded()
 	r.rw.RLock()
 	defer r.rw.RUnlock()
 
@@ -120,33 +100,16 @@ func (r *RedisLib) GetCli(name ...string) *redis.Client {
 	return r.clients[key]
 }
 
-// SetPrefix updates the Redis key prefix
-func (r *RedisLib) SetPrefix(prefix string) {
-	r.rw.Lock()
-	defer r.rw.Unlock()
-	r.prefix = strings.TrimSpace(prefix)
-}
-
-// GetPrefix returns the current Redis key prefix
-func (r *RedisLib) GetPrefix() string {
-	r.rw.RLock()
-	defer r.rw.RUnlock()
-	return r.prefix
-}
-
 // SetDefault sets the default Redis client by name
 func (r *RedisLib) SetDefault(name string) {
 	r.rw.Lock()
 	defer r.rw.Unlock()
 
-	// If no clients have been added yet
 	if len(r.clients) == 0 {
 		r.defaultCli = name
-		// log.Printf("⚠️  Redis client map empty, set default to '%s'", name)
 		return
 	}
 
-	// If client with given name exists
 	if cli, ok := r.clients[name]; ok {
 		r.defaultCli = name
 		r.cli = cli
@@ -156,33 +119,56 @@ func (r *RedisLib) SetDefault(name string) {
 	}
 }
 
-// GetDefault returns the name of the default Redis client
-func (r *RedisLib) GetDefault() string {
-	r.rw.RLock()
-	defer r.rw.RUnlock()
-	return r.defaultCli
+// SetPrefix updates the Redis key prefix
+func (r *RedisLib) SetPrefix(prefix string) {
+	r.rw.Lock()
+	defer r.rw.Unlock()
+	r.prefix = strings.TrimSpace(prefix)
 }
 
-// SetCtx updates the Redis context
+// GetPrefix returns current Redis key prefix
+func (r *RedisLib) GetPrefix() string {
+	r.rw.RLock()
+	defer r.rw.RUnlock()
+	return r.prefix
+}
+
+// SetCtx sets Redis context
 func (r *RedisLib) SetCtx(ctx context.Context) {
 	r.rw.Lock()
 	defer r.rw.Unlock()
 	r.ctx = ctx
 }
 
-// GetCtx returns the current Redis context
+// GetCtx returns current context
 func (r *RedisLib) GetCtx() context.Context {
 	r.rw.RLock()
 	defer r.rw.RUnlock()
 	return r.ctx
 }
 
-// With returns new instance bound to given client name
+// GetDefault returns default client name
+func (r *RedisLib) GetDefault() string {
+	r.rw.RLock()
+	defer r.rw.RUnlock()
+	return r.defaultCli
+}
+
+// With returns a new RedisLib bound to the given client name
 func (r *RedisLib) With(cliName string) *RedisLib {
 	return r.New(cliName, r.prefix)
 }
 
-// ---- Redis command wrappers ----
+// Internal: Ensures lazyInit runs once
+func (r *RedisLib) initIfNeeded() {
+	r.once.Do(func() {
+		if r.lazyInit != nil {
+			r.lazyInit()
+		}
+	})
+}
+
+// ---------------- Redis command wrappers ----------------
 
 func (r *RedisLib) key(k string) string {
 	return r.prefix + ":" + k

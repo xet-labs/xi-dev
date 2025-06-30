@@ -1,3 +1,4 @@
+// Optimized EnvLib for performance, safety, and clarity
 package lib
 
 import (
@@ -10,52 +11,51 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Central utility
+// EnvLib provides a thread-safe environment loader with caching
 type EnvLib struct {
-	envMap   map[string]interface{}
-	rw       sync.RWMutex
-	once     sync.Once
+	vars map[string]interface{}
+	once sync.Once
+	rw   sync.RWMutex
 }
 
-// Global instance
+// Global singleton instance
 var Env = &EnvLib{
-	envMap: make(map[string]interface{}),
+	vars: make(map[string]interface{}),
 }
 
 func init() {
 	Env.Init()
 }
 
-// InitForce forcibly reloads environment variables from .env and system.
+// InitForce reloads .env and OS environment variables forcibly
 func (e *EnvLib) InitForce() {
 	e.rw.Lock()
 	defer e.rw.Unlock()
 
 	if err := godotenv.Load(); err != nil {
-		log.Println("⚠️  .env file not found or couldn't be loaded")
+		log.Println("⚠️  .env not loaded")
 	} else {
-		log.Println("✅ Env initialized..")
+		log.Println("✅ Env loaded")
 	}
 
 	for _, kv := range os.Environ() {
-		parts := strings.SplitN(kv, "=", 2)
-		if len(parts) == 2 {
-			e.envMap[parts[0]] = parts[1]
+		if parts := strings.SplitN(kv, "=", 2); len(parts) == 2 {
+			e.vars[parts[0]] = parts[1]
 		}
 	}
 }
 
-// Init ensures one-time lazy initialization.
+// Init ensures single-time environment initialization
 func (e *EnvLib) Init() {
 	e.once.Do(e.InitForce)
 }
 
-// Env returns string value from env with optional fallback.
+// Get returns string value for key or fallback
 func (e *EnvLib) Get(key string, fallback ...string) string {
 	e.rw.RLock()
 	defer e.rw.RUnlock()
 
-	if val, ok := e.envMap[key]; ok {
+	if val, ok := e.vars[key]; ok {
 		if str, ok := val.(string); ok {
 			return str
 		}
@@ -66,12 +66,12 @@ func (e *EnvLib) Get(key string, fallback ...string) string {
 	return ""
 }
 
-// Get retrieves a value (any type).
+// Raw returns value (any type) or fallback
 func (e *EnvLib) Raw(key string, fallback ...interface{}) interface{} {
 	e.rw.RLock()
 	defer e.rw.RUnlock()
 
-	if val, ok := e.envMap[key]; ok {
+	if val, ok := e.vars[key]; ok {
 		return val
 	}
 	if len(fallback) > 0 {
@@ -80,21 +80,21 @@ func (e *EnvLib) Raw(key string, fallback ...interface{}) interface{} {
 	return nil
 }
 
-// Set sets a key to a value.
+// Set adds or updates a key
 func (e *EnvLib) Set(key string, value interface{}) {
 	e.rw.Lock()
 	defer e.rw.Unlock()
-	e.envMap[key] = value
+	e.vars[key] = value
 }
 
-// Unset deletes a key.
+// Unset deletes a key
 func (e *EnvLib) Unset(key string) {
 	e.rw.Lock()
 	defer e.rw.Unlock()
-	delete(e.envMap, key)
+	delete(e.vars, key)
 }
 
-// Bool returns a boolean value from env with optional fallback.
+// Bool returns boolean value or fallback
 func (e *EnvLib) Bool(key string, fallback ...bool) bool {
 	switch v := e.Raw(key).(type) {
 	case bool:
@@ -114,7 +114,7 @@ func (e *EnvLib) Bool(key string, fallback ...bool) bool {
 	return false
 }
 
-// Int returns an int value from env or fallback.
+// Int returns int value or fallback
 func (e *EnvLib) Int(key string, fallback int) int {
 	switch v := e.Raw(key).(type) {
 	case int:
@@ -127,26 +127,24 @@ func (e *EnvLib) Int(key string, fallback int) int {
 	return fallback
 }
 
-// All returns a copy of all stored environment variables.
+// All returns a copy of all environment variables
 func (e *EnvLib) All() map[string]interface{} {
 	e.rw.RLock()
 	defer e.rw.RUnlock()
 
-	copyMap := make(map[string]interface{}, len(e.envMap))
-	for k, v := range e.envMap {
-		copyMap[k] = v
+	snapshot := make(map[string]interface{}, len(e.vars))
+	for k, v := range e.vars {
+		snapshot[k] = v
 	}
-	return copyMap
+	return snapshot
 }
 
-// As allows custom typed parsing of string env vars (Go 1.18+).
+// As parses and returns custom type
 func As[T any](env *EnvLib, key string, fallback T, parser func(string) (T, error)) T {
-	val, ok := env.Raw(key).(string)
-	if !ok {
-		return fallback
-	}
-	if parsed, err := parser(val); err == nil {
-		return parsed
+	if val, ok := env.Raw(key).(string); ok {
+		if parsed, err := parser(val); err == nil {
+			return parsed
+		}
 	}
 	return fallback
 }
