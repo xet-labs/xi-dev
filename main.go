@@ -20,7 +20,7 @@ func main() {
 	app := gin.Default()
 
 	// Register routes
-	routes.Init(app)
+	routes.Route.Init(app)
 
 	// Init server
 	service.InitServer(app)

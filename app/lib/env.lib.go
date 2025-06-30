@@ -33,9 +33,9 @@ func (e *EnvLib) InitForce() {
 	defer e.rw.Unlock()
 
 	if err := godotenv.Load(); err != nil {
-		log.Println("⚠️  .env not loaded")
+		log.Printf("⚠️  Env couldnt be loaded: %v", err)
 	} else {
-		log.Println("✅ Env loaded")
+		log.Println("✅ Env loaded..")
 	}
 
 	for _, kv := range os.Environ() {

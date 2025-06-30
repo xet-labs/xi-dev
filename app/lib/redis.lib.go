@@ -42,7 +42,7 @@ func (r *RedisLib) RegisterLazyInit(fn func()) {
 
 // New returns a new RedisLib instance with optional prefix/context
 func (r *RedisLib) New(defaultCli string, opts ...interface{}) *RedisLib {
-	r.initIfNeeded()
+	r.lazyInitOnce()
 
 	prefix, ctx := r.prefix, r.ctx
 	for _, opt := range opts {
@@ -89,7 +89,7 @@ func (r *RedisLib) SetCli(name string, cli *redis.Client) {
 
 // GetCli returns a Redis client by name or default
 func (r *RedisLib) GetCli(name ...string) *redis.Client {
-	r.initIfNeeded()
+	r.lazyInitOnce()
 	r.rw.RLock()
 	defer r.rw.RUnlock()
 
@@ -160,7 +160,7 @@ func (r *RedisLib) With(cliName string) *RedisLib {
 }
 
 // Internal: Ensures lazyInit runs once
-func (r *RedisLib) initIfNeeded() {
+func (r *RedisLib) lazyInitOnce() {
 	r.once.Do(func() {
 		if r.lazyInit != nil {
 			r.lazyInit()
