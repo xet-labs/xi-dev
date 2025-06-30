@@ -15,7 +15,7 @@ var DbConf = struct {
 	PostgresDb  string
 }{
 	DefDb:       Env.Get("DB_DEFAULT", "DB"),
-	RedisDefRdb: Env.Get("DB_REDIS_DEFAULT", "eeefeef"),
+	RedisDefRdb: Env.Get("DB_REDIS_DEFAULT", "RDB"),
 	RedisPrefix: Env.Get("APP_ABBR", "redis"),
 }
 
