@@ -5,10 +5,7 @@
 
 		<div class="brand">
 			<a href="/" class="b-brand" data-svg-src="/res/static/brand/brand.svg"></a>
-			<a href="/" class="b-logo icon">
-				<!-- <svg class="svg-icon"><use href="/res/static/brand/brand"/></svg> -->
-				<img class="svg-icon" src="/res/static/brand/brand.svg" />
-			</a>
+			<a href="/" class="b-logo icon" data-svg-src="/res/static/brand/brand-logo.svg"></a>
 
 			{{ if .P.subBrand }}
 			<div class="sub-brand-wrap">
@@ -31,7 +28,6 @@
 				{{ end }}
 			</div>
 		</div>
-
 
 		<div class="nav-r">
 			{{/* template "prtls/nav.toast" . */}}
