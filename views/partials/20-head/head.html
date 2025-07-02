@@ -21,11 +21,11 @@
 
 	<!-- CSS -->
 	{{ csslink "/res/css/app.css" }}
-	{{ range .PAGE.link }}
-	{{ csslink . }}
+	{{ range .P.link }}
+		{{ csslink . }}
 	{{ end }}
 
+	<meta name="csrf-token" content="{{ .P.csrf }}">
 
-	<meta name="csrf-token" content="{{ .csrf }}">
 </head>
 {{ end }}

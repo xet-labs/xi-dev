@@ -6,7 +6,7 @@ import (
 	"log"
 	"sync"
 	"xi/app/lib"
-	"xi/config"
+	"xi/conf"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
@@ -28,10 +28,10 @@ func init() {
 
 func (d *DBService) preInit() {
 	// Set global Redis and DB defaults
-	lib.DB.SetDefault(config.DbConf.DefDb)
+	lib.DB.SetDefault(conf.DbConf.DefDb)
 	lib.Redis.SetCtx(context.Background())
-	lib.Redis.SetDefault(config.DbConf.RedisDefRdb)
-	lib.Redis.SetPrefix(config.DbConf.RedisPrefix)
+	lib.Redis.SetDefault(conf.DbConf.RedisDefRdb)
+	lib.Redis.SetPrefix(conf.DbConf.RedisPrefix)
 }
 
 func (d *DBService) postInit() {
@@ -42,7 +42,7 @@ func (d *DBService) InitForce() {
 
 	d.preInit()
 
-	for profile, c := range config.DB {
+	for profile, c := range conf.DB {
 		if !c.Enable {
 			continue
 		}

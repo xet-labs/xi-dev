@@ -2,7 +2,7 @@
     /* --nav-mr-y: 0.9rem; */
     --nav-mr-x: 1em;
     --nav-mr-y: 1em;
-    --nav-mr-yt: .76em;
+    --nav-mr-yt: .75em;
     --nav-mr-yb: .5em;
     --nav-mr: var(--nav-mr-yt, var(--nav-mr-y)) var(--nav-mr-x) var(--nav-mr-yb, var(--nav-mr-y));
 }

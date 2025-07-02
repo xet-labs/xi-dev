@@ -1,5 +1,5 @@
 // config/db
-package config
+package conf
 
 import (
 	"xi/app/lib"

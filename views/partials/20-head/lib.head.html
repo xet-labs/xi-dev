@@ -1,4 +1,4 @@
-{{ with .PAGE.lib_hljs }}
+{{ with .P.lib_hljs }}
 	{{ if . }}
 		{{ csslink "/res/lib/hljs/styles/atom-one-dark.css" }}
 		{{ jslink "/res/lib/hljs/hl.min.js" 1 }}
@@ -6,19 +6,19 @@
 	{{ end }}
 {{ end }}
 
-{{ with .PAGE.lib_prism }}
+{{ with .P.lib_prism }}
 	{{ if . }}
 		{{ csslink "/res/lib/prism/prism.css" }}
 	{{ end }}
 {{ end }}
 
-{{ with .PAGE.lib.tw }}
+{{ with .P.lib.tw }}
 	{{ if . }}
 		{{ csslink "/res/lib/tailwind/tailwind.css" }}
 	{{ end }}
 {{ end }}
 
-{{ with .PAGE.lib.fa }}
+{{ with .P.lib.fa }}
 	{{ if . }}
 		{{ csslink "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" }}
 	{{ end }}

@@ -1,9 +1,5 @@
 {{ define "prtls/body.script99" }}
-
-{{ with .PAGE.jsInc99 }}
-  {{ range . }}
-    {{ jslink . }}
-  {{ end }}
-{{ end }}
-
+{{ with .P.jsInc99 }} {{ range . }} 
+  {{ jslink . }}
+{{ end }} {{ end }}
 {{ end }}
