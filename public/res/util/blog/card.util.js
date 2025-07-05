@@ -30,7 +30,7 @@ function BlogsCard_fetch() {
   blogCardsFetching = true;
   $("#blogCards_loading").show().css("opacity", 1);
 
-  $.post("/blog/card-get", { BlogsPage: Blogs_Page, BlogsLimit: Blogs_Limit }, (response) => {
+  $.post("https://localhost:4000/blog/card-get", { BlogsPage: Blogs_Page, BlogsLimit: Blogs_Limit }, (response) => {
 
     response = JSON.parse(response);
     if (response.noMoreBlogs) {

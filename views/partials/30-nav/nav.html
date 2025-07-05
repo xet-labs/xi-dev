@@ -182,7 +182,7 @@
 		<div class="nav-m">
 			<div class="menu">
 				{{ range .P.navMenu }}
-				{{ if eq .Label $.P.currentMenu }}
+				{{ if eq .Label $.P.menu }}
 				<a href="{{ .Href }}" class="current-menu">{{ .Label }}</a>
 				{{ else }}
 				<a href="{{ .Href }}">{{ .Label }}</a>

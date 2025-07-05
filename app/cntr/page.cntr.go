@@ -1,29 +1,82 @@
 package cntr
 
 import (
+	"bytes"
+	"html/template"
+	"log"
+	mapUtil "maps"
 	"net/http"
-	"xi/data"
-	"xi/util"
+	"os"
+	"time"
+
+	"xi/app/lib"
+	"xi/conf"
+
+	// "xi/util"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Page(page string) gin.HandlerFunc  {
-	return func(c *gin.Context) {
-		var PAGE = map[string]any{
-			"url":         c.Request.URL.String(),
-			"title":       "XetIndustries",
-			"currentMenu": "Home",
-			"description": "XetIndustries is a Collaborative Platform for Makers, Creators, and Developers.",
-			"canonical":   "https://xetindustries.com/",
-			"tags":        []string{"XetIndustries", "Xet Industries", "xetindustries", "xet industries", "Xtreme Embedded Tech Industries"},
-		}
-		
-		util.MergeMapTo(PAGE, data.View)
+// var db = lib.DB.GetCli()
 
-		c.HTML(http.StatusOK, page, gin.H{
-			"P": PAGE,
-            // any other data you want to pass
-        })
-    }
+func Page(tmpl *template.Template, title, path string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		redisKey := "page:" + c.Request.URL.String()
+
+		// Try Redis cache
+		if data, err := lib.Redis.GetBytes(redisKey); err == nil {
+			c.Data(http.StatusOK, "text/html; charset=utf-8", data)
+			return
+		}
+
+		rawCnt, err := os.ReadFile(path)
+		if err != nil {
+			log.Println(err)
+		}
+
+		// Prep page data
+		page := make(map[string]any)
+		mapUtil.Copy(page, conf.View.PageData)
+		mapUtil.Copy(page, conf.View.Pages[title])
+		page["url"] = c.Request.URL.String()
+
+		// Parse the content into the cloned template (defines "content")
+		t, _ := tmpl.Clone()
+		if _, err := t.Parse(string(rawCnt)); err != nil {
+			log.Fatal(err)
+		}
+
+		// Execute layout/tmpl using the merged data
+		var cnt bytes.Buffer
+		err = t.ExecuteTemplate(&cnt, "layout/base", gin.H{
+			"P": page,
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Cache the result
+		go func(data []byte) {
+			if err := lib.Redis.SetBytes(redisKey, data, 10*time.Minute); err != nil {
+				log.Printf("Redis SET err (%s): %v", redisKey, err)
+			}
+		}(cnt.Bytes())
+
+		c.Data(http.StatusOK, "text/html; charset=utf-8", cnt.Bytes())
+	}
+}
+
+func PageTmpl(title, path string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		// Prep page data
+		page := make(map[string]any)
+		mapUtil.Copy(page, conf.View.PageData)
+		mapUtil.Copy(page, conf.View.Pages[title])
+		page["url"] = c.Request.URL.String()
+
+		c.HTML(http.StatusOK, path, gin.H{
+			"P": page,
+		})
+	}
 }

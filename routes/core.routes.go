@@ -2,12 +2,14 @@ package routes
 
 import (
 	"xi/app/cntr"
+	"xi/conf"
 )
 
 func (rt *RouteStruct) registerCore() {
-	r.GET("/", cntr.Page("pages/home"))
-	r.GET("/b", cntr.Page("pages/blogs"))
-	r.GET("/res/css/app.css", cntr.Res.Css)
+	// r.GET("/", cntr.Page("pages/home"))
+	for title, page := range conf.View.Pages {
+		r.GET(page["route"].(string), cntr.Page(rt.Tmpl, title, page["file"].(string)))
+	}
 
 	r.GET("/d", cntr.D) // debug
 }

@@ -22,7 +22,7 @@ type BlogCntr struct {
 }
 
 // Singleton controller
-var Blog = &BlogCntr{
+var BlogApi = &BlogCntr{
 	db:    lib.DB.GetCli(),
 	blog:  models.Blog{},
 	blogs: []models.Blog{},

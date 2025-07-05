@@ -5,12 +5,12 @@ import (
 )
 
 func (rt *RouteStruct) registerBlog() {
-	blog := r.Group("/blog")
+	blogApi := r.Group("api/blog")
 	{
-		blog.GET("", cntr.Blog.Index)
-		blog.POST("/:id", cntr.Blog.Post)
-		blog.GET("/:id", cntr.Blog.Show)
-		blog.PUT("/:id", cntr.Blog.Put)
-		blog.DELETE("/:id", cntr.Blog.Delete)
+		blogApi.GET("", cntr.BlogApi.Index)
+		blogApi.POST("/:id", cntr.BlogApi.Post)
+		blogApi.GET("/:id", cntr.BlogApi.Show)
+		blogApi.PUT("/:id", cntr.BlogApi.Put)
+		blogApi.DELETE("/:id", cntr.BlogApi.Delete)
 	}
 }

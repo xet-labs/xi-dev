@@ -28,21 +28,19 @@ func init() {
 
 func (d *DBService) preInit() {
 	// Set global Redis and DB defaults
-	lib.DB.SetDefault(conf.DbConf.DefDb)
+	lib.DB.SetDefault(conf.Db.Def)
 	lib.Redis.SetCtx(context.Background())
-	lib.Redis.SetDefault(conf.DbConf.RedisDefRdb)
-	lib.Redis.SetPrefix(conf.DbConf.RedisPrefix)
+	lib.Redis.SetDefault(conf.Db.RedisDef)
+	lib.Redis.SetPrefix(conf.Db.RedisPrefix)
 }
 
-func (d *DBService) postInit() {
-}
+func (d *DBService) postInit() {}
 
 // Initializes all DBs and Redis clients (forced)
 func (d *DBService) InitForce() {
-
 	d.preInit()
 
-	for profile, c := range conf.DB {
+	for profile, c := range conf.Db.DB {
 		if !c.Enable {
 			continue
 		}

@@ -55,7 +55,7 @@ func Css(c *gin.Context) {
 
 	// Cache miss: load + generate
 	cssOnce.Do(func() {
-		cssFiles, _ = util.GetFilesWithExt(CssDir, ".css")
+		cssFiles, _ = util.GetFilesWithExt(".css", CssDir)
 	})
 
 	if len(cssFiles) == 0 {
