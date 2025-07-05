@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"html/template"
 	"log"
-	"xi/app/cntr"
 	"xi/conf"
 	"xi/util"
 
@@ -30,16 +29,12 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 	rt.Tmpl = util.GetNewTmpl("base", ".html", rt.templates...) // Load templates
 	r.SetHTMLTemplate(rt.Tmpl)
 
-	for title, page := range conf.View.Pages {
-		route := "/t" + page["route"].(string)
-		r.GET(route, cntr.PageTmpl(title, page["tmpl"].(string)))
-	}
-
 	// Register routes
 	rt.registerCore()
 	rt.registerBlog()
 	rt.registerRes()
 	rt.registerStatic()
+	rt.registerTest()
 
 	// Optional: Middleware (e.g. gzip)
 	// r.Use(gzip.Gzip(gzip.DefaultCompression))
