@@ -52,7 +52,7 @@ var View = &ViewStruct{
 			"jsInc99": []string{
 				"/res/js/jquery/jquery.min.js",
 				"/res/js/app.js",
-				"/res/util/blog/card.util.js",
+				"/res/js/blogs.js",
 			},
 			"meta": map[string]any{
 				"canonical": "https://xetindustries.com/blog",

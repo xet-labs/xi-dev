@@ -10,6 +10,4 @@ func (rt *RouteStruct) registerCore() {
 	for title, page := range conf.View.Pages {
 		r.GET(page["route"].(string), cntr.Page(rt.Tmpl, title, page["file"].(string)))
 	}
-
-	r.GET("/d", cntr.D) // debug
 }

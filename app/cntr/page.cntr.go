@@ -55,14 +55,14 @@ func Page(tmpl *template.Template, title, path string) gin.HandlerFunc {
 			log.Fatal(err)
 		}
 
+		c.Data(http.StatusOK, "text/html; charset=utf-8", cnt.Bytes())
+
 		// Cache the result
 		go func(data []byte) {
 			if err := lib.Redis.SetBytes(redisKey, data, 10*time.Minute); err != nil {
 				log.Printf("Redis SET err (%s): %v", redisKey, err)
 			}
 		}(cnt.Bytes())
-
-		c.Data(http.StatusOK, "text/html; charset=utf-8", cnt.Bytes())
 	}
 }
 

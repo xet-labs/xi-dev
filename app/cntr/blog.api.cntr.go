@@ -4,6 +4,7 @@ package cntr
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"xi/app/lib"
@@ -17,49 +18,76 @@ import (
 type BlogCntr struct {
 	db    *gorm.DB
 	rdb   *redis.Client
-	blog  models.Blog
-	blogs []models.Blog
+	blog  model.Blog
+	blogs []model.Blog
 }
 
 // Singleton controller
 var BlogApi = &BlogCntr{
 	db:    lib.DB.GetCli(),
-	blog:  models.Blog{},
-	blogs: []models.Blog{},
+	blog:  model.Blog{},
+	blogs: []model.Blog{},
 }
 
-// GET /blog
+// GET /blog or /blog?Page=2&Limit=6
 func (b *BlogCntr) Index(c *gin.Context) {
-	var blogs []models.Blog
-	redisKey := "blogs:all"
+	// Default pagination values
+	q_page := c.DefaultQuery("Page", "1")
+	q_limit := c.DefaultQuery("Limit", "6")
 
-	// Try Redis cache
-	if err := lib.Redis.GetJson(redisKey, &blogs); err == nil {
-		c.JSON(http.StatusOK, blogs)
+	pageNum, err1 := strconv.Atoi(q_page)
+	limitNum, err2 := strconv.Atoi(q_limit)
+	if err1 != nil || err2 != nil || pageNum <= 0 || limitNum <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Page or Limit"})
 		return
 	}
 
-	// Cache miss or error - load from DB
-	if err := b.db.Preload("User").Find(&blogs).Error; err != nil {
+	offset := (pageNum - 1) * limitNum
+
+	// Optional: use paginated cache key
+	redisKey := "blogs:page:" + q_page + ":limit:" + q_limit
+	var blogs []model.Blog
+
+	// Try Redis cache
+	if err := lib.Redis.GetJson(redisKey, &blogs); err == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"blogsExhausted": len(blogs) == 0,
+			"blogs":       blogs,
+		})
+		return
+	}
+
+	// Cache miss or DB fallback
+	if err := b.db.Preload("User").
+		Where("status IN ?", []string{"published", "published_hidden"}).
+		Order("updated_at DESC").
+		Offset(offset).
+		Limit(limitNum).
+		Find(&blogs).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch blogs"})
 		return
 	}
 
-	// Set cache asynchronously
-	go func(data []models.Blog) {
+	c.JSON(http.StatusOK, gin.H{
+		"blogsExhausted": len(blogs) == 0,
+		"blogs":       blogs,
+	})
+
+	// Async Redis set
+	go func(data []model.Blog) {
 		if err := lib.Redis.SetJson(redisKey, data, 10*time.Minute); err != nil {
 			log.Printf("Redis SET err (%s): %v", redisKey, err)
 		}
 	}(blogs)
 
-	c.JSON(http.StatusOK, blogs)
 }
+
 
 // GET /blog/:id
 func (b *BlogCntr) Show(c *gin.Context) {
 	id := c.Param("id")
 	redisKey := "blogs:id:" + id
-	var blog models.Blog
+	var blog model.Blog
 
 	// Try Redis
 	if err := lib.Redis.GetJson(redisKey, &blog); err == nil {
@@ -73,19 +101,19 @@ func (b *BlogCntr) Show(c *gin.Context) {
 		return
 	}
 
+	c.JSON(http.StatusOK, blog)
+
 	// Cache the result
-	go func(data models.Blog) {
+	go func(data model.Blog) {
 		if err := lib.Redis.SetJson(redisKey, data, 10*time.Minute); err != nil {
 			log.Printf("Redis SET err (%s): %v", redisKey, err)
 		}
 	}(blog)
-
-	c.JSON(http.StatusOK, blog)
 }
 
 // POST /blog
 func (b *BlogCntr) Post(c *gin.Context) {
-	var blog models.Blog
+	var blog model.Blog
 
 	if err := c.ShouldBindJSON(&blog); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
@@ -108,7 +136,7 @@ func (b *BlogCntr) Post(c *gin.Context) {
 // PUT /blog/:id
 func (b *BlogCntr) Put(c *gin.Context) {
 	id := c.Param("id")
-	var blog models.Blog
+	var blog model.Blog
 
 	if err := b.db.First(&blog, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
@@ -137,7 +165,7 @@ func (b *BlogCntr) Put(c *gin.Context) {
 func (b *BlogCntr) Delete(c *gin.Context) {
 	id := c.Param("id")
 
-	if err := b.db.Delete(&models.Blog{}, id).Error; err != nil {
+	if err := b.db.Delete(&model.Blog{}, id).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not delete blog"})
 		return
 	}

@@ -1,7 +1,4 @@
-<?php
-use xet\util;
-use xet\h\timesince;
-?>
+{{ define "prtls/blogs.card" }}
 
 <article class="card" data-href="<?= htmlspecialchars($blogUrl); ?>" tabindex="0" role="link" aria-label="Read more about <?= htmlspecialchars($blog->title); ?>">
 		
@@ -60,3 +57,5 @@ use xet\h\timesince;
     </div>
 
 </article>
+
+{{ end }}

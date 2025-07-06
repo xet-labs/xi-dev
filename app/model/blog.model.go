@@ -1,27 +1,25 @@
 // models/blog
-package models
+package model
 
 import (
 	"time"
 )
 
 type Blog struct {
-	ID           uint       `gorm:"primaryKey;column:id"`
-	UID          uint64     `gorm:"column:uid;index"`
-	Status       string     `gorm:"column:status"`
-	Tags         string     `gorm:"column:tags"`
-	Title        string     `gorm:"column:title"`
-	TitleMin     string     `gorm:"column:short_title"`
-	Description  string     `gorm:"column:description"`
-	Hero         string     `gorm:"column:featured_img"`
-	Content      string     `gorm:"column:content"`
-	Slug         string     `gorm:"column:slug"`
-	Path         string     `gorm:"column:path"`
-	Meta         string     `gorm:"column:meta"`
-	MetaKeywords string     `gorm:"column:meta_keywords"`
-	CreatedAt    *time.Time `gorm:"column:created_at"`
-	UpdatedAt    *time.Time `gorm:"column:updated_at"`
-
-	// Relation with User
-	User *User `gorm:"foreignKey:UID;references:UID"`
+	ID           uint        `gorm:"primaryKey;column:id"          json:"id"`
+	UID          uint        `gorm:"column:uid;index"              json:"uid"`
+	Status       string      `gorm:"column:status"                 json:"status"`
+	Tags         StringArray `gorm:"column:tags"                   json:"tags"`
+	Title        string      `gorm:"column:title"                  json:"title"`
+	Headline     string      `gorm:"column:short_title"            json:"headline"`
+	Description  string      `gorm:"column:description"            json:"description"`
+	Hero         StringArray `gorm:"column:featured_img"           json:"featured_img"`
+	Content      string      `gorm:"column:content"                json:"content"`
+	Slug         string      `gorm:"column:slug"                   json:"slug"`
+	Path         string      `gorm:"column:path"                   json:"path"`
+	Meta         string      `gorm:"column:meta"                   json:"meta"`
+	MetaKeywords string      `gorm:"column:meta_keywords"          json:"meta_keywords"`
+	CreatedAt    *time.Time  `gorm:"column:created_at"             json:"created_at"`
+	UpdatedAt    *time.Time  `gorm:"column:updated_at"             json:"updated_at"`
+	User         *User       `gorm:"foreignKey:UID;references:UID" json:"user,omitempty"` // Relation
 }

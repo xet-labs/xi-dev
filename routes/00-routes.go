@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"xi/conf"
@@ -31,16 +30,13 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 
 	// Register routes
 	rt.registerCore()
-	rt.registerBlog()
+	rt.registerBlogApi()
 	rt.registerRes()
 	rt.registerStatic()
-	rt.registerTest()
+	rt.registerDebug()
 
 	// Optional: Middleware (e.g. gzip)
 	// r.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	log.Println("✅ Routes registered..")
-	for _, route := range r.Routes() {
-		fmt.Printf("%s\t%s\t→ %s\n", route.Method, route.Path, route.Handler)
-	}
 }
