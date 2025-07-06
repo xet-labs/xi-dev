@@ -1,5 +1,5 @@
 {{ define "prtls/body.script" }}
-{{ with .PAGE.jsInc }} {{ range . }}
+{{ with .PAGE.js }} {{ range . }}
   {{ jslink . }}
 {{ end }} {{ end }}
 {{ end }}

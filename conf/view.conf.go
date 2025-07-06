@@ -23,7 +23,7 @@ var View = &ViewStruct{
 			{Label: "Support", Href: "#"},
 			{Label: "Contact", Href: "#"},
 		},
-		"jsInc99": []string{
+		"js99": []string{
 			"/res/js/jquery/jquery.min.js",
 			"/res/js/app.js",
 		},
@@ -50,7 +50,7 @@ var View = &ViewStruct{
 			"subBrand":    "Blog",
 			"title":       "Blog | XetIndustries",
 			"description": "Discover Insightful Articles, Expert Tips and Inspiring Ideas. Write, Share and Connect with a thriving like-minded community.",
-			"jsInc99": []string{
+			"js99": []string{
 				"/res/js/jquery/jquery.min.js",
 				"/res/js/app.js",
 				"/res/js/blogs.js",
