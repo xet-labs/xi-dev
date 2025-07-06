@@ -1,19 +1,24 @@
 {{ define "prtls/head" }}
+
 <!DOCTYPE html>
 <html lang="en">
-<script>document.documentElement.classList.add(localStorage.getItem("theme"));</script>
+
 <head>
+	<script>document.documentElement.classList.add(localStorage.getItem("theme"));</script>
+
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-	<link rel="icon" type="image/png" sizes="96x96" href="/res/static/brand/favicon-192x192.png" />
-	<link rel="icon" type="image/png" sizes="48x48" href="/res/static/brand/favicon-180x180.png" />
-	<link rel="icon" type="image/png" sizes="16x16" href="/res/static/brand/favicon-48x48.png" />
-	<link rel="apple-touch-icon" href="/res/static/brand/favicon-180x180.png" />
-	<link rel="icon" type="image/x-icon" href="/favicon.ico" />
-	<link rel="manifest" href="/manifest.json" />
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+	<link rel="alternate icon" type="image/png" href="/favicon.ico">
+	<link rel="icon" type="image/png" sizes="192x192" href="/res/static/brand/favicon-192x192.png">
+	<link rel="icon" type="image/png" sizes="180x180" href="/res/static/brand/favicon-180x180.png">
+	<link rel="icon" type="image/png" sizes="48x48" href="/res/static/brand/favicon-48x48.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/res/static/brand/favicon-180x180.png">
+
+	<link rel="manifest" href="/manifest.json">
+
 	<meta name="theme-color" content="#ff9700">
 
 	<!-- FONTS -->
@@ -22,10 +27,9 @@
 	<!-- CSS -->
 	{{ csslink "/res/css/app.css" }}
 	{{ range .P.link }}
-		{{ csslink . }}
+	{{ csslink . }}
 	{{ end }}
 
-	<meta name="csrf-token" content="{{ .P.csrf }}">
-
 </head>
+
 {{ end }}

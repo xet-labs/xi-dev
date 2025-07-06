@@ -47,6 +47,7 @@ var View = &ViewStruct{
 			"file":        "views/pages/blogs.html",
 			"tmpl":        "pages/blogs",
 			"menu":        "Blog",
+			"subBrand":    "Blog",
 			"title":       "Blog | XetIndustries",
 			"description": "Discover Insightful Articles, Expert Tips and Inspiring Ideas. Write, Share and Connect with a thriving like-minded community.",
 			"jsInc99": []string{

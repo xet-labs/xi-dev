@@ -173,10 +173,15 @@
 			<div class="sub-brand-wrap">
 				<div class="line-y"></div>
 				<div class="sub-brand">
-					<a href="{{ index .P.navMenu .P.subBrand }}">{{ .P.subBrand }}</a>
+					{{ range .P.navMenu }}
+					{{ if eq .Label $.P.subBrand }}
+					<a href="{{ .Href }}">{{ .Label }}</a>
+					{{ end }}
+					{{ end }}
 				</div>
 			</div>
 			{{ end }}
+
 		</div>
 
 		<div class="nav-m">

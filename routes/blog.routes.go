@@ -8,9 +8,18 @@ func (rt *RouteStruct) registerBlogApi() {
 	blogApi := r.Group("api/blog")
 	{
 		blogApi.GET("", cntr.BlogApi.Index)
-		blogApi.GET("/:id", cntr.BlogApi.Show)
-		blogApi.POST("/:id", cntr.BlogApi.Post)
-		blogApi.PUT("/:id", cntr.BlogApi.Put)
-		blogApi.DELETE("/:id", cntr.BlogApi.Delete)
+		blogApi.GET("/:uid/:id", cntr.BlogApi.Show)
+		blogApi.POST("/:uid/:id", cntr.BlogApi.Post)
+		blogApi.PUT("/:uid/:id", cntr.BlogApi.Put)
+		blogApi.DELETE("/:uid/:id", cntr.BlogApi.Delete)
+	}
+
+		blog := r.Group("/blog")
+	{
+		// blog.GET("", cntr.BlogApi.Index)
+		blog.GET("/:uid/:id", cntr.BlogApi.Show)
+		blog.POST("/:uid/:id", cntr.BlogApi.Post)
+		blog.PUT("/:uid/:id", cntr.BlogApi.Put)
+		blog.DELETE("/:uid/:id", cntr.BlogApi.Delete)
 	}
 }
