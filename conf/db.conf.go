@@ -19,6 +19,7 @@ var Db = struct {
 
 	DB: map[string]DBParam {
 		"DB": {
+			Enable:        true,
 			Database:      Env.Get("DB_XI", "XI"),
 			User:          Env.Get("DB_XI_USER"),
 			Pass:          Env.Get("DB_XI_PASS"),
@@ -32,15 +33,14 @@ var Db = struct {
 			PrefixIndexes: true,
 			Strict:        true,
 			Engine:        "",
-			Enable:        true,
 		},
 		"RDB": {
+			Enable:  false,
 			Driver:  "redis",
 			RedisDB: Env.Int("DB_REDIS", 0),
 			Host:    Env.Get("DB_REDIS_HOST", "127.0.0.1"),
 			Port:    Env.Get("DB_REDIS_PORT", "6379"),
 			Pass:    Env.Get("DB_REDIS_PASS", ""),
-			Enable:  true,
 		},
 	},
 }

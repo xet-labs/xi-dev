@@ -6,8 +6,7 @@ import (
 )
 
 func (rt *RouteStruct) registerCore() {
-	// r.GET("/", cntr.Page("pages/home"))
-	for title, page := range conf.View.Pages {
-		r.GET(page["route"].(string), cntr.Page(rt.Tmpl, title, page["file"].(string)))
-	}
+	home := conf.View.Pages["home"]
+	r.GET(home["route"].(string), cntr.Page.Tcnt("home", home["file"].(string)))
+	
 }

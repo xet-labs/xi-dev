@@ -1,0 +1,39 @@
+{{ define "page/blog" }}
+
+{{ template "prtls/head" . }}
+
+<body class="body-blog">
+
+	{{/* template "prtls/body.lib" . */}}
+	{{ template "prtls/body.script" . }}
+	{{ template "prtls/nav" . }}
+
+	<main>
+
+		<div class="blog-wrap wrap">
+			<article class="blog con publisheds">
+				<header class="blog-head">
+					{{ template "prtls/blog.head" . }}
+				</header>
+
+				<section class="blog-cnt published">
+					{{ .P.B.Content }}
+				</section>
+
+				<div class="blog-foot">
+					<hr class="line-x">
+				</div>
+			</article>
+		</div>
+		
+	</main>
+
+	{{ template "prtls/footer" . }}
+	{{ template "prtls/body.script99" . }}
+	{{/* template "prtls/body.lib99" . */}}
+
+</body>
+
+</html>
+
+{{ end }}

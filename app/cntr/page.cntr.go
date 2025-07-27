@@ -2,81 +2,101 @@ package cntr
 
 import (
 	"bytes"
-	"html/template"
 	"log"
-	mapUtil "maps"
+	"maps"
 	"net/http"
 	"os"
 	"time"
-
 	"xi/app/lib"
 	"xi/conf"
-
-	// "xi/util"
 
 	"github.com/gin-gonic/gin"
 )
 
-// var db = lib.DB.GetCli()
+type PageCntr struct{}
 
-func Page(tmpl *template.Template, title, path string) gin.HandlerFunc {
+var Page = &PageCntr{}
+
+// Uses Go template directly to render a file-based page
+func (p *PageCntr) Tmpl(title, tmpl string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		redisKey := "page:" + c.Request.URL.String()
+		data := p.buildData(c, title)
+		c.HTML(http.StatusOK, tmpl, gin.H{"P": data})
+	}
+}
 
-		// Try Redis cache
-		if data, err := lib.Redis.GetBytes(redisKey); err == nil {
+// Renders raw HTML file inside a base layout and caches it
+func (p *PageCntr) Tcnt(title, rawPath string, ttl ...time.Duration) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		refKey := "page:" + c.Request.URL.String()
+
+		// Return from cache if available
+		if data, err := lib.Redis.GetBytes(refKey); err == nil {
 			c.Data(http.StatusOK, "text/html; charset=utf-8", data)
 			return
 		}
 
-		rawCnt, err := os.ReadFile(path)
+		rawContent, err := os.ReadFile(rawPath)
 		if err != nil {
-			log.Println(err)
+			log.Printf("Tcnt: error reading file: %v", err)
+			c.Status(http.StatusInternalServerError)
+			return
 		}
 
-		// Prep page data
-		page := make(map[string]any)
-		mapUtil.Copy(page, conf.View.PageData)
-		mapUtil.Copy(page, conf.View.Pages[title])
-		page["url"] = c.Request.URL.String()
-
-		// Parse the content into the cloned template (defines "content")
-		t, _ := tmpl.Clone()
-		if _, err := t.Parse(string(rawCnt)); err != nil {
-			log.Fatal(err)
-		}
-
-		// Execute layout/tmpl using the merged data
-		var cnt bytes.Buffer
-		err = t.ExecuteTemplate(&cnt, "layout/base", gin.H{
-			"P": page,
-		})
+		rendered, err := p.renderTcnt(c, title, string(rawContent))
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("Tcnt: render error: %v", err)
+			c.Status(http.StatusInternalServerError)
+			return
 		}
 
-		c.Data(http.StatusOK, "text/html; charset=utf-8", cnt.Bytes())
+		c.Data(http.StatusOK, "text/html; charset=utf-8", rendered)
 
-		// Cache the result
+		// Async cache
 		go func(data []byte) {
-			if err := lib.Redis.SetBytes(redisKey, data, 10*time.Minute); err != nil {
-				log.Printf("Redis SET err (%s): %v", redisKey, err)
+			expire := 10 * time.Minute
+			if len(ttl) > 0 {
+				expire = ttl[0]
 			}
-		}(cnt.Bytes())
+			if err := lib.Redis.SetBytes(refKey, data, expire); err != nil {
+				log.Printf("Redis SET err (%s): %v", refKey, err)
+			}
+		}(rendered)
 	}
 }
 
-func PageTmpl(title, path string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-		// Prep page data
-		page := make(map[string]any)
-		mapUtil.Copy(page, conf.View.PageData)
-		mapUtil.Copy(page, conf.View.Pages[title])
-		page["url"] = c.Request.URL.String()
-
-		c.HTML(http.StatusOK, path, gin.H{
-			"P": page,
-		})
+// renderTcnt renders inline content inside base layout
+func (p *PageCntr) renderTcnt(c *gin.Context, title, content string) ([]byte, error) {
+	t, err := lib.View.RawTcli.Clone()
+	if err != nil {
+		return nil, err
 	}
+
+	if _, err := t.Parse(content); err != nil {
+		return nil, err
+	}
+
+	P := p.buildData(c, title)
+	// data, _ := json.MarshalIndent(P, "", "  ")
+	// fmt.Println(string(data))
+	
+	var out bytes.Buffer
+	if err := t.ExecuteTemplate(&out, conf.View.Layout, gin.H{"P": P}); err != nil {
+		return nil, err
+	}
+
+	return out.Bytes(), nil
+}
+
+// Combines global and per-page config data
+func (p *PageCntr) buildData(c *gin.Context, title string) map[string]any {
+	data := make(map[string]any)
+	maps.Copy(data, conf.View.PageData)
+
+	if page, ok := conf.View.Pages[title]; ok {
+		maps.Copy(data, page)
+	}
+
+	data["url"] = c.Request.URL.String()
+	return data
 }

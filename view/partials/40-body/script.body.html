@@ -1,0 +1,5 @@
+{{ define "prtls/body.script" }}
+{{ with .P.js }} {{ range . }}
+  {{ linkJs . }}
+{{ end }} {{ end }}
+{{ end }}

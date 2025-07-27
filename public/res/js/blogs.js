@@ -23,6 +23,53 @@ function timeAgo(dateStr) {
   return "just now";
 }
 
+function renderBlogsCard(blog) {
+  const user = blog.user || {};
+  const blogUrl = blog.path || `/blog/@${user.username}/${blog.slug}`;
+  const blogTitle = blog.title?.trim() || blog.headline?.trim() || "Untitled";
+  const blogHeadline = blog.headline?.trim() || blog.title?.trim() || "Untitled";
+  const userVerified = user.verified
+    ? `<i class="icon meta-verified" title="Verified">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" viewBox="0 0 24 24">
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zM9.8 17.3l-4.2-4.1L7 11.8l2.8 2.7L17 7.4l1.4 1.4-8.6 8.5z"></path>
+        </svg>
+      </i>` : "";
+
+  return `
+<article class="card" data-href="${blogUrl}" tabindex="0" role="link" aria-label="Read more about ${blog.title || blog.short_title}">
+  <figure class="card-hero">
+    <a href="${blogUrl}">
+      <img src="${blog.featured_img[0]}" alt="${blog.title}" loading="lazy" class="lazyload">
+    </a>
+  </figure>
+
+  <div class="card-info">
+    <h2 class="card-title" title="${blog.title}">
+      <a href="${blogUrl}">${blogHeadline}</a>
+    </h2>
+    <p class="card-exrpt">${blog.description}</p>
+
+    <div class="card-meta-wrap">
+      <div class="card-meta">
+        <a href="/@${user.username}" class="meta-author-img">
+          <figure>
+            <img src="${user.profile_img}" alt="${user.name}" loading="lazy">
+          </figure>
+        </a>
+        <div class="meta-info">
+          <div class="meta-author">
+            <a href="/@${user.username}" title="@${user.username}">${user.name}</a>
+            ${userVerified}
+          </div>
+          <div class="meta-time">
+            <time>${timeAgo(blog.updated_at)}</time>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>`;
+}
 
 var blogCardsFetching = false;
 var Blogs_Page = 1;
@@ -50,54 +97,6 @@ function BlogsCard_fetch() {
     $("#blogCards_loading").css("opacity", 0).hide();
     blogCardsFetching = false;
   });
-}
-
-function renderBlogsCard(blog) {
-  const user = blog.user || {};
-  const blogUrl = blog.path || `/blog/@${user.username}/${blog.slug}`;
-  const blogTitle = blog.title?.trim() || blog.headline?.trim() || "Untitled";
-  const blogHeadline = blog.headline?.trim() || blog.title?.trim() || "Untitled";
-  const userVerified = user.verified
-    ? `<i class="icon meta-verified" title="Verified">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" viewBox="0 0 24 24">
-          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zM9.8 17.3l-4.2-4.1L7 11.8l2.8 2.7L17 7.4l1.4 1.4-8.6 8.5z"></path>
-        </svg>
-      </i>` : "";
-
-  return `
-<article class="card" data-href="${blogUrl}" tabindex="0" role="link" aria-label="Read more about ${blogTitle || blog.short_title}">
-  <figure class="card-hero">
-    <a href="${blogUrl}">
-      <img src="${blog.featured_img[0]}" alt="${blogTitle}" loading="lazy" class="lazyload">
-    </a>
-  </figure>
-
-  <div class="card-info">
-    <h2 class="card-title" title="${blogTitle}">
-      <a href="${blogUrl}">${blogHeadline}</a>
-    </h2>
-    <p class="card-exrpt">${blog.description}</p>
-
-    <div class="card-meta-wrap">
-      <div class="card-meta">
-        <a href="/@${user.username}" class="meta-author-img">
-          <figure>
-            <img src="${user.profile_img}" alt="${user.name}" loading="lazy">
-          </figure>
-        </a>
-        <div class="meta-info">
-          <div class="meta-author">
-            <a href="/@${user.username}" title="@${user.username}">${user.name}</a>
-            ${userVerified}
-          </div>
-          <div class="meta-time">
-            <time>${timeAgo(blog.updated_at)}</time>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</article>`;
 }
 
 // Call on page load

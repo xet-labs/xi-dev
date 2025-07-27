@@ -3,6 +3,7 @@ package routes
 import (
 	"html/template"
 	"log"
+	"xi/app/lib"
 	"xi/conf"
 	"xi/util"
 
@@ -10,29 +11,35 @@ import (
 )
 
 type RouteStruct struct {
-	Engine    *gin.Engine
-	Tmpl      *template.Template
+	Ecli      *gin.Engine
+	Tcli      *template.Template
 	templates []string
 }
 
 var Route = &RouteStruct{
-	templates: conf.View.Templates,
+	templates: conf.View.TemplateDir,
 }
+
 var r *gin.Engine
 
 // Initializes all routes and templates
 func (rt *RouteStruct) Init(engine *gin.Engine) {
-	rt.Engine = engine
-	r = engine
+	rt.Ecli = engine
+	r = rt.Ecli
 
-	rt.Tmpl = util.GetNewTmpl("base", ".html", rt.templates...) // Load templates
-	r.SetHTMLTemplate(rt.Tmpl)
+	rt.Tcli = util.NewTmpl("base", ".html", rt.templates...) // Load templates
+	r.SetHTMLTemplate(rt.Tcli)
+
+	// propagate to global lib.View
+	lib.View.Ecli = rt.Ecli
+	lib.View.Tcli = rt.Tcli
+	lib.View.RawTcli, _ = rt.Tcli.Clone()
 
 	// Register routes
+	rt.registerAuth()
 	rt.registerCore()
-	rt.registerBlogApi()
+	rt.registerBlog()
 	rt.registerRes()
-	rt.registerStatic()
 	rt.registerDebug()
 
 	// Optional: Middleware (e.g. gzip)

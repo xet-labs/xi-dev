@@ -1,10 +1,10 @@
-// cntr/blog.go
+// cntr/blog.api.go
 package cntr
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -17,7 +17,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type BlogCntr struct {
+type BlogApiCntr struct {
 	db    *gorm.DB
 	rdb   *redis.Client
 	blog  model.Blog
@@ -25,14 +25,16 @@ type BlogCntr struct {
 }
 
 // Singleton controller
-var BlogApi = &BlogCntr{
+var BlogApi = &BlogApiCntr{
 	db:    lib.DB.GetCli(),
 	blog:  model.Blog{},
 	blogs: []model.Blog{},
 }
 
+
+
 // GET /blog or /blog?Page=2&Limit=6
-func (b *BlogCntr) Index(c *gin.Context) {
+func (b *BlogApiCntr) Index(c *gin.Context) {
 	page := c.DefaultQuery("Page", "1")
 	limit := c.DefaultQuery("Limit", "6")
 
@@ -44,13 +46,11 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	}
 
 	offset := (pageNum - 1) * limitNum
-
-	// Optional: use paginated cache key
-	redisKey := "blogs:page:" + page + ":limit:" + limit
+	refKey := "blogs:page:" + url.QueryEscape(page) + ":limit:" + url.QueryEscape(limit)
 	var blogs []model.Blog
 
 	// Try cache
-	if err := lib.Redis.GetJson(redisKey, &blogs); err == nil {
+	if err := lib.Redis.GetJson(refKey, &blogs); err == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"blogsExhausted": len(blogs) == 0,
 			"blogs":          blogs,
@@ -58,15 +58,8 @@ func (b *BlogCntr) Index(c *gin.Context) {
 		return
 	}
 
-	// Cache miss or DB fallback
-	err := b.db.Preload("User").
-		Where("status IN ?", []string{"published", "published_hidden"}).
-		Order("updated_at DESC").
-		Offset(offset).
-		Limit(limitNum).
-		Find(&blogs).Error
-
-	if err != nil {
+	// Fallback to DB
+	if err := b.IndexCore(&blogs, offset, limitNum); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch blogs"})
 		return
 	}
@@ -76,72 +69,99 @@ func (b *BlogCntr) Index(c *gin.Context) {
 		"blogs":          blogs,
 	})
 
-	// Async Cache set
+	// Async cache
 	go func(data []model.Blog) {
-		if err := lib.Redis.SetJson(redisKey, data, 10*time.Minute); err != nil {
-			log.Printf("Redis SET err (%s): %v", redisKey, err)
+		if err := lib.Redis.SetJson(refKey, data, 10*time.Minute); err != nil {
+			log.Printf("Redis SET error (%s): %v", refKey, err)
 		}
 	}(blogs)
+}
 
+func (b *BlogApiCntr) IndexCore(blogs *[]model.Blog, offset, limit int) error {
+	return b.db.
+		Preload("User").
+		Where("status IN ?", []string{"published", "published_hidden"}).
+		Order("updated_at DESC").
+		Offset(offset).
+		Limit(limit).
+		Find(blogs).
+		Error
 }
 
 // GET api/blog/uid/id
-func (b *BlogCntr) Show(c *gin.Context) {
-	rawUID := c.Param("uid") // could be @username or UID
-	rawID := c.Param("id")   // could be blogId or slug
+func (b *BlogApiCntr) Show(c *gin.Context) {
+	rawUID := c.Param("uid") // @username or UID
+	rawID := c.Param("id")   // blog ID or slug
+
+	refKey := "blogs:uid:" + url.QueryEscape(rawUID) + ":" + url.QueryEscape(rawID)
 	var blog model.Blog
-	var redisKey string
-	var err error
 
-	if username, ok :=strings.CutPrefix(rawUID, "@"); ok  {
-		redisKey = fmt.Sprintf("blogs:uname:%s:%s", username, rawID)
-
-		// Try Redis
-		if err = lib.Redis.GetJson(redisKey, &blog); err == nil {
-			c.JSON(http.StatusOK, blog)
-			return
-		}
-
-		// DB Fallback with JOIN on username
-		err = b.db.Preload("User").
-			Joins("JOIN users ON users.uid = blogs.uid").
-			Where("users.username = ? AND (blogs.slug = ? OR blogs.id = ?)", username, rawID, rawID).
-			First(&blog).Error
-
-	} else if isNumeric(rawUID) {
-		redisKey = fmt.Sprintf("blogs:uid:%s:%s", rawUID, rawID)
-
-		if err = lib.Redis.GetJson(redisKey, &blog); err == nil {
-			c.JSON(http.StatusOK, blog)
-			return
-		}
-
-		// DB Fallback using UID directly
-		err = b.db.Preload("User").
-			Where("uid = ? AND (slug = ? OR id = ?)", rawUID, rawID, rawID).
-			First(&blog).Error
-	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user identifier"})
+	// Try cache
+	if err := lib.Redis.GetJson(refKey, &blog); err == nil {
+		c.JSON(http.StatusOK, blog)
 		return
 	}
 
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
+	// Validate parameters
+	if err := b.Validate(rawUID, rawID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Return and cache
+	// Fallback to DB
+	if err := b.ShowCore(&blog, rawUID, rawID); err != nil {
+		status := http.StatusNotFound
+		if err == ErrInvalidUID {
+			status = http.StatusBadRequest
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, blog)
 
+	// Cache asynchronously
 	go func(key string, data model.Blog) {
 		if err := lib.Redis.SetJson(key, data, 10*time.Minute); err != nil {
 			log.Printf("Redis SET err (%s): %v", key, err)
 		}
-	}(redisKey, blog)
+	}(refKey, blog)
+}
+
+// FetchBlog fetches a blog and stores it in the given pointer.
+// It returns the Redis key and any error.
+func (b *BlogApiCntr) ShowCore(dest *model.Blog, rawUID, rawID string) error {
+	var err error
+
+	// Case 1: @username format
+	if username, ok := strings.CutPrefix(rawUID, "@"); ok {
+		// DB fallback
+		err = b.db.Preload("User").
+			Joins("JOIN users ON users.uid = blogs.uid").
+			Where("users.username = ? AND (blogs.slug = ? OR blogs.id = ?)", username, rawID, rawID).
+			First(dest).Error
+
+		// Case 2: UID (numeric)
+	} else if isNumeric(rawUID) {
+
+		err = b.db.Preload("User").
+			Where("uid = ? AND (slug = ? OR id = ?)", rawUID, rawID, rawID).
+			First(dest).Error
+
+		// Invalid UID format
+	} else {
+		return ErrInvalidUID
+	}
+
+	if err != nil {
+		return ErrBlogNotFound
+	}
+
+	return nil
 }
 
 // POST api/blog/uid/id
-func (b *BlogCntr) Post(c *gin.Context) {
+func (b *BlogApiCntr) Post(c *gin.Context) {
 	var blog model.Blog
 
 	if err := c.ShouldBindJSON(&blog); err != nil {
@@ -156,14 +176,14 @@ func (b *BlogCntr) Post(c *gin.Context) {
 		return
 	}
 
-	// Invalidate blog list cache
-	b.rdb.Del(lib.Redis.GetCtx(), "blogs:all")
-
 	c.JSON(http.StatusCreated, blog)
+
+	// Invalidate blog list cache
+	lib.Redis.Del("blogs:all")
 }
 
 // PUT api/blog/uid/id
-func (b *BlogCntr) Put(c *gin.Context) {
+func (b *BlogApiCntr) Put(c *gin.Context) {
 	id := c.Param("id")
 	var blog model.Blog
 
@@ -184,14 +204,14 @@ func (b *BlogCntr) Put(c *gin.Context) {
 		return
 	}
 
-	// Invalidate caches
-	b.rdb.Del(lib.Redis.GetCtx(), "blogs:all", "blogs:id:"+id)
-
 	c.JSON(http.StatusOK, blog)
+
+	// Invalidate caches
+	lib.Redis.Del("blogs:all", "blogs:id:"+id)
 }
 
 // DELETE api/blog/uid/id
-func (b *BlogCntr) Delete(c *gin.Context) {
+func (b *BlogApiCntr) Delete(c *gin.Context) {
 	id := c.Param("id")
 
 	if err := b.db.Delete(&model.Blog{}, id).Error; err != nil {
@@ -200,11 +220,12 @@ func (b *BlogCntr) Delete(c *gin.Context) {
 	}
 
 	// Invalidate caches
-	b.rdb.Del(lib.Redis.GetCtx(), "blogs:all", "blogs:id:"+id)
+	lib.Redis.Del("blogs:all", "blogs:id:"+id)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted"})
 }
 
+// --HELPERS--
 // Utility: return pointer to time
 func ptrTime(t time.Time) *time.Time {
 	return &t
@@ -212,4 +233,18 @@ func ptrTime(t time.Time) *time.Time {
 func isNumeric(s string) bool {
 	_, err := strconv.Atoi(s)
 	return err == nil
+}
+
+func (b *BlogApiCntr) Validate(rawUID, rawID string) error {
+	if strings.HasPrefix(rawUID, "@") {
+		if !lib.Validate.Uname(rawUID) {
+			return ErrInvalidUsername
+		}
+	} else if !lib.Validate.UID(rawUID) {
+		return ErrInvalidUID
+	}
+	if !lib.Validate.Slug(rawID) {
+		return ErrInvalidSlug
+	}
+	return nil
 }

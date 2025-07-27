@@ -3,10 +3,9 @@ package conf
 import "xi/app/lib"
 
 var View = &ViewStruct{
-
-	Templates: []string{"views/layout", "views/partials", "views/pages"},
-
-	Layout: "layout/base",
+	CssDir:    []string{"view/partials"},
+	Layout:    "layout/base",
+	TemplateDir: []string{"view/layout", "view/partials", "view/pages"},
 
 	PageData: map[string]any{
 		"appName":   lib.Env.Get("APP_NAME"),
@@ -30,21 +29,21 @@ var View = &ViewStruct{
 	},
 
 	Pages: map[string]map[string]any{
-		"Home": {
+		"home": {
 			"route":       "/",
-			"file":        "views/pages/home.html",
-			"tmpl":        "pages/home",
+			"file":        "view/pages/root.part.html",
+			"tmpl":        "pages/root",
 			"menu":        "Home",
 			"title":       "XetIndustries",
-			"description": "XetIndustries is a Collaborative Platform for Makers, Creators, and Developers.",
+			"description": "A Platform for Makers, Creators, and Developers.",
 			"meta": map[string]any{
 				"canonical": "https://xetindustries.com/",
 				"tags":      []string{"XetIndustries", "Xet Industries", "xetindustries", "xet industries", "Xtreme Embedded Tech Industries"},
 			},
 		},
-		"Blog": {
+		"blogs": {
 			"route":       "/blog",
-			"file":        "views/pages/blogs.html",
+			"file":        "view/pages/blogs.part.html",
 			"tmpl":        "pages/blogs",
 			"menu":        "Blog",
 			"subBrand":    "Blog",
@@ -59,6 +58,21 @@ var View = &ViewStruct{
 				"canonical": "https://xetindustries.com/blog",
 			},
 		},
+		"blog": {
+			"route":    "/blog/*",
+			"file":     "view/pages/blog.page.html",
+			"tmpl":     "page/blog",
+			"menu":     "Blog",
+			"subBrand": "Blog",
+			"lib_hljs": true,
+			"js99": []string{
+				"/res/js/jquery/jquery.min.js",
+				"/res/js/app.js",
+				// "/res/js/blog.js",
+				"/res/util/copy-code.util.js",
+				"/res/util/h2-clickable.util.js",
+			},
+		},
 		// "Contact": {
 		// 	"route": "/contact",
 		// 	"file":  "views/pages/contact.html",
@@ -67,8 +81,9 @@ var View = &ViewStruct{
 }
 
 type ViewStruct = struct {
+	CssDir    []string
 	Layout    string
-	Templates []string
+	TemplateDir []string
 	PageData  map[string]any
 	Pages     map[string]map[string]any
 }
