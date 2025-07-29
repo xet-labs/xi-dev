@@ -1,4 +1,4 @@
-# xetindustries
+# XetIndustries
 
 🚧 A personal website project — under active construction.
 
