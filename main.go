@@ -15,11 +15,11 @@ func init() {
 }
 
 func main() {
-	// Init Gin router
+	// Init Gin Engine
 	gin.SetMode(Env.Get("APP_MODE", "debug"))
 	app := gin.Default()
 
-	// Register routes
+	// Init routes
 	routes.Route.Init(app)
 
 	// Init server
