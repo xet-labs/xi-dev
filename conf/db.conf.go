@@ -18,6 +18,7 @@ var Db = struct {
 	RedisPrefix: Env.Get("APP_ABBR", "redis"),
 
 	DB: map[string]DBParam {
+
 		"DB": {
 			Enable:        true,
 			Database:      Env.Get("DB_XI", "XI"),
@@ -34,8 +35,9 @@ var Db = struct {
 			Strict:        true,
 			Engine:        "",
 		},
+
 		"RDB": {
-			Enable:  Env.Bool("REDIS_Enabled", true),
+			Enable:  Env.Bool("DB_REDIS_Enabled", true),
 			Driver:  "redis",
 			RedisDB: Env.Int("DB_REDIS", 0),
 			Host:    Env.Get("DB_REDIS_HOST", "127.0.0.1"),
