@@ -1,13 +1,9 @@
-:root {
-    --pre-pd: (var(--pre-pd-y, .75em) var(--pre-pd-x, 1em));
-}
-
 code {
     -webkit-box-decoration-break: clone;
 
     padding: 0.15em 0.3em;
     font-size: var(--code-font-z, 0.875em);
-    
+
     font-family: var(--font-monospace);
     color: var(--code-colr, var(--colr-txt));
     background: var(--code-bg, var(--bg-05));
@@ -43,7 +39,7 @@ pre[class*="lang"] {
     white-space: var(--pre-white-space, unset);
 
     /* max-width: 200px; */
-    margin: var(--pre-mr-y, calc(var(--p-space) * 1.25 )) var(--pre-mr-x, 0);
+    margin: var(--pre-mr-y, calc(var(--p-space) * 1.25)) var(--pre-mr-x, 0);
     padding: var(--pre-pd, 0);
     font-size: var(--pre-fontz, 0.875em);
 
@@ -51,13 +47,16 @@ pre[class*="lang"] {
     background: var(--pre-bg, var(--bg-05));
     border-radius: var(--pre-brdr-rad, var(--radius-s));
     border: var(--pre-brdr, var(--pre-brdr-z, 1px) solid var(--pre-brdr-colr, transparent));
+
+    &:has(code) {
+        padding: 0;
+    }
 }
 
 pre code,
 pre code[class*="lang"] {
     font-size: var(--code-fontz, 1em);
     margin-right: var(--pre-pd-x);
-    padding: 0;
     padding: var(--pre-pd);
 
     color: inherit;
@@ -69,7 +68,6 @@ pre code[class*="lang"] {
     -webkit-mask-image: var(--code-mask);
 }
 
-pre:has(code),
-pre:has(code[class*="lang"]) {
-    padding: 0;
+:root {
+    --pre-pd: (var(--pre-pd-y, .75em) var(--pre-pd-x, 1em));
 }

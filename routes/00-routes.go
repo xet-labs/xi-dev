@@ -31,15 +31,15 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 	r.SetHTMLTemplate(rt.Tcli)
 
 	// propagate to global lib.View
-	lib.View.Ecli = rt.Ecli
-	lib.View.Tcli = rt.Tcli
-	lib.View.RawTcli, _ = rt.Tcli.Clone()
+	lib.View.Ecli = rt.Ecli					// Engine_cli
+	lib.View.Tcli = rt.Tcli					// Template_cli
+	lib.View.RawTcli, _ = rt.Tcli.Clone()	// RawTemplate_cli
 
 	// Register routes
-	rt.registerAuth()
 	rt.registerCore()
 	rt.registerBlog()
 	rt.registerRes()
+	rt.registerAuth()
 	rt.registerDebug()
 
 	// Optional: Middleware (e.g. gzip)

@@ -1,4 +1,4 @@
-package resCntr
+package res
 
 import (
 	"log"
@@ -22,6 +22,11 @@ var (
 	CssRedisTTL = 12 * time.Hour
 	cssOnce     sync.Once
 	cssFiles    []string
+
+	reComment     = regexp.MustCompile(`(?s)/\*.*?\*/`)
+	reWhitespace  = regexp.MustCompile(`\s+`)
+	reSpaceAround = regexp.MustCompile(`\s*([{}:;,])\s*`)
+	reEmptyRule   = regexp.MustCompile(`[^{}]+\{\}`)
 )
 
 func init() {
@@ -46,12 +51,21 @@ func mergeFiles(files []string) string {
 	return sb.String()
 }
 
-// minifyCSS removes comments and compresses whitespace
 func minifyCSS(css string) string {
-	css = regexp.MustCompile(`(?s)/\*.*?\*/`).ReplaceAllString(css, "")
-	css = regexp.MustCompile(`\s*([{}:;,])\s*`).ReplaceAllString(css, "$1")
-	css = strings.ReplaceAll(css, ";}", "}")
-	css = regexp.MustCompile(`\s+`).ReplaceAllString(css, " ")
+	css = reComment.ReplaceAllString(css, "") // Remove comments
+	css = reWhitespace.ReplaceAllString(css, " ") // Collapse spaces
+	css = reSpaceAround.ReplaceAllString(css, "$1") // Minify spaces
+	css = strings.ReplaceAll(css, ";}", "}") // Remove trailing semicolons before }
+
+	// Recursively remove empty rules (including nested)
+	for {
+		newCSS := reEmptyRule.ReplaceAllString(css, "")
+		if newCSS == css {
+			break
+		}
+		css = newCSS
+	}
+
 	return strings.TrimSpace(css)
 }
 

@@ -18,20 +18,21 @@ var (
 	ErrBlogNotFound    = errors.New("blog not found")
 )
 
-func Rc(c *gin.Context, page string, refKey string) {
+func Rc(c *gin.Context, page string, refKey string) bool {
 	if cached, err := lib.Redis.GetBytes(refKey); err == nil {
 		c.Data(http.StatusOK, "text/html; charset=utf-8", cached)
-		return
+		return true
 	}
+	return false
 }
 
-func Rrc(c *gin.Context, page string, refKey string, P map[string]any) {
+func Rrc(c *gin.Context, page string, refKey string, P map[string]any) bool {
 	// Render
 	var buf bytes.Buffer
 	if err := lib.View.Tcli.ExecuteTemplate(&buf, page, gin.H{"P": P}); err != nil {
 		log.Printf("Render error for %s: %v", refKey, err)
 		c.Status(http.StatusInternalServerError)
-		return
+		return false
 	}
 
 	// Return and cache data
@@ -41,4 +42,6 @@ func Rrc(c *gin.Context, page string, refKey string, P map[string]any) {
 			log.Printf("Redis SET err (%s): %v", refKey, err)
 		}
 	}(buf.Bytes())
+
+	return true
 }

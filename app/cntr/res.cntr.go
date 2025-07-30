@@ -2,7 +2,7 @@
 package cntr
 
 import (
-	"xi/app/cntr/resCntr"
+	"xi/app/cntr/res"
 	
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +10,6 @@ import (
 var Res = struct {
 	Css gin.HandlerFunc
 }{
-	Css: resCntr.Css,
+	Css: res.Css,
 }
 

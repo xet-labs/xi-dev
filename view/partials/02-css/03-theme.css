@@ -1,0 +1,119 @@
+/* Dynamic vars */
+:root {
+    /* Base-Static */
+    --mono-rgb-0: 0, 0, 0;
+    --mono-rgb-100: 255, 255, 255;
+    --colr-black: rgba(var(--mono-rgb-0), 1);
+    --colr-white: rgba(var(--mono-rgb-100), 1);
+
+    /* Base-dynamic */
+    --mono: rgba(var(--mono-rgb), 1);
+    --mono-inv: rgba(var(--mono-rgb-inv), 1);
+    --colr: var(--mono);
+    --colr-inv: var(--mono-inv);
+
+    --bg-0: rgba(var(--mono-rgb), 0);
+    --bg-025: rgba(var(--mono-rgb), 0.025);
+    --bg-05: rgba(var(--mono-rgb), 0.05);
+    --bg-075: rgba(var(--mono-rgb), 0.075);
+    --bg-1: rgba(var(--mono-rgb), 0.1);
+    --bg-15: rgba(var(--mono-rgb), 0.15);
+    --bg-2: rgba(var(--mono-rgb), 0.2);
+    --bg-25: rgba(var(--mono-rgb), 0.25);
+    --bg-mod: var(--colr-30);
+    --bg-mod: rgba(var(--mono-rgb), 0.075);
+    --bg-mod-hov: rgba(var(--mono-rgb), 0.075);
+    
+
+    
+    --colr-txt-faint: var(--text-faint);
+    --colr-txt-mute: var(--text-muted);
+    --colr-txt-normal: var(--text-normal);
+    
+    --colr-divider: rgba(var(--mono-rgb), 0.075);
+    --colr-outln: rgba(var(--mono-rgb), 0.125);
+    --colr-brdr: rgba(var(--mono-rgb), 0.09);
+    
+    --underlay-bg: rgba(var(--mono-rgb-0), 0.05);
+
+    --icon-brdr: none;
+    --icon-colr: var(--text-muted);
+    --icon-focus-colr: var(--colr-txt);
+
+    --underlay-bg: var(--bg-mod-cover);
+}
+
+/* Static vars */
+:root {
+    --accent-h: 258;
+    --accent-s: 88%;
+    --accent-l: 66%;
+    --accent-h: 76;
+    --accent-s: 76%;
+    --accent-l: 53%;
+
+    --shadow-s: 0 1px 3px 0 #0000001a, 0 1px 2px 0 #0000000f;
+    --shadow-m: 0 4px 6px -1px #0000001a, 0 2px 4px -1px #0000000f;
+    --shadow-l: 0 10px 15px -3px #7c7c7c1a, 0 4px 6px -2px #6666660d;
+    /* mix-blend-mode: exclusion; */
+
+    --selection-colr: inherit;
+    --selection-bg: hsla(var(--colr-accent-hsl), .8);
+    --selection-bg: var(--colr-accent);
+
+    --scrollbar-bg: rgba(var(--mono-rgb), 0.05);
+    --scrollbar-bg: transparent;
+    --scrollbar-thumb-bg: rgba(var(--mono-rgb), 0.1);
+    --scrollbar-hov-thumb-bg: rgba(var(--mono-rgb), 0.2);
+
+    --pre-colr: #d4d4d4;
+
+    --signuplogin-submit-colr: #3b57e3;
+    --signuplogin-input-focus-brdr-colr: var(--signuplogin-submit-colr);
+    
+    --input-brdr-colr: #4040408f;
+}
+
+/* --Theme-- */
+:root {color-scheme: light;
+    --bg: #f7f7f7;
+    --colr-txt: #26272e;
+    /* --bg: #fff; */
+    /* --bg: #f8f8f8; */
+    --colr-txt-1: #606060;
+
+    --colr-primary: #002b75;
+    --colr-action: hsl(230, 75%, 56%);
+
+    --colr-a: #0b5fd3;
+    --colr-a-hov: #0b5fd3;
+    --pre-bg: #18181b;
+}
+
+.dark {color-scheme: dark;
+    /* --bg: #121417; --colr-txt: #D4D4D4; */
+    /* --bg: #121212; --colr-txt: #E0E0E0; */
+    --bg: #0d0d0e;
+    --colr-txt: #dadada;
+    /*obsidian-docs*/
+    /* --bg: #151515; */
+    /* --bg: #0f0f0f; */
+    /* --bg: #111116; */
+    /* --bg: #000; */
+    --colr-txt-1: #9ca3af;
+
+    --colr-primary: #4e3bf5;
+
+    --colr-a: #4A90E2;
+    --colr-a-hov: #4A90E2;
+    --pre-bg: var(--bg-05);
+}
+
+
+/* @media screen and (min-width: 320px) {:root{ }}
+@media screen and (min-width: 480px) {:root{ }}
+@media screen and (min-width: 768px) {:root{ }}
+@media screen and (min-width: 1024px) {:root{ }}
+@media screen and (min-width: 1280px) {:root{ }}
+@media screen and (min-width: 1440px) {:root{ }}
+@media screen and (min-width: 1920px) {:root{ }} */

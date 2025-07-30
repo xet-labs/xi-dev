@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"xi/app/lib"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -18,9 +19,8 @@ type AuthMw struct {
 
 // Global singleton instance
 var Auth = &AuthMw{
-	jwtSecret: []byte("supersecretkey"),
+	jwtSecret: []byte(lib.Env.Get("JWT_SECRET")),
 }
-
 
 // Middleware to verify token
 func (a *AuthMw) Required() gin.HandlerFunc {

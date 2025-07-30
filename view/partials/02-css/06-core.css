@@ -6,13 +6,6 @@
 
     --trns-brdr-durn: .18s;
     --trns-brdr: var(--trns-brdr-durn) ease;
-
-    --tag-font-size: .81rem;
-    --tag-color: var(--colr-txt-1);
-    --tag-border-color: var(--colr-txt-1);
-    --tag-hover-color: var(--colr-txt-2-h);
-    --tag-hover-border-color: var(--colr-txt-2-h);
-    --tag-hover-bg: var(--bg-scolor);
 }
 
 *,
@@ -21,15 +14,10 @@
     transition: background-color var(--trns-theme), border-color var(--trns-theme), color var(--trns-theme-type);
 }
 
-::selection {background-color: var(--selection-bg); color: var(--selection-colr, var(--colr-txt));}
-::-webkit-selection {background-color: var(--selection-bg); color: var(--selection-colr, var(--colr-txt));}
-
-
 ::-webkit-scrollbar {
-    background-color: var(--scrollbar-bg);
     width: 10px;
     -webkit-border-radius: var(--radius-l);
-    background-color: transparent;
+    background-color: var(--scrollbar-bg, transparent);
 }
 ::-webkit-scrollbar-track {background-color: transparent;}
 ::-webkit-scrollbar-thumb {
@@ -42,6 +30,9 @@
 ::-webkit-scrollbar-thumb:hover,
 ::-webkit-scrollbar-thumb:active { background-color: var(--scrollbar-hov-thumb-bg); }
 ::-webkit-scrollbar-corner { background: transparent;}
+
+::selection {background-color: var(--selection-bg); color: var(--selection-colr, var(--colr-txt));}
+::-webkit-selection {background-color: var(--selection-bg); color: var(--selection-colr, var(--colr-txt));}
 
 html{
     position: relative;

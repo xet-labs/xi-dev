@@ -44,7 +44,7 @@ var View = &ViewStruct{
 		"blogs": {
 			"route":       "/blog",
 			"file":        "view/pages/blogs.part.html",
-			"tmpl":        "pages/blogs",
+			"tmpl":        "layout/blogs",
 			"menu":        "Blog",
 			"subBrand":    "Blog",
 			"title":       "Blog | XetIndustries",
@@ -61,7 +61,7 @@ var View = &ViewStruct{
 		"blog": {
 			"route":    "/blog/*",
 			"file":     "view/pages/blog.page.html",
-			"tmpl":     "page/blog",
+			"tmpl":     "layout/blog",
 			"menu":     "Blog",
 			"subBrand": "Blog",
 			"lib_hljs": true,

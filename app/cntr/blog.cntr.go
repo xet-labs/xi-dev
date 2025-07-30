@@ -34,7 +34,9 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	refKey := "/blog"
 
 	// Try cache
-	Rc(c, "page/blog", refKey)
+	if Rc(c, "layout/blog", refKey) {
+		return
+	}
 
 	// Build data
 	P := make(map[string]any)
@@ -45,7 +47,7 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	P["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	Rrc(c, "page/blogs", refKey, P)
+	Rrc(c, "layout/blogs", refKey, P)
 }
 
 func (b *BlogCntr) Show(c *gin.Context) {
@@ -55,7 +57,9 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	var blog model.Blog
 
 	// Try cache
-	Rc(c, "page/blog", refKey)
+	if Rc(c, "layout/blog", refKey) {
+		return
+	}
 
 	// Validate params
 	if err := BlogApi.Validate(rawUID, rawID); err != nil {
@@ -86,7 +90,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	P["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	Rrc(c, "page/blog", refKey, P)
+	Rrc(c, "layout/blog", refKey, P)
 }
 
 // POST api/blog/uid/id
