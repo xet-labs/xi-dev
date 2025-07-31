@@ -34,7 +34,7 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	refKey := "/blog"
 
 	// Try cache
-	if Rc(c, "layout/blog", refKey) {
+	if lib.View.RenderCache(c, "layout/blog", refKey) {
 		return
 	}
 
@@ -47,7 +47,7 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	P["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	Rrc(c, "layout/blogs", refKey, P)
+	lib.View.RenderAndCache(c, "layout/blogs", refKey, P)
 }
 
 func (b *BlogCntr) Show(c *gin.Context) {
@@ -57,7 +57,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	var blog model.Blog
 
 	// Try cache
-	if Rc(c, "layout/blog", refKey) {
+	if lib.View.RenderCache(c, "layout/blog", refKey) {
 		return
 	}
 
@@ -90,7 +90,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	P["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	Rrc(c, "layout/blog", refKey, P)
+	lib.View.RenderAndCache(c, "layout/blog", refKey, P)
 }
 
 // POST api/blog/uid/id

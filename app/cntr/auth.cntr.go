@@ -60,7 +60,7 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 	refKey := "/auth/" + url.QueryEscape(rawUID) + "/" + url.QueryEscape(rawID)
 
 	// Try cache
-	Rc(c, "page/auth", refKey)
+	lib.View.RenderCache(c, "page/auth", refKey)
 
 	// Prep data
 	P := make(map[string]any)
@@ -71,7 +71,7 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 	P["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	Rrc(c, "page/auth", refKey, P)
+	lib.View.RenderAndCache(c, "page/auth", refKey, P)
 }
 
 func (a *AuthCntr) ShowSignout(c *gin.Context) {}
@@ -83,7 +83,7 @@ func (a *AuthCntr) Logins(c *gin.Context) {
 	refKey := "/auth"
 
 	// Try cache
-	Rc(c, "page/auth", refKey)
+	lib.View.RenderCache(c, "page/auth", refKey)
 
 	// Build data
 	P := make(map[string]any)
@@ -94,7 +94,7 @@ func (a *AuthCntr) Logins(c *gin.Context) {
 	P["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	Rrc(c, "page/auths", refKey, P)
+	lib.View.RenderAndCache(c, "page/auths", refKey, P)
 }
 
 func (a *AuthCntr) Login(c *gin.Context) {
@@ -129,7 +129,7 @@ func (a *AuthCntr) ShowLogin(c *gin.Context) {
 	refKey := "/auth/" + url.QueryEscape(rawUID) + "/" + url.QueryEscape(rawID)
 
 	// Try cache
-	Rc(c, "page/auth", refKey)
+	lib.View.RenderCache(c, "page/auth", refKey)
 
 	// Prep data
 	P := make(map[string]any)
@@ -140,7 +140,7 @@ func (a *AuthCntr) ShowLogin(c *gin.Context) {
 	P["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	Rrc(c, "page/auth", refKey, P)
+	lib.View.RenderAndCache(c, "page/auth", refKey, P)
 }
 
 func (a *AuthCntr) ShowLogout(c *gin.Context) {}

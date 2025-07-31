@@ -72,7 +72,7 @@ func (b *BlogApiCntr) Index(c *gin.Context) {
 	// Async cache
 	go func(data []model.Blog) {
 		if err := lib.Redis.SetJson(refKey, data, 10*time.Minute); err != nil {
-			log.Printf("Redis SET error (%s): %v", refKey, err)
+			log.Printf("Redis SET err (%s): %v", refKey, err)
 		}
 	}(blogs)
 }
@@ -121,11 +121,11 @@ func (b *BlogApiCntr) Show(c *gin.Context) {
 	c.JSON(http.StatusOK, blog)
 
 	// Cache asynchronously
-	go func(key string, data model.Blog) {
-		if err := lib.Redis.SetJson(key, data, 10*time.Minute); err != nil {
-			log.Printf("Redis SET err (%s): %v", key, err)
+	go func(data model.Blog) {
+		if err := lib.Redis.SetJson(refKey, data, 10*time.Minute); err != nil {
+			log.Printf("Redis SET err (%s): %v", refKey, err)
 		}
-	}(refKey, blog)
+	}(blog)
 }
 
 // FetchBlog fetches a blog and stores it in the given pointer.

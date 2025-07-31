@@ -77,9 +77,10 @@
 /* --Theme-- */
 :root {color-scheme: light;
     --bg: #f7f7f7;
-    --colr-txt: #26272e;
+    /* --bg: rgb(254, 250, 243); */
     /* --bg: #fff; */
     /* --bg: #f8f8f8; */
+    --colr-txt: #26272e;
     --colr-txt-1: #606060;
 
     --colr-primary: #002b75;

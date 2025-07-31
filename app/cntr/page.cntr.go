@@ -53,12 +53,12 @@ func (p *PageCntr) Tcnt(title, rawPath string, ttl ...time.Duration) gin.Handler
 		c.Data(http.StatusOK, "text/html; charset=utf-8", rendered)
 
 		// Async cache
-		go func(data []byte) {
+		go func(data any) {
 			expire := 10 * time.Minute
 			if len(ttl) > 0 {
 				expire = ttl[0]
 			}
-			if err := lib.Redis.SetBytes(refKey, data, expire); err != nil {
+			if err := lib.Redis.Set(refKey, data, expire); err != nil {
 				log.Printf("Redis SET err (%s): %v", refKey, err)
 			}
 		}(rendered)

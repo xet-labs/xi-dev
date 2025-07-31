@@ -8,5 +8,4 @@ Stay tuned for more.
 
 ---
 
-Made with ❤️..
-📄 Licensed under the [Apache License 2.0](./LICENSE)  
+Made with ❤️, Licensed under the [Apache License 2.0](./LICENSE)  

@@ -13,14 +13,14 @@ import (
 
 // EnvLib provides a thread-safe environment loader with caching
 type EnvLib struct {
-	vars map[string]interface{}
+	vars map[string]any
 	once sync.Once
 	rw   sync.RWMutex
 }
 
 // Global singleton instance
 var Env = &EnvLib{
-	vars: make(map[string]interface{}),
+	vars: make(map[string]any),
 }
 
 func init() {
@@ -67,7 +67,7 @@ func (e *EnvLib) Get(key string, fallback ...string) string {
 }
 
 // Raw returns value (any type) or fallback
-func (e *EnvLib) Raw(key string, fallback ...interface{}) interface{} {
+func (e *EnvLib) Raw(key string, fallback ...any) any {
 	e.rw.RLock()
 	defer e.rw.RUnlock()
 
@@ -81,7 +81,7 @@ func (e *EnvLib) Raw(key string, fallback ...interface{}) interface{} {
 }
 
 // Set adds or updates a key
-func (e *EnvLib) Set(key string, value interface{}) {
+func (e *EnvLib) Set(key string, value any) {
 	e.rw.Lock()
 	defer e.rw.Unlock()
 	e.vars[key] = value
@@ -128,11 +128,11 @@ func (e *EnvLib) Int(key string, fallback int) int {
 }
 
 // All returns a copy of all environment variables
-func (e *EnvLib) All() map[string]interface{} {
+func (e *EnvLib) All() map[string]any {
 	e.rw.RLock()
 	defer e.rw.RUnlock()
 
-	snapshot := make(map[string]interface{}, len(e.vars))
+	snapshot := make(map[string]any, len(e.vars))
 	for k, v := range e.vars {
 		snapshot[k] = v
 	}

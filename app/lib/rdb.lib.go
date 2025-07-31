@@ -41,7 +41,7 @@ func (r *RedisLib) RegisterLazyInit(fn func()) {
 }
 
 // New returns a new RedisLib instance with optional prefix/context
-func (r *RedisLib) New(defaultCli string, opts ...interface{}) *RedisLib {
+func (r *RedisLib) New(defaultCli string, opts ...any) *RedisLib {
 	r.lazyInitOnce()
 
 	prefix, ctx := r.prefix, r.ctx
@@ -181,11 +181,11 @@ func (r *RedisLib) Get(k string) (string, error) {
 	return r.cli.Get(r.ctx, r.key(k)).Result()
 }
 
-func (r *RedisLib) Set(k, val string, ttl time.Duration) error {
+func (r *RedisLib) Set(k string, v any, ttl time.Duration) error {
 	if r.cli == nil {
 		return redis.ErrClosed
 	}
-	return r.cli.Set(r.ctx, r.key(k), val, ttl).Err()
+	return r.cli.Set(r.ctx, r.key(k), v, ttl).Err()
 }
 
 func (r *RedisLib) GetBytes(k string) ([]byte, error) {
@@ -195,27 +195,20 @@ func (r *RedisLib) GetBytes(k string) ([]byte, error) {
 	return r.cli.Get(r.ctx, r.key(k)).Bytes()
 }
 
-func (r *RedisLib) SetBytes(k string, data []byte, ttl time.Duration) error {
-	if r.cli == nil {
-		return redis.ErrClosed
-	}
-	return r.cli.Set(r.ctx, r.key(k), data, ttl).Err()
-}
-
-func (r *RedisLib) GetJson(k string, out interface{}) error {
-	data, err := r.GetBytes(k)
+func (r *RedisLib) GetJson(k string, out any) error {
+	v, err := r.GetBytes(k)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(data, out)
+	return json.Unmarshal(v, out)
 }
 
-func (r *RedisLib) SetJson(k string, val interface{}, ttl time.Duration) error {
-	data, err := json.Marshal(val)
+func (r *RedisLib) SetJson(k string, v any, ttl time.Duration) error {
+	val, err := json.Marshal(v)
 	if err != nil {
 		return fmt.Errorf("json marshal failed: %w", err)
 	}
-	return r.SetBytes(k, data, ttl)
+	return r.Set(k, val, ttl)
 }
 
 func (r *RedisLib) Exists(k string) (bool, error) {
