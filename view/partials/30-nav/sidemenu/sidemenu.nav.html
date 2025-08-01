@@ -31,7 +31,7 @@
 			<div class="menu">
 				{{ range .P.navMenu }}
 				{{ if eq .Label $.P.menu }}
-				<a href="{{ .Href }}" class="active-menu">{{ .Label }}</a>
+				<a href="{{ .Href }}" class="menu-current">{{ .Label }}</a>
 				{{ else }}
 				<a href="{{ .Href }}">{{ .Label }}</a>
 				{{ end }}

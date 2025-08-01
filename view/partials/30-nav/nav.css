@@ -44,7 +44,7 @@ nav .nav-r {
 }
 nav .menu {
     display: flex;
-    flex-direction: var(--menu-drxn, row);
+    flex-direction: var(--menu-direction, row);
     gap: var(--menu-gap, 2px);
     cursor: var(--menu-cursor, pointer);
     
@@ -53,20 +53,20 @@ nav .menu {
     color: var(--menu-colr, var(--colr-txt-mute));
 
     &:hover {
-        --menu-active-bg: transparent;
+        --menu-current-bg: transparent;
     }
 }
-nav .menu a.active-menu {
+nav .menu a.current-menu {
     --menu-font-wght-calc: calc(var(--menu-font-wght) + 50);
 
     font-weight: var(--menu-font-wght-calc, 400);
-    color: var(--menu-active-colr, var(--colr-txt));
-    background: var(--menu-active-bg, var(--bg-05));
+    color: var(--menu-current-colr, var(--colr-txt));
+    background: var(--menu-current-bg, var(--bg-05));
 }
 nav .menu a {
     --menu-font-wght: 450;
     
-    padding: var(--menu-a-pd, 0.5rem 0.75rem);
+    padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
     font-weight: var(--menu-font-wght, 450);
     line-height: 1em;
@@ -96,10 +96,6 @@ nav label[for="id-signup-btn"].icon {display: var(--nav-signup-btn-display, flex
 
     --nav-icons-gap: 1.25em;
     --nav-signup-btn-display: none;
-
-    /* --menu-active-bg: var(--bg-075);
-    --menu-hov-bg: var(--bg-075);
-    --menu-active-bg: var(--bg-1); */
 }
 @media screen and (min-width: 320px) {:root{ }}
 @media screen and (min-width: 480px) {
