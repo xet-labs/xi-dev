@@ -18,9 +18,6 @@
 
             <a href="/#" class="brand" data-svg-src="/res/static/brand/brand.svg"></a>
 
-            <div class="menu">
-                <a href="" style="pointer-events: none;visibility: hidden;">|</a>
-            </div>
             <label for="id-nav-sidemenuOpen-btn" class="icon" tabindex="0">
                 <svg xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 -960 960 960" width="26">
                     <path
@@ -30,11 +27,11 @@
 
         </div>
 
-        <div class="nav-sidemenu-main">
+        <div class="nav-sidemenu-menu">
 			<div class="menu">
 				{{ range .P.navMenu }}
 				{{ if eq .Label $.P.menu }}
-				<a href="{{ .Href }}" class="current-menu">{{ .Label }}</a>
+				<a href="{{ .Href }}" class="active-menu">{{ .Label }}</a>
 				{{ else }}
 				<a href="{{ .Href }}">{{ .Label }}</a>
 				{{ end }}

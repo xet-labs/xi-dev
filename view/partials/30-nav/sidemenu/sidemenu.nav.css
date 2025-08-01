@@ -3,11 +3,15 @@ nav .nav-sidemenu-wrap {
     --underlay-blur: var(--nav-sudemenu-underlay-blur, unset);
     
     /* --menu-colr: var(--colr-txt); */
-    /* --menu-current-bg: var(--bg-1);
+    /* --menu-active-bg: var(--bg-1);
     --menu-hov-bg: var(--bg-1);
     --menu-active-bg: var(--bg-15); */
 }
 nav .nav-sidemenu {
+    --menu-drxn: column;
+    --menu-pd: .75em;
+    --menu-a-pd: .75em 1em .75em 1.75em;
+
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -18,12 +22,12 @@ nav .nav-sidemenu {
     pointer-events: none;
 
     margin-top: var(--nav-sidemenu-mr-yt, 0);
-    height: min(var(--nav-sidemenu-y, 100%), 100%);
-    width: min(var(--nav-sidemenu-x, 100%), 100%);
+    height: var(--nav-sidemenu-y, 100%);
+    width: var(--nav-sidemenu-x, 100%);
    
     top: 0; right: 0;
     transform: var(--nav-sidemenu-transform, translate(.25em, 0) scale(1));
-    transition: .12s ease;
+    transition: all .12s ease;
 
     background: var(--nav-bg, var(--bg));
     border-radius: var(--nav-sidemenu-brdr-rad, var(--radius-s));
@@ -39,45 +43,29 @@ body:has(#id-nav-sidemenuOpen-btn:checked) .nav-sidemenu {
     transform: translate(0, 0) scale(1);
     transition: all .08s ease;
 }
-nav .nav-sidemenu .nav-sidemenu-head {
+nav .nav-sidemenu-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     
-    padding: calc(var(--nav-mr-yt) - (var(--nav-sidemenu-mr-yt, 0px) / 2)) var(--nav-mr-x) calc(var(--nav-mr-yb) - (var(--nav-sidemenu-mr-yt, 0px) / 2));
-    height: calc(var(--nav-height) + .5px);
+    padding: calc(var(--nav-pd-yt) - (var(--nav-sidemenu-mr-yt, 0px) / 2)) var(--nav-pd-x) calc(var(--nav-pd-yb) - (var(--nav-sidemenu-mr-yt, 0px) / 2));
+    height: var(--nav-sidemenu-head-y, fit-content);
     border-bottom: var(--nav-brdr-yb, 1px solid var(--nav-brdr-colr, var(--colr-divider)));
 }
 
-nav .nav-sidemenu-main {
-    --menu-direction: column;
-    padding: .75em;
-}
-
-nav .nav-sidemenu-main  a {
-    margin: 0;
-    width: 100%;
-    line-height: 1;
-    padding: .75em 1em;
-    padding-left: 1.75em;
-
-    &:hover{ transition: all 0s ease; }
-}
-
 :root{
-    --nav-sudemenu-underlay-blur: 0px;
-
-    --nav-sidemenu-mr-yt: 0px;
     --nav-sidemenu-x: 70vw;
-    --nav-sidemenu-brdr-rad: var(--radius-m) 0 0 var(--radius-m);
+    --nav-sidemenu-head-y: calc(var(--nav-y) - var(--nav-sidemenu-mr-yt, 0px) - var(--nav-sidemenu-mr-yb, 0px) + 1px);
     
+    --nav-sudemenu-underlay-blur: 0px;
+    --nav-sidemenu-brdr-rad: var(--radius-m) 0 0 var(--radius-m);
 }
 @media screen and (min-width: 320px) {:root{ }}
 @media screen and (min-width: 480px) {:root{
     --nav-sudemenu-underlay-bg: transparent;
     
     --nav-sidemenu-mr-yt: 2px;
-    --nav-sidemenu-x: 275px;
+    --nav-sidemenu-x: 17.25em;
     --nav-sidemenu-y: fit-content;
     --nav-sidemenu-transform: translate(.25em, -.25em) scale(.97);
     --nav-sidemenu-brdr-rad: var(--radius-l);
