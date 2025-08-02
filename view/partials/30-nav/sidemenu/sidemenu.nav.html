@@ -27,16 +27,14 @@
 
         </div>
 
-        <div class="nav-sidemenu-menu">
-			<div class="menu">
-				{{ range .P.navMenu }}
-				{{ if eq .Label $.P.menu }}
-				<a href="{{ .Href }}" class="menu-current">{{ .Label }}</a>
-				{{ else }}
-				<a href="{{ .Href }}">{{ .Label }}</a>
-				{{ end }}
-				{{ end }}
-			</div>
+        <div class="menu">
+            {{ range .P.navMenu }}
+            {{ if eq .Label $.P.menu }}
+            <a href="{{ .Href }}" class="menu-current">{{ .Label }}</a>
+            {{ else }}
+            <a href="{{ .Href }}">{{ .Label }}</a>
+            {{ end }}
+            {{ end }}
         </div>
     </div>
 </section>

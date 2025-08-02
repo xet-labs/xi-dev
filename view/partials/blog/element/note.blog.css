@@ -1,4 +1,4 @@
-.blog-cnt .note {
+.blog .cnt .note {
     --note-background: var(--background-information);
     --note-theme: var(--icon-information);
     background-color: var(--note-background);
@@ -9,7 +9,7 @@
     padding: 1rem 1rem 1rem 3rem;
     position: relative;
 }
-.blog-cnt .note:before {
+.blog .cnt .note:before {
     background-color: var(--note-theme);
     content: "";
     display: block;

@@ -2,7 +2,7 @@
 
 {{ template "prtls/head" . }}
 
-<body class="body-blog">
+<body class="blog">
 
 	{{/* template "prtls/body.lib" . */}}
 	{{ template "prtls/body.script" . }}
@@ -10,13 +10,13 @@
 
 	<main>
 
-		<div class="blog-wrap wrap">
-			<article class="blog con publisheds">
+		<div class="wrap">
+			<article class="blog-con con">
 				<header class="blog-head">
-					{{ template "prtls/blog.head" . }}
+					{{ template "prtls/blog.header" . }}
 				</header>
 
-				<section class="blog-cnt published">
+				<section class="blog-content">
 					{{ .P.B.Content }}
 				</section>
 

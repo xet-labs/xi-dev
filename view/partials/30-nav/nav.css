@@ -11,6 +11,7 @@ nav {
     background: var(--nav-bg, inherit);
     border-bottom: var(--nav-brdr-yb, 1px solid var(--nav-brdr-colr, var(--colr-divider)));
 
+    transition-duration: 0s;
     transition: top .22s;
 }
 
@@ -44,35 +45,37 @@ nav .nav-r {
 }
 nav .menu {
     display: flex;
-    flex-direction: var(--menu-direction, row);
+    flex-direction: var(--menu-drxn, row);
     gap: var(--menu-gap, 2px);
-    cursor: var(--menu-cursor, pointer);
-    
+    margin: var(--menu-mr, 0);
     padding: var(--menu-pd, 0);
-
+    
+    cursor: var(--menu-cursor, pointer);
     color: var(--menu-colr, var(--colr-txt-mute));
 
     &:hover {
         --menu-current-bg: transparent;
     }
 }
-nav .menu a.current-menu {
+nav .menu a.menu-current {
     --menu-font-wght-calc: calc(var(--menu-font-wght) + 50);
 
     font-weight: var(--menu-font-wght-calc, 400);
+
     color: var(--menu-current-colr, var(--colr-txt));
     background: var(--menu-current-bg, var(--bg-05));
 }
 nav .menu a {
     --menu-font-wght: 450;
     
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
+    font-size: 0.875rem;    
     font-weight: var(--menu-font-wght, 450);
     line-height: 1em;
+    padding: var(--menu-a-pd, 0.5rem 0.75rem);
 
     color: inherit;
     border-radius: var(--menu-brdr-rad, var(--radius-s));
+    transition: background-color 0s;
 
     &:hover {
         color: var(--menu-hov-colr, var(--colr-txt));

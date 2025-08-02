@@ -37,7 +37,7 @@ var Db = struct {
 		},
 
 		"RDB": {
-			Enable:  Env.Bool("DB_REDIS_Enabled", true),
+			Enable:  Env.Bool("DB_REDIS_Enable", true),
 			Driver:  "redis",
 			RedisDB: Env.Int("DB_REDIS", 0),
 			Host:    Env.Get("DB_REDIS_HOST", "127.0.0.1"),

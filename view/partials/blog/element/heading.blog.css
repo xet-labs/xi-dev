@@ -1,0 +1,19 @@
+.blog-content h2 {
+    /* margin: 1.5em 0 0.5em; */
+    margin-bottom: .5em;
+    padding-bottom: .5em;
+    border-bottom: 1px solid var(--h-brdr-colr, var(--colr-divider));
+}
+
+.blog-content h2 a {
+    font-weight: inherit;
+    text-decoration: none;
+    width: fit-content;
+    /* width: 100%; */
+
+    &:hover {
+        color: inherit;
+        transition-duration: 0s;
+        text-decoration: underline;
+    }
+}

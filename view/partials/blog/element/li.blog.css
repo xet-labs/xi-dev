@@ -1,34 +1,34 @@
-.blog ol,
-.blog ul {
+.blog article ol,
+.blog article ul {
     padding-inline-start: 0;
     margin-block: var(--p-space, 1rem);
 }
-.blog ol > li,
-.blog ul > li {
+.blog article ol > li,
+.blog article ul > li {
     position: relative;
     text-align: start;
 
     margin-inline-start: 3ch;
     padding-block: var(--list-spacing, 0.075em);
 }
-.blog ol > li::marker,
-.blog ul > li::marker {
+.blog article ol > li::marker,
+.blog article ul > li::marker {
     color: var(--list-marker-color, var(--text-faint));
 }
 
-.blog ol {
+.blog article ol {
     list-style-type: var(--list-numbered-style, decimal);
 }
 
-.blog ul.has-list-bullet {
+.blog article ul.has-list-bullet {
     list-style-type: '\200B';
 }
-.blog ul.has-list-bullet > li::marker {
+.blog article ul.has-list-bullet > li::marker {
     color: transparent;
 }
 
-.blog ol > li p,
-.blog ul > li p{
+.blog article ol > li p,
+.blog article ul > li p{
     margin: 0;
     padding: 0;
 

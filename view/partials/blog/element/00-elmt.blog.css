@@ -1,34 +1,23 @@
-.blog h2 a {
-    font-weight: inherit;
-    text-decoration: none;
-    width: fit-content;
-    /* width: 100%; */
-}
-.blog h2 a:hover {
-    color: inherit;
-    transition-duration: 0s;
-    text-decoration: underline;
-}
-
-.blog-cnt b,
-.blog-cnt strong {
+.blog-content b,
+.blog-content strong {
     --b-wght-def: calc(var(--p-wght) + 180);
     font-weight: var(--b-wght-def, var(--b-wght-def));
     letter-spacing: +.005em;
 }
-.blog-cnt b>b,
-.blog-cnt strong>strong {
+
+.blog-content b>b,
+.blog-content strong>strong {
     --bb-wght-def: calc(var(--p-wght) + 140);
     font-weight: var(--bb-wght-def, var(--bb-wght-def));
     letter-spacing: +.01em;
 }
 
-
-.blog-cnt a {
+.blog-content a {
     font-weight: 500;
     text-decoration: underline;
-}
-.blog a:hover {
-    text-decoration: underline;
-    color: var(--colr-a-hov);
+
+    &:hover {
+        text-decoration: underline;
+        color: var(--colr-a-hov);
+    }
 }

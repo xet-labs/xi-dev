@@ -1,4 +1,4 @@
-.blog .blog-yt {
+.blog article .blog-yt {
     overflow: hidden;
 
     margin: var(--blog-yt-mr, 1.5em 0 1.5em);
@@ -8,7 +8,7 @@
     border-radius: var(--radius-s);
     /* box-shadow: var(--blog-yt-shadow, var(--post-img-box-shadow)); */
 }
-.blog .blog-yt iframe {
+.blog article .blog-yt iframe {
     width: 100%;
     height: 100%;
 }

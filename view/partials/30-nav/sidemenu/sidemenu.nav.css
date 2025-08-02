@@ -9,7 +9,7 @@ nav .nav-sidemenu-wrap {
 }
 nav .nav-sidemenu {
     --menu-drxn: column;
-    --menu-pd: .75em;
+    --menu-mr: .75em;
     --menu-a-pd: .75em 1em .75em 1.75em;
 
     position: fixed;

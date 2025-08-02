@@ -24,9 +24,9 @@
     border-radius: var(--code-brdr-radius, var(--radius-xs));
 
     /* text-decoration: underline; */
-}
-.blog .th-1:hover {
-    text-decoration: underline;
+    &:hover {
+        text-decoration: underline;
+    }
 }
 .blog .th-2 {
     padding: 0.1em 0.25em;
@@ -36,11 +36,11 @@
     color: #814cff;
     color: #0078d4;
     text-decoration: none;
-}
-.blog .th-2:hover {
-    text-decoration: underline;
-    /* color: inherit; */
-
+    
+    &:hover {
+        text-decoration: underline;
+        /* color: inherit; */
+    }
 }
 .blog .th-2 {
     padding: 0.1em 0.25em;
@@ -70,10 +70,10 @@
     background: transparent;
     border-radius: 50em;
     /* box-shadow: rgba(0, 0, 0, 0) 0px 0px, rgba(0, 0, 0, 0) 0px 0px, rgba(30, 41, 59, 0.04) 0px 2px 6px, rgba(30, 41, 59, 0.06) 0px 1px 2px; */
-}
 
-.content-logo:hover {
-    display: hidden;
+    &:hover {
+        display: hidden;
+    }
 }
 
 .content-logo img {
