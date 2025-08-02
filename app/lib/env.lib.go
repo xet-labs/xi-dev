@@ -1,4 +1,3 @@
-// Optimized EnvLib for performance, safety, and clarity
 package lib
 
 import (
@@ -11,23 +10,23 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// EnvLib provides a thread-safe environment loader with caching
 type EnvLib struct {
-	vars map[string]any
+	app  map[string]any // store Runtime env
+	sys  map[string]any // store Systems env
 	once sync.Once
 	rw   sync.RWMutex
 }
 
-// Global singleton instance
 var Env = &EnvLib{
-	vars: make(map[string]any),
+	sys: make(map[string]any),
 }
 
-func init() {
-	Env.Init()
-}
+func init() { Env.Init() }
 
-// InitForce reloads .env and OS environment variables forcibly
+// Init, ensure single-time env initialization
+func (e *EnvLib) Init() { e.once.Do(e.InitForce) }
+
+// InitForce, reload .env and OS env variables forcibly
 func (e *EnvLib) InitForce() {
 	e.rw.Lock()
 	defer e.rw.Unlock()
@@ -40,22 +39,18 @@ func (e *EnvLib) InitForce() {
 
 	for _, kv := range os.Environ() {
 		if parts := strings.SplitN(kv, "=", 2); len(parts) == 2 {
-			e.vars[parts[0]] = parts[1]
+			e.sys[parts[0]] = parts[1]
 		}
 	}
 }
 
-// Init ensures single-time environment initialization
-func (e *EnvLib) Init() {
-	e.once.Do(e.InitForce)
-}
 
 // Get returns string value for key or fallback
 func (e *EnvLib) Get(key string, fallback ...string) string {
 	e.rw.RLock()
 	defer e.rw.RUnlock()
 
-	if val, ok := e.vars[key]; ok {
+	if val, ok := e.sys[key]; ok {
 		if str, ok := val.(string); ok {
 			return str
 		}
@@ -66,32 +61,32 @@ func (e *EnvLib) Get(key string, fallback ...string) string {
 	return ""
 }
 
-// Raw returns value (any type) or fallback
-func (e *EnvLib) Raw(key string, fallback ...any) any {
-	e.rw.RLock()
-	defer e.rw.RUnlock()
-
-	if val, ok := e.vars[key]; ok {
-		return val
-	}
-	if len(fallback) > 0 {
-		return fallback[0]
-	}
-	return nil
-}
-
 // Set adds or updates a key
 func (e *EnvLib) Set(key string, value any) {
 	e.rw.Lock()
 	defer e.rw.Unlock()
-	e.vars[key] = value
+	e.sys[key] = value
 }
 
 // Unset deletes a key
 func (e *EnvLib) Unset(key string) {
 	e.rw.Lock()
 	defer e.rw.Unlock()
-	delete(e.vars, key)
+	delete(e.sys, key)
+}
+
+// Raw returns value (any type) or fallback
+func (e *EnvLib) Raw(key string, fallback ...any) any {
+	e.rw.RLock()
+	defer e.rw.RUnlock()
+
+	if val, ok := e.sys[key]; ok {
+		return val
+	}
+	if len(fallback) > 0 {
+		return fallback[0]
+	}
+	return nil
 }
 
 // Bool returns boolean value or fallback
@@ -132,8 +127,8 @@ func (e *EnvLib) All() map[string]any {
 	e.rw.RLock()
 	defer e.rw.RUnlock()
 
-	snapshot := make(map[string]any, len(e.vars))
-	for k, v := range e.vars {
+	snapshot := make(map[string]any, len(e.sys))
+	for k, v := range e.sys {
 		snapshot[k] = v
 	}
 	return snapshot

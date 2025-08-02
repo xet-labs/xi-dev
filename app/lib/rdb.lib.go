@@ -174,13 +174,6 @@ func (r *RedisLib) key(k string) string {
 	return r.prefix + ":" + k
 }
 
-func (r *RedisLib) Get(k string) (string, error) {
-	if r.cli == nil {
-		return "", redis.ErrClosed
-	}
-	return r.cli.Get(r.ctx, r.key(k)).Result()
-}
-
 func (r *RedisLib) Set(k string, v any, ttl time.Duration) error {
 	if r.cli == nil {
 		return redis.ErrClosed
@@ -188,19 +181,18 @@ func (r *RedisLib) Set(k string, v any, ttl time.Duration) error {
 	return r.cli.Set(r.ctx, r.key(k), v, ttl).Err()
 }
 
+func (r *RedisLib) Get(k string) (string, error) {
+	if r.cli == nil {
+		return "", redis.ErrClosed
+	}
+	return r.cli.Get(r.ctx, r.key(k)).Result()
+}
+
 func (r *RedisLib) GetBytes(k string) ([]byte, error) {
 	if r.cli == nil {
 		return nil, redis.ErrClosed
 	}
 	return r.cli.Get(r.ctx, r.key(k)).Bytes()
-}
-
-func (r *RedisLib) GetJson(k string, out any) error {
-	v, err := r.GetBytes(k)
-	if err != nil {
-		return err
-	}
-	return json.Unmarshal(v, out)
 }
 
 func (r *RedisLib) SetJson(k string, v any, ttl time.Duration) error {
@@ -211,12 +203,12 @@ func (r *RedisLib) SetJson(k string, v any, ttl time.Duration) error {
 	return r.Set(k, val, ttl)
 }
 
-func (r *RedisLib) Exists(k string) (bool, error) {
-	if r.cli == nil {
-		return false, redis.ErrClosed
+func (r *RedisLib) GetJson(k string, out any) error {
+	v, err := r.GetBytes(k)
+	if err != nil {
+		return err
 	}
-	n, err := r.cli.Exists(r.ctx, r.key(k)).Result()
-	return n > 0, err
+	return json.Unmarshal(v, out)
 }
 
 func (r *RedisLib) Del(keys ...string) error {
@@ -227,7 +219,6 @@ func (r *RedisLib) Del(keys ...string) error {
 		return nil
 	}
 
-	// Prepend the Redis key prefix using r.key
 	var redisKeys []string
 	for _, k := range keys {
 		redisKeys = append(redisKeys, r.key(k))
@@ -236,6 +227,13 @@ func (r *RedisLib) Del(keys ...string) error {
 	return r.cli.Del(r.ctx, redisKeys...).Err()
 }
 
+func (r *RedisLib) Exists(k string) (bool, error) {
+	if r.cli == nil {
+		return false, redis.ErrClosed
+	}
+	n, err := r.cli.Exists(r.ctx, r.key(k)).Result()
+	return n > 0, err
+}
 
 func (r *RedisLib) Keys(pattern string) ([]string, error) {
 	if r.cli == nil {
