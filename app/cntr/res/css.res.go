@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"xi/app/lib"
-	"xi/conf"
+	"xi/app/cfg"
 	"xi/util"
 
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	CssDir      = conf.View.CssDir
+	CssDir      = cfg.View.CssDir
 	refKey      = "res:app.css"
 	CssRedisTTL = 12 * time.Hour
 	cssFiles    []string

@@ -19,12 +19,12 @@ var sharedClients = make(map[string]*redis.Client)
 type RedisLib struct {
 	prefix     string
 	defaultCli string
-	cli        *redis.Client
 	clients    map[string]*redis.Client
+	client     *redis.Client
 	ctx        context.Context
-	rw       sync.RWMutex
-	once     sync.Once
-	lazyInit func()
+	rw         sync.RWMutex
+	once       sync.Once
+	lazyInit   func()
 }
 
 // Global instance
@@ -59,14 +59,14 @@ func (r *RedisLib) New(defaultCli string, opts ...any) *RedisLib {
 	return &RedisLib{
 		prefix:     prefix,
 		defaultCli: defaultCli,
-		cli:        r.GetCli(defaultCli),
+		client:     r.GetCli(defaultCli),
 		clients:    sharedClients,
 		ctx:        ctx,
 	}
 }
 
 // SetCli registers a new Redis client
-func (r *RedisLib) SetCli(name string, cli *redis.Client) {
+func (r *RedisLib) SetCli(name string, client *redis.Client) {
 	r.rw.Lock()
 	defer r.rw.Unlock()
 
@@ -74,15 +74,15 @@ func (r *RedisLib) SetCli(name string, cli *redis.Client) {
 		log.Printf("⚠️  Redis client '%s' already exists", name)
 	}
 	for n, c := range r.clients {
-		if c == cli {
+		if c == client {
 			log.Printf("⚠️  Redis client already registered as '%s'", n)
 			break
 		}
 	}
 
-	r.clients[name] = cli
-	if r.cli == nil || r.defaultCli == name || strings.TrimSpace(r.defaultCli) == "" {
-		r.cli = cli
+	r.clients[name] = client
+	if r.client == nil || r.defaultCli == name || strings.TrimSpace(r.defaultCli) == "" {
+		r.client = client
 		r.defaultCli = name
 	}
 }
@@ -112,7 +112,7 @@ func (r *RedisLib) SetDefault(name string) {
 
 	if cli, ok := r.clients[name]; ok {
 		r.defaultCli = name
-		r.cli = cli
+		r.client = cli
 		log.Printf("✅ Redis default: client set to '%s'", name)
 	} else {
 		log.Printf("⚠️  Redis default: client '%s' not found", name)
@@ -175,24 +175,24 @@ func (r *RedisLib) key(k string) string {
 }
 
 func (r *RedisLib) Set(k string, v any, ttl time.Duration) error {
-	if r.cli == nil {
+	if r.client == nil {
 		return redis.ErrClosed
 	}
-	return r.cli.Set(r.ctx, r.key(k), v, ttl).Err()
+	return r.client.Set(r.ctx, r.key(k), v, ttl).Err()
 }
 
 func (r *RedisLib) Get(k string) (string, error) {
-	if r.cli == nil {
+	if r.client == nil {
 		return "", redis.ErrClosed
 	}
-	return r.cli.Get(r.ctx, r.key(k)).Result()
+	return r.client.Get(r.ctx, r.key(k)).Result()
 }
 
 func (r *RedisLib) GetBytes(k string) ([]byte, error) {
-	if r.cli == nil {
+	if r.client == nil {
 		return nil, redis.ErrClosed
 	}
-	return r.cli.Get(r.ctx, r.key(k)).Bytes()
+	return r.client.Get(r.ctx, r.key(k)).Bytes()
 }
 
 func (r *RedisLib) SetJson(k string, v any, ttl time.Duration) error {
@@ -212,7 +212,7 @@ func (r *RedisLib) GetJson(k string, out any) error {
 }
 
 func (r *RedisLib) Del(keys ...string) error {
-	if r.cli == nil {
+	if r.client == nil {
 		return redis.ErrClosed
 	}
 	if len(keys) == 0 {
@@ -224,27 +224,27 @@ func (r *RedisLib) Del(keys ...string) error {
 		redisKeys = append(redisKeys, r.key(k))
 	}
 
-	return r.cli.Del(r.ctx, redisKeys...).Err()
+	return r.client.Del(r.ctx, redisKeys...).Err()
 }
 
 func (r *RedisLib) Exists(k string) (bool, error) {
-	if r.cli == nil {
+	if r.client == nil {
 		return false, redis.ErrClosed
 	}
-	n, err := r.cli.Exists(r.ctx, r.key(k)).Result()
+	n, err := r.client.Exists(r.ctx, r.key(k)).Result()
 	return n > 0, err
 }
 
 func (r *RedisLib) Keys(pattern string) ([]string, error) {
-	if r.cli == nil {
+	if r.client == nil {
 		return nil, redis.ErrClosed
 	}
-	return r.cli.Keys(r.ctx, r.key(pattern)).Result()
+	return r.client.Keys(r.ctx, r.key(pattern)).Result()
 }
 
 func (r *RedisLib) FlushAll() error {
-	if r.cli == nil {
+	if r.client == nil {
 		return redis.ErrClosed
 	}
-	return r.cli.FlushAll(r.ctx).Err()
+	return r.client.FlushAll(r.ctx).Err()
 }

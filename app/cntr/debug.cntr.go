@@ -3,13 +3,25 @@ package cntr
 import (
 	"net/http"
 	"sort"
+	"xi/app/lib"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Debug(r *gin.Engine) gin.HandlerFunc {
 
-return func(c *gin.Context) {
+	return func(c *gin.Context) {
+
+		routes, _ := routeData(r)
+		c.JSON(http.StatusOK, gin.H{
+			"route":         routes,
+			// "routeDetailed": detailed,
+			"conf": lib.Cfg.All,
+		})
+	}
+}
+
+func routeData(r *gin.Engine) ([]string, []string) {
 	var routes []string
 	var detailed []string
 
@@ -26,17 +38,5 @@ return func(c *gin.Context) {
 	sort.Slice(routes, func(i, j int) bool {
 		return routes[i][4:] < routes[j][4:]
 	})
-	sort.Slice(detailed, func(i, j int) bool {
-		return detailed[i][6:] < detailed[j][6:] // "GET | " is 6 chars
-	})
-
-	c.JSON(http.StatusOK, gin.H{
-		"route":         routes,
-		"routeDetailed": detailed,
-	})
+	return routes, detailed
 }
-
-
-
-}
-

@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"xi/app/lib"
 	"xi/app/model"
-	"xi/conf"
+	"xi/app/cfg"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -64,8 +64,8 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 
 	// Prep data
 	P := make(map[string]any)
-	maps.Copy(P, conf.View.PageData)
-	if pd, ok := conf.View.Pages["auth"]; ok {
+	maps.Copy(P, cfg.View.PageData)
+	if pd, ok := cfg.View.Pages["auth"]; ok {
 		maps.Copy(P, pd)
 	}
 	P["url"] = c.Request.URL.String()
@@ -87,8 +87,8 @@ func (a *AuthCntr) Logins(c *gin.Context) {
 
 	// Build data
 	P := make(map[string]any)
-	maps.Copy(P, conf.View.PageData)
-	if pd, ok := conf.View.Pages["auths"]; ok {
+	maps.Copy(P, cfg.View.PageData)
+	if pd, ok := cfg.View.Pages["auths"]; ok {
 		maps.Copy(P, pd)
 	}
 	P["url"] = c.Request.URL.String()
@@ -133,8 +133,8 @@ func (a *AuthCntr) ShowLogin(c *gin.Context) {
 
 	// Prep data
 	P := make(map[string]any)
-	maps.Copy(P, conf.View.PageData)
-	if pd, ok := conf.View.Pages["auth"]; ok {
+	maps.Copy(P, cfg.View.PageData)
+	if pd, ok := cfg.View.Pages["auth"]; ok {
 		maps.Copy(P, pd)
 	}
 	P["url"] = c.Request.URL.String()

@@ -45,7 +45,7 @@ func init() {
 	})
 }
 
-// -- Minify CSS
+// Minify CSS
 func (m *MinifyLib) Css(input []byte) ([]byte, error) {
 	var out bytes.Buffer
 	err := minifier.Minify("text/css", &out, bytes.NewReader(input))
@@ -53,7 +53,7 @@ func (m *MinifyLib) Css(input []byte) ([]byte, error) {
 	return out.Bytes(), err
 }
 
-// -- Minify CSS Hybrid
+// Minify CSS Hybrid
 func (m *MinifyLib) CssHybrid(input []byte) ([]byte, error) {
 	var out bytes.Buffer
 	if err := minifier.Minify("text/css", &out, bytes.NewReader(input)); err != nil {
@@ -72,7 +72,7 @@ func (m *MinifyLib) CssHybrid(input []byte) ([]byte, error) {
 	return []byte(css), nil
 }
 
-// -- Minify CSS Regex
+// Minify CSS Regex
 func (m *MinifyLib) CssRegex(css string) (string, error) {
 	css = reComment.ReplaceAllString(css, "")       // Remove comments
 	css = reWhitespace.ReplaceAllString(css, " ")   // Collapse spaces
@@ -91,7 +91,7 @@ func (m *MinifyLib) CssRegex(css string) (string, error) {
 	return strings.TrimSpace(css), nil
 }
 
-// -- Minify HTML
+// Minify HTML
 func (m *MinifyLib) Html(input []byte) ([]byte, error) {
 	var out bytes.Buffer
 	err := minifier.Minify("text/html", &out, bytes.NewReader(input))

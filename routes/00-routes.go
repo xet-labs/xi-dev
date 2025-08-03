@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"log"
 	"xi/app/lib"
-	"xi/conf"
+	"xi/app/cfg"
 	"xi/util"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,7 @@ type RouteStruct struct {
 }
 
 var Route = &RouteStruct{
-	templates: conf.View.TemplateDir,
+	templates: cfg.View.TemplateDir,
 }
 
 var r *gin.Engine

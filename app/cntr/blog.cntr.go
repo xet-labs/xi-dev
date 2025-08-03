@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"xi/app/lib"
 	"xi/app/model"
-	"xi/conf"
+	"xi/app/cfg"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -40,8 +40,8 @@ func (b *BlogCntr) Index(c *gin.Context) {
 
 	// Build data
 	P := make(map[string]any)
-	maps.Copy(P, conf.View.PageData)
-	if pd, ok := conf.View.Pages["blogs"]; ok {
+	maps.Copy(P, cfg.View.PageData)
+	if pd, ok := cfg.View.Pages["blogs"]; ok {
 		maps.Copy(P, pd)
 	}
 	P["url"] = c.Request.URL.String()
@@ -79,8 +79,8 @@ func (b *BlogCntr) Show(c *gin.Context) {
 
 	// Prep data
 	P := make(map[string]any)
-	maps.Copy(P, conf.View.PageData)
-	if pd, ok := conf.View.Pages["blog"]; ok {
+	maps.Copy(P, cfg.View.PageData)
+	if pd, ok := cfg.View.Pages["blog"]; ok {
 		maps.Copy(P, pd)
 	}
 	P["B"] = BlogView{

@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 	"xi/app/lib"
-	"xi/conf"
+	"xi/app/cfg"
 
 	"github.com/gin-gonic/gin"
 )
@@ -81,7 +81,7 @@ func (p *PageCntr) renderTcnt(c *gin.Context, title, content string) ([]byte, er
 	// fmt.Println(string(data))
 	
 	var out bytes.Buffer
-	if err := t.ExecuteTemplate(&out, conf.View.Layout, gin.H{"P": P}); err != nil {
+	if err := t.ExecuteTemplate(&out, cfg.View.Layout, gin.H{"P": P}); err != nil {
 		return nil, err
 	}
 
@@ -91,9 +91,9 @@ func (p *PageCntr) renderTcnt(c *gin.Context, title, content string) ([]byte, er
 // Combines global and per-page config data
 func (p *PageCntr) buildData(c *gin.Context, title string) map[string]any {
 	data := make(map[string]any)
-	maps.Copy(data, conf.View.PageData)
+	maps.Copy(data, cfg.View.PageData)
 
-	if page, ok := conf.View.Pages[title]; ok {
+	if page, ok := cfg.View.Pages[title]; ok {
 		maps.Copy(data, page)
 	}
 

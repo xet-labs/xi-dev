@@ -6,7 +6,7 @@ import (
 	"log"
 	"sync"
 	"xi/app/lib"
-	"xi/conf"
+	"xi/app/cfg"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
@@ -28,10 +28,10 @@ func init() {
 
 func (d *DBService) preInit() {
 	// Set global Redis and DB defaults
-	lib.DB.SetDefault(conf.Db.Def)
+	lib.DB.SetDefault(cfg.Db.DefaultDb)
 	lib.Redis.SetCtx(context.Background())
-	lib.Redis.SetDefault(conf.Db.RedisDef)
-	lib.Redis.SetPrefix(conf.Db.RedisPrefix)
+	lib.Redis.SetDefault(cfg.Db.DefaultRdb)
+	lib.Redis.SetPrefix(cfg.Db.RdbPrefix)
 }
 
 func (d *DBService) postInit() {}
@@ -40,14 +40,14 @@ func (d *DBService) postInit() {}
 func (d *DBService) InitForce() {
 	d.preInit()
 
-	for profile, c := range conf.Db.DB {
+	for profile, c := range cfg.Db.Connection {
 		if !c.Enable {
 			continue
 		}
 
 		// Fallback for DB credentials
 		if c.User == "" {
-			c.User = c.Database + "_u"
+			c.User = c.Db + "_u"
 		}
 		if c.Pass == "" {
 			c.Pass = lib.Env.Get("DB_PASS")
@@ -56,7 +56,7 @@ func (d *DBService) InitForce() {
 		switch c.Driver {
 		case "mysql", "mariadb":
 			dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local",
-				c.User, c.Pass, c.Host, c.Port, c.Database, c.Charset)
+				c.User, c.Pass, c.Host, c.Port, c.Db, c.Charset)
 			dbConn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 			if err != nil {
 				log.Fatalf("❌ Could not connect to DB '%s': %v", profile, err)
@@ -65,7 +65,7 @@ func (d *DBService) InitForce() {
 			log.Printf("✅ DB connected '%s' (MySQL)", profile)
 
 		case "sqlite":
-			dbConn, err := gorm.Open(sqlite.Open(c.Database), &gorm.Config{})
+			dbConn, err := gorm.Open(sqlite.Open(c.Db), &gorm.Config{})
 			if err != nil {
 				log.Fatalf("❌ Could not connect to DB '%s': %v", profile, err)
 			}
@@ -76,7 +76,7 @@ func (d *DBService) InitForce() {
 			rdb := redis.NewClient(&redis.Options{
 				Addr:     c.Host + ":" + c.Port,
 				Password: c.Pass,
-				DB:       c.RedisDB,
+				DB:       c.Rdb,
 			})
 			if err := rdb.Ping(context.Background()).Err(); err != nil {
 				log.Fatalf("❌ Could not connect to Redis '%s': %v", profile, err)

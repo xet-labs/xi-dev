@@ -1,8 +1,21 @@
-package conf
+package cfg
 
 import "xi/app/lib"
 
-var View = &ViewStruct{
+type ViewConf = struct {
+	CssDir    []string
+	Layout    string
+	TemplateDir []string
+	PageData  map[string]any
+	Pages     map[string]map[string]any
+}
+
+type MenuItem struct {
+	Label string
+	Href  string
+}
+
+var View = &ViewConf{
 	CssDir:    []string{"view/partials"},
 	Layout:    "layout/base",
 	TemplateDir: []string{"view/layout", "view/partials", "view/pages"},
@@ -12,8 +25,8 @@ var View = &ViewStruct{
 		"appDomain": lib.Env.Get("APP_DOMAIN"),
 		"appUrl":    lib.Env.Get("APP_URL"),
 
-		"tags":         []string{"XetIndustries", "Xet Industries", "xetindustries", "xet industries", "Xtreme Embedded Tech Industries"},
-		"featured_img": []string{"/res/static/brand/brand.svg"},
+		"appTags":         []string{"XetIndustries", "Xet Industries", "xetindustries", "xet industries", "Xtreme Embedded Tech Industries"},
+		"appFeatured_img": []string{"/res/static/brand/brand.svg"},
 
 		"navMenu": []MenuItem{
 			{Label: "Home", Href: "/"},
@@ -31,8 +44,8 @@ var View = &ViewStruct{
 	Pages: map[string]map[string]any{
 		"home": {
 			"route":       "/",
-			"file":        "view/pages/root.part.html",
-			"tmpl":        "pages/root",
+			"file":		   "view/pages/home.part.html",
+			"tmpl":        "page/home",
 			"menu":        "Home",
 			"title":       "XetIndustries",
 			"description": "A Platform for Makers, Creators, and Developers.",
@@ -43,7 +56,6 @@ var View = &ViewStruct{
 		},
 		"blogs": {
 			"route":       "/blog",
-			"file":        "view/pages/blogs.part.html",
 			"tmpl":        "layout/blogs",
 			"menu":        "Blog",
 			"subBrand":    "Blog",
@@ -60,7 +72,6 @@ var View = &ViewStruct{
 		},
 		"blog": {
 			"route":    "/blog/*",
-			"file":     "view/pages/blog.page.html",
 			"tmpl":     "layout/blog",
 			"menu":     "Blog",
 			"subBrand": "Blog",
@@ -78,17 +89,4 @@ var View = &ViewStruct{
 		// 	"file":  "views/pages/contact.html",
 		// },
 	},
-}
-
-type ViewStruct = struct {
-	CssDir    []string
-	Layout    string
-	TemplateDir []string
-	PageData  map[string]any
-	Pages     map[string]map[string]any
-}
-
-type MenuItem struct {
-	Label string
-	Href  string
 }
