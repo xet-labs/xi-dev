@@ -15,16 +15,19 @@ type ConfLib struct {
 	rw sync.RWMutex
 }
 
-// Singleton instance
 var Cfg = &ConfLib{
-	ConfigFiles: []string{"app/config.json", "conf/config.json"},
+	ConfigFiles: []string{
+		"app/cfg/cfg.json",
+		"config/config.json",
+	},
 }
 
-// Regex to parse {{VAR:-default}} format
-var envPattern = regexp.MustCompile(`\{\{\s*([A-Z0-9_]+)(:-([^}]*))?\s*\}\}`)
+var envPattern = regexp.MustCompile(`\{\{\s*([A-Z0-9_]+)(:-([^}]*))?\s*\}\}`) // parse {{VAR:-default}}
+
+func init() { Cfg.Init() }
 
 // Load loads and parses the config JSON file
-func (c *ConfLib) Load(filePath ...string) error {
+func (c *ConfLib) Init(filePath ...string) error {
 	configFiles := c.ConfigFiles
 	if len(filePath) > 0 { configFiles = filePath }
 
@@ -35,18 +38,19 @@ func (c *ConfLib) Load(filePath ...string) error {
 			continue
 		}
 
-		expanded := c.ExpandJsonVar(string(raw))
+		fmt.Printf("%s", raw)
+		// expanded := c.ExpandJsonVar(string(raw))
 
-		var parsed map[string]any
-		if err := json.Unmarshal([]byte(expanded), &parsed); err != nil {
-			return fmt.Errorf("json decode (%s): %w", path, err)
-		}
+		// var parsed map[string]any
+		// if err := json.Unmarshal([]byte(expanded), &parsed); err != nil {
+		// 	return fmt.Errorf("json decode (%s): %w", path, err)
+		// }
 
-		c.rw.Lock()
-		c.data = deepMerge(c.data, parsed)
-		c.rw.Unlock()
+		// c.rw.Lock()
+		// c.data = deepMerge(c.data, parsed)
+		// c.rw.Unlock()
 
-		fmt.Printf("✅ Loaded config: %s\n", path)
+		// fmt.Printf("✅ Loaded config: %s\n", path)
 	}
 
 	return nil

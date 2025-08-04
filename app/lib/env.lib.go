@@ -44,7 +44,6 @@ func (e *EnvLib) InitForce() {
 	}
 }
 
-
 // Get returns string value for key or fallback
 func (e *EnvLib) Get(key string, fallback ...string) string {
 	e.rw.RLock()
