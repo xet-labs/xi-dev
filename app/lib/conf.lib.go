@@ -3,126 +3,121 @@ package lib
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"regexp"
-	"strings"
 	"sync"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/knadh/koanf/v2"
+	koanfJson "github.com/knadh/koanf/parsers/json"
+	"github.com/knadh/koanf/providers/rawbytes"
 )
 
 type ConfLib struct {
-	ConfigFiles []string
-	data map[string]any
-	rw sync.RWMutex
+	Files         []string
+	FilesLoaded   []string
+	FilesDefault  []string
+	koanfInstance *koanf.Koanf
+
+	watch *fsnotify.Watcher
+	rw   sync.RWMutex
+	once sync.Once
 }
 
 var Cfg = &ConfLib{
-	ConfigFiles: []string{
-		"app/cfg/cfg.json",
+	koanfInstance: koanf.New("."),
+	FilesDefault: []string{
+		"app/data/config/config.json",
 		"config/config.json",
 	},
 }
 
-var envPattern = regexp.MustCompile(`\{\{\s*([A-Z0-9_]+)(:-([^}]*))?\s*\}\}`) // parse {{VAR:-default}}
-
 func init() { Cfg.Init() }
 
-// Load loads and parses the config JSON file
-func (c *ConfLib) Init(filePath ...string) error {
-	configFiles := c.ConfigFiles
-	if len(filePath) > 0 { configFiles = filePath }
+func (c *ConfLib) Init(filePath ...string) {
+	c.once.Do(func() {
+		c.InitCore(filePath...)
+	})
+}
 
-	for _, path := range configFiles {
+func (c *ConfLib) InitCore(filePath ...string) error {
+	Env.Init()
+	c.Files = c.FilesDefault
+	if len(filePath) > 0 {
+		c.Files = filePath
+	}
+
+	for _, path := range c.Files {
 		raw, err := os.ReadFile(path)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "⚠️  Skipping config %s: %v\n", path, err)
 			continue
 		}
 
-		fmt.Printf("%s", raw)
-		// expanded := c.ExpandJsonVar(string(raw))
+		// Resolve env vars like {{VAR:-fallback}} or {{VAR}}
+		expanded := []byte(c.expandEnvVars(string(raw)))
 
-		// var parsed map[string]any
-		// if err := json.Unmarshal([]byte(expanded), &parsed); err != nil {
-		// 	return fmt.Errorf("json decode (%s): %w", path, err)
-		// }
+		err = c.koanfInstance.Load(rawbytes.Provider(expanded), koanfJson.Parser())
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "⚠️  Failed parsing %s: %v\n", path, err)
+			continue
+		}
 
-		// c.rw.Lock()
-		// c.data = deepMerge(c.data, parsed)
-		// c.rw.Unlock()
-
-		// fmt.Printf("✅ Loaded config: %s\n", path)
+		c.FilesLoaded = append(c.FilesLoaded, path)
 	}
 
+	if len(c.FilesLoaded) > 0 {
+		log.Printf("✅ Config loaded: %s\n", c.FilesLoaded)
+		return nil
+	}
+
+	log.Println("⚠️  No config loaded.")
 	return nil
 }
 
-// ExpandJsonVar resolves {{VAR:-fallback}} in raw JSON
-func (c *ConfLib) ExpandJsonVar(input string) string {
-	return envPattern.ReplaceAllStringFunc(input, func(match string) string {
-		parts := envPattern.FindStringSubmatch(match)
-		key := parts[1]
-		fallback := parts[3]
-		val, ok := os.LookupEnv(key)
-		if ok {
+var envPattern = regexp.MustCompile(`\{\{([A-Z0-9_]+)(:-([^}]*))?\}\}`)
+
+
+// expandEnvVars replaces {{ENV}} or {{ENV:-fallback}} with actual values
+func (c *ConfLib) expandEnvVars(s string) string {
+	return envPattern.ReplaceAllStringFunc(s, func(match string) string {
+		sub := envPattern.FindStringSubmatch(match)
+		key := sub[1]
+		def := sub[3]
+		if val, ok := os.LookupEnv(key); ok {
 			return val
 		}
-		return fallback
+		return def
 	})
 }
 
-// Get retrieves a value using dot-notation path
 func (c *ConfLib) Get(path string) any {
-	c.rw.RLock()
-	defer c.rw.RUnlock()
-
-	parts := strings.Split(path, ".")
-	var cur any = c.data
-
-	for _, part := range parts {
-		switch typed := cur.(type) {
-		case map[string]any:
-			cur = typed[part]
-		default:
-			return nil
-		}
-	}
-	return cur
+	return c.koanfInstance.Get(path)
 }
 
-// GetMap returns a map for a path (e.g., object)
 func (c *ConfLib) GetMap(path string) map[string]any {
-	val := c.Get(path)
-	if m, ok := val.(map[string]any); ok {
-		return m
+	if val, ok := c.koanfInstance.Get(path).(map[string]any); ok {
+		return val
 	}
-	return nil
+	return map[string]any{}
 }
 
-// GetArray returns array/slice at path
 func (c *ConfLib) GetArray(path string) []any {
-	val := c.Get(path)
-	if arr, ok := val.([]any); ok {
-		return arr
+	if val, ok := c.koanfInstance.Get(path).([]any); ok {
+		return val
 	}
-	return nil
+	return []any{}
 }
 
 func (c *ConfLib) JSON() string {
-	c.rw.RLock()
-	defer c.rw.RUnlock()
-
-	out, err := json.MarshalIndent(c.data, "", "  ")
+	out, err := json.MarshalIndent(c.All(), "", "  ")
 	if err != nil {
 		return "{}"
 	}
 	return string(out)
 }
 
-
 func (c *ConfLib) All() map[string]any {
-	c.rw.RLock()
-	defer c.rw.RUnlock()
-
-	// Optionally return a deep copy if you want to avoid mutation from outside
-	return c.data
+	return c.koanfInstance.All()
 }

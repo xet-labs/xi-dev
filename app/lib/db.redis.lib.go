@@ -22,9 +22,10 @@ type RedisLib struct {
 	clients    map[string]*redis.Client
 	client     *redis.Client
 	ctx        context.Context
+	lazyInit   func()
+	
 	rw         sync.RWMutex
 	once       sync.Once
-	lazyInit   func()
 }
 
 // Global instance
@@ -35,14 +36,23 @@ var Redis = &RedisLib{
 	ctx:        context.Background(),
 }
 
-// RegisterLazyInit allows deferred initialization
-func (r *RedisLib) RegisterLazyInit(fn func()) {
+// RegisterLazyFn allows deferred initialization
+func (r *RedisLib) RegisterLazyFn(fn func()) {
 	r.lazyInit = fn
+}
+
+// Ensures lazyInit runs once
+func (r *RedisLib) lazyFnOnce() {
+	r.once.Do(func() {
+		if r.lazyInit != nil {
+			r.lazyInit()
+		}
+	})
 }
 
 // New returns a new RedisLib instance with optional prefix/context
 func (r *RedisLib) New(defaultCli string, opts ...any) *RedisLib {
-	r.lazyInitOnce()
+	r.lazyFnOnce()
 
 	prefix, ctx := r.prefix, r.ctx
 	for _, opt := range opts {
@@ -89,7 +99,7 @@ func (r *RedisLib) SetCli(name string, client *redis.Client) {
 
 // GetCli returns a Redis client by name or default
 func (r *RedisLib) GetCli(name ...string) *redis.Client {
-	r.lazyInitOnce()
+	r.lazyFnOnce()
 	r.rw.RLock()
 	defer r.rw.RUnlock()
 
@@ -157,15 +167,6 @@ func (r *RedisLib) GetDefault() string {
 // With returns a new RedisLib bound to the given client name
 func (r *RedisLib) With(cliName string) *RedisLib {
 	return r.New(cliName, r.prefix)
-}
-
-// Internal: Ensures lazyInit runs once
-func (r *RedisLib) lazyInitOnce() {
-	r.once.Do(func() {
-		if r.lazyInit != nil {
-			r.lazyInit()
-		}
-	})
 }
 
 // ---------------- Redis command wrappers ----------------

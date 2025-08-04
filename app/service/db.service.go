@@ -21,9 +21,9 @@ type DBService struct {
 var DB = &DBService{}
 
 func init() {
-	DB.Init()
-	lib.DB.RegisterLazyInit(DB.Init)
-	lib.Redis.RegisterLazyInit(DB.Init)
+	// Ensure the 'DB.Init' is called in lib.{DB, Redis} so that core env is setup
+	lib.DB.RegisterLazyFn(DB.Init)
+	lib.Redis.RegisterLazyFn(DB.Init)
 }
 
 func (d *DBService) preInit() {

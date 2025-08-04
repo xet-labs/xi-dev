@@ -24,10 +24,10 @@ var Env = &EnvLib{
 func init() { Env.Init() }
 
 // Init, ensure single-time env initialization
-func (e *EnvLib) Init() { e.once.Do(e.InitForce) }
+func (e *EnvLib) Init() { e.once.Do(e.InitCore) }
 
-// InitForce, reload .env and OS env variables forcibly
-func (e *EnvLib) InitForce() {
+// InitCore, reload .env and OS env variables forcibly
+func (e *EnvLib) InitCore() {
 	e.rw.Lock()
 	defer e.rw.Unlock()
 

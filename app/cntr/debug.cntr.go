@@ -16,7 +16,7 @@ func Debug(r *gin.Engine) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{
 			"route":         routes,
 			// "routeDetailed": detailed,
-			"conf": lib.Cfg.All,
+			"conf": lib.Cfg.All(),
 		})
 	}
 }

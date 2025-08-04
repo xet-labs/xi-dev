@@ -22,18 +22,23 @@ var DB = &DBLib{
 	clients:   make(map[string]*gorm.DB),
 }
 
-// RegisterLazyInit sets a callback for deferred initialization.
-func (d *DBLib) RegisterLazyInit(fn func()) {
+// RegisterLazyFn sets a callback for deferred initialization.
+func (d *DBLib) RegisterLazyFn(fn func()) {
 	d.lazyInit = fn
 }
 
-// Get returns the DB instance by name or default
-func (d *DBLib) GetCli(name ...string) *gorm.DB {
+// Ensures lazyInit runs once
+func (d *DBLib) lazyFnOnce() {
 	d.once.Do(func() {
 		if d.lazyInit != nil {
 			d.lazyInit()
 		}
 	})
+}
+
+// Get returns the DB instance by name or default
+func (d *DBLib) GetCli(name ...string) *gorm.DB {
+	d.lazyFnOnce()
 	d.rw.RLock()
 	defer d.rw.RUnlock()
 

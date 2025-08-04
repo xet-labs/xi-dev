@@ -13,7 +13,7 @@
       "xet industries",
       "Xtreme Embedded Tech Industries"
     ],
-    "app_featured_img": ["/res/static/brand/brand.svg"]
+    "featured_img": ["/res/static/brand/brand.svg"]
   },
   "database": {
     "default_db": "{{DB_DEFAULT:-db}}",
@@ -47,6 +47,11 @@
     }
   },
   "view": {
+    "appName": "${}",
+		"appDomain": "${}",
+		"appUrl":    "${}",
+		"appTags":         "${}",
+		"appFeatured_img": "${}",
     "css_dir": ["view/partials"],
     "default_layout": "layout/base",
     "template_dir": ["view/layout", "view/partials", "view/pages"],
