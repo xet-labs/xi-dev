@@ -5,10 +5,9 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"time"
-
-	// "strings"
 	"sync"
+	"time"
+	"xi/app/schema"
 
 	"github.com/fsnotify/fsnotify"
 	koanfJson "github.com/knadh/koanf/parsers/json"
@@ -17,13 +16,21 @@ import (
 )
 
 type ConfLib struct {
+	Global       schema.Config
 	Files        []string
 	FilesLoaded  []string
 	FilesDefault []string
 	koanfCli     *koanf.Koanf
+	Hooks        Hook
+
+	IntermediateMap  map[string]any
+	IntermediateJson map[string]any
+
+	DataMap  map[string]any
+	DataJson map[string]any
 
 	watch *fsnotify.Watcher
-	rw    sync.RWMutex
+	mu    sync.RWMutex
 	once  sync.Once
 }
 
@@ -35,9 +42,9 @@ var (
 			"config/config.json",
 		},
 	}
-	reJsonEnv = regexp.MustCompile(`\$\{([A-Z0-9_]+)(:-([^}]*))?\}`)
+	reJsonEnv     = regexp.MustCompile(`\$\{([A-Z0-9_]+)(:-([^}]*))?\}`)
 	reJsonEnvPost = regexp.MustCompile(`(?m)(,\s*)?"__REMOVE__"(,\s*)?|^"__REMOVE__"(,\s*)?`)
-	reJsonVar = regexp.MustCompile(`\$\{([^}:]*)(:-([^}]*))?\}|\$\{\}`)
+	reJsonVar     = regexp.MustCompile(`\$\{([^}:]*)(:-([^}]*))?\}|\$\{\}`)
 )
 
 func init() {
@@ -46,9 +53,9 @@ func init() {
 		log.Printf("⚠️ Config Daemon setup failed: %v", err)
 	}
 
-	log.Printf("--> %s", Cfg.Get("app.domain"))
-	log.Printf("--> %s", Cfg.GetMap("app"))
-	log.Printf("--> %s", Cfg.koanfCli.Get(""))
+	// log.Printf("--> %s", Cfg.Get("app.domain"))
+	// log.Printf("--> %s", Cfg.GetMap("app"))
+	// log.Printf("--> %s", Cfg.koanfCli.Get(""))
 }
 
 func (c *ConfLib) Init(filePath ...string) { c.once.Do(func() { c.InitCore(filePath...) }) }
@@ -57,6 +64,8 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	// Init Env
 	Env.Init()
 
+	c.Hooks.RunPre()
+
 	// Assign Config Files
 	c.FilesLoaded = nil
 	c.Files = c.FilesDefault
@@ -64,7 +73,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 		c.Files = filePath
 	}
 
-	// Overlay Config Files
+	// Overlay Resolved Config Files
 	for _, path := range c.Files {
 		raw, err := os.ReadFile(path)
 		if err != nil {
@@ -86,12 +95,13 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	// Resolve internal refs ${ref} | ${ref:-fallback}
 	c.resolveJsonVars()
 
+	c.Hooks.RunPost()
+
 	if len(c.FilesLoaded) > 0 {
 		log.Printf("✅ Config loaded: %s\n", c.FilesLoaded)
-		return nil
+	} else {
+		log.Println("⚠️  No config loaded.")
 	}
-
-	log.Println("⚠️  No config loaded.")
 	return nil
 }
 
@@ -194,10 +204,10 @@ func (c *ConfLib) resolveJsonVars() {
 func (c *ConfLib) Daemon() error {
 	if c.watch != nil {
 		return nil // already watching
-	} 
+	}
 
-	c.rw.Lock()
-	defer c.rw.Unlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {

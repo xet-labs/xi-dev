@@ -63,8 +63,8 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 	lib.View.RenderCache(c, "page/auth", refKey)
 
 	// Prep data
-	P := make(map[string]any)
-	maps.Copy(P, cfg.View.Page)
+	P := make(map[string]cfg.PageParam)
+	maps.Copy(P, cfg.View.Pages.Default)
 	if pd, ok := cfg.View.Pages["auth"]; ok {
 		maps.Copy(P, pd)
 	}

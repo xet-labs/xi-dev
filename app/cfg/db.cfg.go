@@ -3,16 +3,17 @@ package cfg
 
 import (
 	"xi/app/lib"
+	"xi/app/schema"
 )
 
 var env = lib.Env
 
-var Db = &DbConf{
+var Db = &schema.DbConf{
 	DbDefault:  env.Get("DEFAULT_DB", "db"),
 	RdbDefault: env.Get("DEFAULT_RDB", "rdb"),
 	RdbPrefix:  env.Get("APP_ABBR", "redis"),
 
-	Conn: map[string]DbParam{
+	Conn: map[string]schema.DbParam{
 
 		"db": {
 			Enable:        true,

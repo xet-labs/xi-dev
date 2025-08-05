@@ -21,7 +21,7 @@ type RedisLib struct {
 	ctx        context.Context
 	lazyInit   func()
 	
-	rw         sync.RWMutex
+	mu         sync.RWMutex
 	once       sync.Once
 }
 
@@ -74,8 +74,8 @@ func (r *RedisLib) New(defaultCli string, opts ...any) *RedisLib {
 
 // SetCli registers a new Redis client
 func (r *RedisLib) SetCli(name string, client *redis.Client) {
-	r.rw.Lock()
-	defer r.rw.Unlock()
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
 	if _, exists := r.clients[name]; exists {
 		log.Printf("⚠️  Redis client '%s' already exists", name)
@@ -97,8 +97,8 @@ func (r *RedisLib) SetCli(name string, client *redis.Client) {
 // GetCli returns a Redis client by name or default
 func (r *RedisLib) GetCli(name ...string) *redis.Client {
 	r.lazyFnOnce()
-	r.rw.RLock()
-	defer r.rw.RUnlock()
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 
 	key := r.defaultCli
 	if len(name) > 0 && strings.TrimSpace(name[0]) != "" {
@@ -109,8 +109,8 @@ func (r *RedisLib) GetCli(name ...string) *redis.Client {
 
 // SetDefault sets the default Redis client by name
 func (r *RedisLib) SetDefault(name string) {
-	r.rw.Lock()
-	defer r.rw.Unlock()
+	r.mu.Lock()
+	defer r.mu.Unlock()
 
 	if len(r.clients) == 0 {
 		r.defaultCli = name
@@ -128,36 +128,36 @@ func (r *RedisLib) SetDefault(name string) {
 
 // SetPrefix updates the Redis key prefix
 func (r *RedisLib) SetPrefix(prefix string) {
-	r.rw.Lock()
-	defer r.rw.Unlock()
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.prefix = strings.TrimSpace(prefix)
 }
 
 // GetPrefix returns current Redis key prefix
 func (r *RedisLib) GetPrefix() string {
-	r.rw.RLock()
-	defer r.rw.RUnlock()
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	return r.prefix
 }
 
 // SetCtx sets Redis context
 func (r *RedisLib) SetCtx(ctx context.Context) {
-	r.rw.Lock()
-	defer r.rw.Unlock()
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.ctx = ctx
 }
 
 // GetCtx returns current context
 func (r *RedisLib) GetCtx() context.Context {
-	r.rw.RLock()
-	defer r.rw.RUnlock()
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	return r.ctx
 }
 
 // GetDefault returns default client name
 func (r *RedisLib) GetDefault() string {
-	r.rw.RLock()
-	defer r.rw.RUnlock()
+	r.mu.RLock()
+	defer r.mu.RUnlock()
 	return r.defaultCli
 }
 

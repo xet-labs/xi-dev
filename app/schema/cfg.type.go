@@ -1,4 +1,4 @@
-package cfg
+package schema
 
 type Config struct {
 	App  AppConf  `json:"app"`
@@ -45,7 +45,6 @@ type DbParam struct {
 type ViewConf struct {
 	CssDir      []string             `json:"css_dir"`
 	TemplateDir []string             `json:"template_dir"`
-	Default        PageParam            `json:"page"`
 	Pages       map[string]PageParam `json:"pages"`
 }
 

@@ -1,34 +1,36 @@
 package cfg
 
-import "xi/app/lib"
+import (
+	"xi/app/lib"
+	"xi/app/schema"
+)
 
-var View = &ViewConf{
+var View = &schema.ViewConf{
 	CssDir:      []string{"view/partials"},
 	TemplateDir: []string{"view/layout", "view/partials", "view/pages"},
 
-	Default: PageParam{
-		Layout: "layout/base",
-		App: AppConf{
-			Name:        lib.Env.Get("APP_NAME"),
-			Domain:      lib.Env.Get("APP_DOMAIN"),
-			Url:         lib.Env.Get("APP_URL"),
-			Tags:        []string{"XetIndustries", "Xet Industries", "xetindustries", "xet industries", "Xtreme Embedded Tech Industries"},
-			FeaturedImg: []string{"/res/static/brand/brand.svg"},
+	Pages: map[string]schema.PageParam{
+		"Default": {
+			Layout: "layout/base",
+			App: schema.AppConf{
+				Name:        lib.Env.Get("APP_NAME"),
+				Domain:      lib.Env.Get("APP_DOMAIN"),
+				Url:         lib.Env.Get("APP_URL"),
+				Tags:        []string{"XetIndustries", "Xet Industries", "xetindustries", "xet industries", "Xtreme Embedded Tech Industries"},
+				FeaturedImg: []string{"/res/static/brand/brand.svg"},
+			},
+			NavMenu: []schema.MenuItem{
+				{Label: "Home", Href: "/"},
+				{Label: "Blog", Href: "/blog"},
+				{Label: "Product", Href: "#"},
+				{Label: "Support", Href: "#"},
+				{Label: "Contact", Href: "#"},
+			},
+			Js99: []string{
+				"/res/js/jquery/jquery.min.js",
+				"/res/js/app.js",
+			},
 		},
-		NavMenu: []MenuItem{
-			{Label: "Home", Href: "/"},
-			{Label: "Blog", Href: "/blog"},
-			{Label: "Product", Href: "#"},
-			{Label: "Support", Href: "#"},
-			{Label: "Contact", Href: "#"},
-		},
-		Js99: []string{
-			"/res/js/jquery/jquery.min.js",
-			"/res/js/app.js",
-		},
-	},
-
-	Pages: map[string]PageParam{
 		"home": {
 			Route:       "/",
 			File:        "view/pages/home.part.html",
@@ -36,7 +38,7 @@ var View = &ViewConf{
 			Menu:        "Home",
 			Title:       "XetIndustries",
 			Description: "A Platform for Makers, Creators, and Developers.",
-			Meta: &PageMeta{
+			Meta: &schema.PageMeta{
 				Canonical: "https://xetindustries.com/",
 				Tags:      []string{"XetIndustries", "Xet Industries", "xetindustries", "xet industries", "Xtreme Embedded Tech Industries"},
 			},
@@ -53,7 +55,7 @@ var View = &ViewConf{
 				"/res/js/app.js",
 				"/res/js/blogs.js",
 			},
-			Meta: &PageMeta{
+			Meta: &schema.PageMeta{
 				Canonical: "https://xetindustries.com/blog",
 			},
 		},

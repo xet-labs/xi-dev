@@ -13,7 +13,7 @@ type AuthLib struct {
 	jwtSecret []byte
 
 	once sync.Once
-	rw   sync.RWMutex
+	mu   sync.RWMutex
 }
 
 var Auth = &AuthLib{

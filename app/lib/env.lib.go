@@ -14,7 +14,7 @@ type EnvLib struct {
 	app  map[string]any // store Runtime env
 	sys  map[string]any // store Systems env
 	once sync.Once
-	rw   sync.RWMutex
+	mu   sync.RWMutex
 }
 
 var Env = &EnvLib{
@@ -28,8 +28,8 @@ func (e *EnvLib) Init() { e.once.Do(e.InitCore) }
 
 // InitCore, reload .env and OS env variables forcibly
 func (e *EnvLib) InitCore() {
-	e.rw.Lock()
-	defer e.rw.Unlock()
+	e.mu.Lock()
+	defer e.mu.Unlock()
 
 	if err := godotenv.Load(); err != nil {
 		log.Printf("⚠️  Env couldnt be loaded: %v", err)
@@ -46,8 +46,8 @@ func (e *EnvLib) InitCore() {
 
 // Get returns string value for key or fallback
 func (e *EnvLib) Get(key string, fallback ...string) string {
-	e.rw.RLock()
-	defer e.rw.RUnlock()
+	e.mu.RLock()
+	defer e.mu.RUnlock()
 
 	if val, ok := e.sys[key]; ok {
 		if str, ok := val.(string); ok {
@@ -62,22 +62,22 @@ func (e *EnvLib) Get(key string, fallback ...string) string {
 
 // Set adds or updates a key
 func (e *EnvLib) Set(key string, value any) {
-	e.rw.Lock()
-	defer e.rw.Unlock()
+	e.mu.Lock()
+	defer e.mu.Unlock()
 	e.sys[key] = value
 }
 
 // Unset deletes a key
 func (e *EnvLib) Unset(key string) {
-	e.rw.Lock()
-	defer e.rw.Unlock()
+	e.mu.Lock()
+	defer e.mu.Unlock()
 	delete(e.sys, key)
 }
 
 // Raw returns value (any type) or fallback
 func (e *EnvLib) Raw(key string, fallback ...any) any {
-	e.rw.RLock()
-	defer e.rw.RUnlock()
+	e.mu.RLock()
+	defer e.mu.RUnlock()
 
 	if val, ok := e.sys[key]; ok {
 		return val
@@ -123,8 +123,8 @@ func (e *EnvLib) Int(key string, fallback int) int {
 
 // All returns a copy of all environment variables
 func (e *EnvLib) All() map[string]any {
-	e.rw.RLock()
-	defer e.rw.RUnlock()
+	e.mu.RLock()
+	defer e.mu.RUnlock()
 
 	snapshot := make(map[string]any, len(e.sys))
 	for k, v := range e.sys {

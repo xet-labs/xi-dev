@@ -14,7 +14,7 @@ type AuthMw struct {
 	jwtSecret []byte
 
 	once sync.Once
-	rw   sync.RWMutex
+	mu   sync.RWMutex
 }
 
 // Global singleton instance

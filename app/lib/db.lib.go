@@ -11,7 +11,7 @@ import (
 type DBLib struct {
 	clients   map[string]*gorm.DB
 	defaultCli string
-	rw        sync.RWMutex
+	mu        sync.RWMutex
 	once      sync.Once
 	lazyInit  func()
 }
@@ -39,8 +39,8 @@ func (d *DBLib) lazyFnOnce() {
 // Get returns the DB instance by name or default
 func (d *DBLib) GetCli(name ...string) *gorm.DB {
 	d.lazyFnOnce()
-	d.rw.RLock()
-	defer d.rw.RUnlock()
+	d.mu.RLock()
+	defer d.mu.RUnlock()
 
 	dbName := d.defaultCli
 	if len(name) > 0 && name[0] != "" {
@@ -57,8 +57,8 @@ func (d *DBLib) GetCli(name ...string) *gorm.DB {
 
 // Set sets a DB by name
 func (d *DBLib) SetCli(name string, db *gorm.DB) {
-	d.rw.Lock()
-	defer d.rw.Unlock()
+	d.mu.Lock()
+	defer d.mu.Unlock()
 	d.clients[name] = db
 }
 
