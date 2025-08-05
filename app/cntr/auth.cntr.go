@@ -64,7 +64,7 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 
 	// Prep data
 	P := make(map[string]any)
-	maps.Copy(P, cfg.View.PageData)
+	maps.Copy(P, cfg.View.Page)
 	if pd, ok := cfg.View.Pages["auth"]; ok {
 		maps.Copy(P, pd)
 	}

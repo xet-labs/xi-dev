@@ -11,12 +11,11 @@ import (
 func Debug(r *gin.Engine) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-
 		routes, _ := routeData(r)
 		c.JSON(http.StatusOK, gin.H{
 			"route":         routes,
 			// "routeDetailed": detailed,
-			"conf": lib.Cfg.All(),
+			"conf": lib.Cfg.AllMap(),
 		})
 	}
 }

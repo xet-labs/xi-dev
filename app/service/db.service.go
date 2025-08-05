@@ -28,9 +28,9 @@ func init() {
 
 func (d *DBService) preInit() {
 	// Set global Redis and DB defaults
-	lib.DB.SetDefault(cfg.Db.DefaultDb)
+	lib.DB.SetDefault(cfg.Db.DbDefault)
 	lib.Redis.SetCtx(context.Background())
-	lib.Redis.SetDefault(cfg.Db.DefaultRdb)
+	lib.Redis.SetDefault(cfg.Db.RdbDefault)
 	lib.Redis.SetPrefix(cfg.Db.RdbPrefix)
 }
 
@@ -40,7 +40,7 @@ func (d *DBService) postInit() {}
 func (d *DBService) InitForce() {
 	d.preInit()
 
-	for profile, c := range cfg.Db.Connection {
+	for profile, c := range cfg.Db.Conn {
 		if !c.Enable {
 			continue
 		}

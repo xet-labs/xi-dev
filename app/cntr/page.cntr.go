@@ -81,7 +81,7 @@ func (p *PageCntr) renderTcnt(c *gin.Context, title, content string) ([]byte, er
 	// fmt.Println(string(data))
 	
 	var out bytes.Buffer
-	if err := t.ExecuteTemplate(&out, cfg.View.Layout, gin.H{"P": P}); err != nil {
+	if err := t.ExecuteTemplate(&out, P["layout"].(string), gin.H{"P": P}); err != nil {
 		return nil, err
 	}
 

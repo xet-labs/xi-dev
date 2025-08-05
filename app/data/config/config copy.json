@@ -13,9 +13,7 @@
       "xet industries",
       "Xtreme Embedded Tech Industries"
     ],
-    "logo": [
-      "${APP_LOGO}"
-    ],
+    "logo": [],
     "featured_img": [
       "/res/static/brand/brand.svg"
     ]
@@ -52,6 +50,11 @@
     }
   },
   "view": {
+    "appName": "",
+    "appDomain": "",
+    "appUrl": "",
+    "appTags": "",
+    "appFeatured_img": "",
     "css_dir": [
       "view/partials"
     ],
@@ -60,7 +63,7 @@
       "view/partials",
       "view/pages"
     ],
-    "page": {
+    "page_data": {
       "app": "{{app}}",
       "layout": "layout/base",
       "nav_menu": [
@@ -93,10 +96,9 @@
     "pages": {
       "home": {
         "route": "/",
-        "title": "XetIndustries",
-        "file": "view/pages/home.part.html",
         "template": "pages/root",
         "menu": "Home",
+        "title": "XetIndustries",
         "description": "A Platform for Makers, Creators, and Developers.",
         "meta": {
           "canonical": "https://xetindustries.com/",
