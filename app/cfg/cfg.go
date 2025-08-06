@@ -1,9 +1,11 @@
 package cfg
 
-import "xi/app/schema"
+import "xi/app/lib/schema"
 
-type CfgLib struct{
-	schema.Config
-}
+var Global schema.Config
 
-var Cfg = &CfgLib{}
+var (
+	App  *schema.AppConf
+	Db   *schema.DbConf
+	View *schema.ViewConf
+)

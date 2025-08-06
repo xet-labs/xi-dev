@@ -2,12 +2,14 @@ package lib
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"regexp"
 	"sync"
 	"time"
-	"xi/app/schema"
+
+	"xi/app/cfg"
 
 	"github.com/fsnotify/fsnotify"
 	koanfJson "github.com/knadh/koanf/parsers/json"
@@ -16,12 +18,11 @@ import (
 )
 
 type ConfLib struct {
-	Global       schema.Config
 	Files        []string
 	FilesLoaded  []string
 	FilesDefault []string
 	koanfCli     *koanf.Koanf
-	Hooks        Hook
+	Hook         Hook
 
 	IntermediateMap  map[string]any
 	IntermediateJson map[string]any
@@ -61,10 +62,9 @@ func init() {
 func (c *ConfLib) Init(filePath ...string) { c.once.Do(func() { c.InitCore(filePath...) }) }
 
 func (c *ConfLib) InitCore(filePath ...string) error {
-	// Init Env
+	// Init Env and pre funcs
 	Env.Init()
-
-	c.Hooks.RunPre()
+	c.Hook.RunPre()
 
 	// Assign Config Files
 	c.FilesLoaded = nil
@@ -95,7 +95,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	// Resolve internal refs ${ref} | ${ref:-fallback}
 	c.resolveJsonVars()
 
-	c.Hooks.RunPost()
+	c.Hook.RunPost()
 
 	if len(c.FilesLoaded) > 0 {
 		log.Printf("✅ Config loaded: %s\n", c.FilesLoaded)
@@ -104,7 +104,21 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	}
 	return nil
 }
+func (c *ConfLib) postSetup() error{
+	confBytes, err := json.Marshal(c.DataJson)
+	if err != nil {
+		return fmt.Errorf("failed to marshal DataJson: %w", err)
+	}
 
+	if err := json.Unmarshal(confBytes, &cfg.Global); err != nil {
+		return fmt.Errorf("failed to unmarshal into Config struct: %w", err)
+	}
+
+	if err := c.koanfCli.Load(rawbytes.Provider(confBytes), koanfJson.Parser()); err != nil {
+		return fmt.Errorf("⚠️  Config parsing failed %s: %v\n", path, err)
+	}
+	return nil
+}
 // resolveJsonEnv replaces ${ENV} or ${ENV:-fallback} with actual values
 func (c *ConfLib) resolveJsonEnv(input string) string {
 	return reJsonEnv.ReplaceAllStringFunc(input, func(match string) string {
