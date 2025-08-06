@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"xi/app/model"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,7 +30,7 @@ func (v *ViewLib) RenderCache(c *gin.Context, page string, refKey string) bool {
 }
 
 // Render and Cache Minified HTML
-func (v *ViewLib) RenderAndCache(c *gin.Context, page string, refKey string, P map[string]any) bool {
+func (v *ViewLib) RenderAndCache(c *gin.Context, page string, refKey string, P model.PageParam) bool {
 	var buf bytes.Buffer
 	if err := v.Tcli.ExecuteTemplate(&buf, page, gin.H{"P": P}); err != nil {
 		log.Printf("Render error for %s: %v", refKey, err)

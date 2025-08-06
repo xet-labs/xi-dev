@@ -1,1 +1,143 @@
-{}
+{
+  "app": {
+    "abbr": "${APP_ABBR:-XL}",
+    "name": "${APP_NAME:-XetLabs}",
+    "domain": "${APP_DOMAIN:-localhost}",
+    "url": "${APP_URL:-localhost}",
+    "mode": "${APP_MODE:-release}",
+    "port": "${APP_PORT:-8080}",
+    "tags": [
+      "XetIndustries",
+      "Xet Industries",
+      "xetindustries",
+      "xet industries",
+      "Xtreme Embedded Tech Industries"
+    ],
+    "logo": [
+      "${APP_LOGO}"
+    ],
+    "featured_img": [
+      "/res/static/brand/brand.svg"
+    ]
+  },
+  "db": {
+    "db_default": "${DB_DEFAULT:-db}",
+    "rdb_default": "${RDB_DEFAULT:-rdb}",
+    "rdb_prefix": "${APP_ABBR:-redis}",
+    "conn": {
+      "db": {
+        "enable": true,
+        "db": "${DB:-XI}",
+        "user": "${DB_USER:-XI_u}",
+        "pass": "${DB_PASS}",
+        "driver": "${DB_DRIVER:-mysql}",
+        "host": "${DB_HOST:-127.0.0.1}",
+        "port": "${DB_PORT:-3306}",
+        "charset": "${DB_CHARSET:-utf8mb4}",
+        "engine": "${DB_ENGINE}",
+        "collation": "${DB_COLLATION:-utf8mb4_unicode_ci}",
+        "socket": "${DB_SOCKET}",
+        "prefix": "${DB_PREFIX}",
+        "prefixindexes": true,
+        "strict": true
+      },
+      "rdb": {
+        "enable": "${RDB_ENABLE:-true}",
+        "rdb": "${RDB:-0}.int",
+        "driver": "redis",
+        "host": "${RDB_HOST:-127.0.0.1}",
+        "port": "${RDB_PORT:-6379}",
+        "pass": ""
+      }
+    }
+  },
+  "view": {
+    "css_dir": [
+      "view/partials"
+    ],
+    "template_dir": [
+      "view/layout",
+      "view/partials",
+      "view/pages"
+    ],
+    "default": {
+      "app": {},
+      "layout": "layout/base",
+      "nav_menu": [
+        {
+          "label": "Home",
+          "href": "/"
+        },
+        {
+          "label": "Blog",
+          "href": "/blog"
+        },
+        {
+          "label": "Product",
+          "href": "#"
+        },
+        {
+          "label": "Support",
+          "href": "#"
+        },
+        {
+          "label": "Contact",
+          "href": "#"
+        }
+      ],
+      "js99": [
+        "/res/js/jquery/jquery.min.js",
+        "/res/js/app.js"
+      ]
+    },
+    "pages": {
+      "home": {
+        "route": "/",
+        "title": "XetIndustries",
+        "file": "view/pages/home.part.html",
+        "template": "pages/root",
+        "menu": "Home",
+        "description": "A Platform for Makers, Creators, and Developers.",
+        "meta": {
+          "canonical": "https://xetindustries.com/",
+          "tags": [
+            "XetIndustries",
+            "Xet Industries",
+            "xetindustries",
+            "xet industries",
+            "Xtreme Embedded Tech Industries"
+          ]
+        }
+      },
+      "blogs": {
+        "route": "/blog",
+        "template": "layout/blogs",
+        "menu": "Blog",
+        "sub_brand": "Blog",
+        "title": "Blog | XetIndustries",
+        "description": "Discover Insightful Articles, Expert Tips and Inspiring Ideas. Write, Share and Connect with a thriving like-minded community.",
+        "js99": [
+          "/res/js/jquery/jquery.min.js",
+          "/res/js/app.js",
+          "/res/js/blogs.js"
+        ],
+        "meta": {
+          "canonical": "https://xetindustries.com/blog"
+        }
+      },
+      "blog": {
+        "route": "/blog/*",
+        "template": "layout/blog",
+        "menu": "Blog",
+        "sub_brand": "Blog",
+        "lib_hljs": true,
+        "js99": [
+          "/res/js/jquery/jquery.min.js",
+          "/res/js/app.js",
+          "/res/util/copy-code.util.js",
+          "/res/util/h2-clickable.util.js"
+        ]
+      }
+    }
+  }
+}

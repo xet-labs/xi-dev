@@ -3,6 +3,8 @@ package lib
 import (
 	"encoding/json"
 	"log"
+	"xi/app/cfg"
+	"xi/app/model"
 )
 
 func (c *ConfLib) Get(path string) any {
@@ -32,20 +34,59 @@ func (c *ConfLib) All() map[string]any {
 }
 
 func (c *ConfLib) AllMap() map[string]any {
-	var nested map[string]any
-	if err := c.koanfCli.Unmarshal("", &nested); err != nil {
-		log.Printf("⚠️ Config failed to unmarshal: %v", err)
+	var cfgRaw map[string]any
+	if err := c.koanfCli.Unmarshal("", &cfgRaw); err != nil {
+		log.Printf("⚠️  [Conf] AllMap WRN: failed to unmarshal: %v", err)
 		return map[string]any{} // Return an empty map on error
 	}
-	return nested
+	return cfgRaw
 }
 
-func (c *ConfLib) AllJSON() []byte {
-	if out, err := json.MarshalIndent(c.AllMap(), "", "  "); err == nil {
-		log.Printf("⚠️ COnfig failed to marshal: %v", err)
-		return out
+func (c *ConfLib) AllJson() []byte {
+	out, err := json.Marshal(c.AllMap())
+	if err != nil {
+		log.Printf("⚠️  [Conf] AllJson WRN: failed to marshal: %v", err)
+		return []byte("{}")
 	}
-	return []byte("{}")
+	return out
 }
 
+func (c *ConfLib) AllJsonPretty() []byte {
+	out, err := json.MarshalIndent(c.AllMap(), "", "  ")
+	if err != nil {
+		log.Printf("⚠️  [Conf] AllJson WRN: failed to marshal: %v", err)
+		return []byte("{}")
+	}
+	return out
+}
 
+func (c *ConfLib) AllMapStruct() *model.Config {
+	cfgRaw := cfg.Get()
+	// if err := c.koanfCli.Unmarshal("", &cfgRaw); err != nil {
+	// 	log.Printf("⚠️  [Conf] AllMapStruct WRN: failed to unmarshal: %v", err)
+	// 	return model.Config{} // Return zero value on error
+	// }
+	if err := json.Unmarshal(c.AllJson(), &cfgRaw); err != nil {
+		log.Printf("⚠️  [Conf] AllMapStruct WRN: failed to unmarshal: %v", err)
+		return &model.Config{}
+	}
+	return cfgRaw
+}
+
+func (c *ConfLib) AllJsonStruct() []byte {
+	out, err := json.Marshal(c.AllMapStruct())
+	if err != nil {
+		log.Printf("⚠️  [Conf] AllJson WRN: failed to marshal: %v", err)
+		return []byte("{}")
+	}
+	return out
+}
+
+func (c *ConfLib) AllJsonStructPretty() []byte {
+	out, err := json.MarshalIndent(c.AllMapStruct(), "", "  ")
+	if err != nil {
+		log.Printf("⚠️  [Conf] AllJson WRN: failed to marshal: %v", err)
+		return []byte("{}")
+	}
+	return out
+}

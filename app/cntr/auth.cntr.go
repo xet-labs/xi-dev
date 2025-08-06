@@ -2,7 +2,6 @@
 package cntr
 
 import (
-	"maps"
 	"net/http"
 	"net/url"
 	"xi/app/lib"
@@ -63,12 +62,8 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 	lib.View.RenderCache(c, "page/auth", refKey)
 
 	// Prep data
-	P := make(map[string]cfg.PageParam)
-	maps.Copy(P, cfg.View.Pages.Default)
-	if pd, ok := cfg.View.Pages["auth"]; ok {
-		maps.Copy(P, pd)
-	}
-	P["url"] = c.Request.URL.String()
+	P := cfg.View.Pages["auth"]
+	P.Data["url"] = c.Request.URL.String()
 
 	// Cache renderer
 	lib.View.RenderAndCache(c, "page/auth", refKey, P)
@@ -86,12 +81,8 @@ func (a *AuthCntr) Logins(c *gin.Context) {
 	lib.View.RenderCache(c, "page/auth", refKey)
 
 	// Build data
-	P := make(map[string]any)
-	maps.Copy(P, cfg.View.PageData)
-	if pd, ok := cfg.View.Pages["auths"]; ok {
-		maps.Copy(P, pd)
-	}
-	P["url"] = c.Request.URL.String()
+	P := cfg.View.Pages["auths"]
+	P.Data["url"] = c.Request.URL.String()
 
 	// Cache renderer
 	lib.View.RenderAndCache(c, "page/auths", refKey, P)
@@ -132,12 +123,8 @@ func (a *AuthCntr) ShowLogin(c *gin.Context) {
 	lib.View.RenderCache(c, "page/auth", refKey)
 
 	// Prep data
-	P := make(map[string]any)
-	maps.Copy(P, cfg.View.PageData)
-	if pd, ok := cfg.View.Pages["auth"]; ok {
-		maps.Copy(P, pd)
-	}
-	P["url"] = c.Request.URL.String()
+	P := cfg.View.Pages["auth"]
+	P.Data["url"] = c.Request.URL.String()
 
 	// Cache renderer
 	lib.View.RenderAndCache(c, "page/auth", refKey, P)

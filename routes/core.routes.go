@@ -2,10 +2,10 @@ package routes
 
 import (
 	"xi/app/cntr"
-	"xi/app/lib"
+	"xi/app/cfg"
 )
 
 func (rt *RouteStruct) registerCore() {
-	cfg:=lib.Cfg
-	r.GET(cfg.Get("view.pages.home.route").(string), cntr.Page.Tcnt("home", cfg.Get("view.pages.home.file").(string)))
+	home := cfg.View.Pages["home"]
+	r.GET(home.Route, cntr.Page.Tcnt("home", home.File))
 }

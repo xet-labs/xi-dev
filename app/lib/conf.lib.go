@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"regexp"
+	// "strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,10 +27,7 @@ type ConfLib struct {
 	Hook         Hook
 
 	IntermediateMap  map[string]any
-	IntermediateJson map[string]any
-
-	DataMap  map[string]any
-	DataJson map[string]any
+	IntermediateJson []byte
 
 	watch *fsnotify.Watcher
 	mu    sync.RWMutex
@@ -39,24 +38,26 @@ var (
 	Cfg = &ConfLib{
 		koanfCli: koanf.New("."),
 		FilesDefault: []string{
-			"app/data/config/config.json",
+			// "app/data/config/config.json",
 			"config/config.json",
 		},
 	}
-	reJsonEnv     = regexp.MustCompile(`\$\{([A-Z0-9_]+)(:-([^}]*))?\}`)
-	reJsonEnvPost = regexp.MustCompile(`(?m)(,\s*)?"__REMOVE__"(,\s*)?|^"__REMOVE__"(,\s*)?`)
-	reJsonVar     = regexp.MustCompile(`\$\{([^}:]*)(:-([^}]*))?\}|\$\{\}`)
+
+	reJsonEnv         = regexp.MustCompile(`\$\{([A-Z0-9_]+)(:-([^}]*))?\}`)
+	reJsonEnvPost     = regexp.MustCompile(`(?m)(,\s*)?__REMOVE__(,\s*)?|^__REMOVE__(,\s*)?`)
+	reJsonDoubleQuote = regexp.MustCompile(`""([^"\n\r]+?)""`)
+	
+	reJsonIntCast     = regexp.MustCompile(`:\s*"(-?\d+)\.int"`)
+	reJsonBoolStr     = regexp.MustCompile(`:\s*"(true|false|1|0)"`)
+	// reJsonBoolStr = regexp.MustCompile(`:\s*"(?i:true|false|1|0)"`) // detects "true", "false", "1", "0" as string values
+	reJsonVar = regexp.MustCompile(`\$\{([^}:]*)(:-([^}]*))?\}|\$\{\}`)
 )
 
 func init() {
 	Cfg.Init()
 	if err := Cfg.Daemon(); err != nil {
-		log.Printf("⚠️ Config Daemon setup failed: %v", err)
+		log.Printf("⚠️ [Conf] Daemon WRN: setup failed: %v", err)
 	}
-
-	// log.Printf("--> %s", Cfg.Get("app.domain"))
-	// log.Printf("--> %s", Cfg.GetMap("app"))
-	// log.Printf("--> %s", Cfg.koanfCli.Get(""))
 }
 
 func (c *ConfLib) Init(filePath ...string) { c.once.Do(func() { c.InitCore(filePath...) }) }
@@ -64,7 +65,7 @@ func (c *ConfLib) Init(filePath ...string) { c.once.Do(func() { c.InitCore(fileP
 func (c *ConfLib) InitCore(filePath ...string) error {
 	// Init Env and pre funcs
 	Env.Init()
-	c.Hook.RunPre()
+	// c.Hook.RunPre()
 
 	// Assign Config Files
 	c.FilesLoaded = nil
@@ -77,7 +78,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	for _, path := range c.Files {
 		raw, err := os.ReadFile(path)
 		if err != nil {
-			log.Printf("⚠️  Config Skipped %s: %v\n", path, err)
+			log.Printf("⚠️  [Conf] Init WRN: Skipped '%s': %v\n", path, err)
 			continue
 		}
 
@@ -85,43 +86,36 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 		resolvedJsonEnv := []byte(c.cleanJson(c.resolveJsonEnv(string(raw))))
 
 		if err := c.koanfCli.Load(rawbytes.Provider(resolvedJsonEnv), koanfJson.Parser()); err != nil {
-			log.Printf("⚠️  Config parsing failed %s: %v\n", path, err)
+			log.Printf("⚠️  [Conf] Init WRN: Parsing failed '%s': %v\n", path, err)
 			continue
 		}
 
 		c.FilesLoaded = append(c.FilesLoaded, path)
 	}
 
+	// fmt.Printf("-->\n%s\n%s\n", c.AllMap(), c.AllJson())
+	// Preserve intermediate data, to be used in future features
+	c.IntermediateMap = c.AllMap()
+	// c.IntermediateJson = c.AllJson()
+
+	c.ConfPostView()
+
 	// Resolve internal refs ${ref} | ${ref:-fallback}
 	c.resolveJsonVars()
 
-	c.Hook.RunPost()
+	// c.Hook.RunPost()
 
 	if len(c.FilesLoaded) > 0 {
-		log.Printf("✅ Config loaded: %s\n", c.FilesLoaded)
+		log.Printf("✅ [Conf] loaded: %s\n", c.FilesLoaded)
 	} else {
-		log.Println("⚠️  No config loaded.")
+		log.Printf("⚠️  [Conf] Init WRN: No config loaded.")
 	}
 	return nil
 }
-func (c *ConfLib) postSetup() error{
-	confBytes, err := json.Marshal(c.DataJson)
-	if err != nil {
-		return fmt.Errorf("failed to marshal DataJson: %w", err)
-	}
 
-	if err := json.Unmarshal(confBytes, &cfg.Global); err != nil {
-		return fmt.Errorf("failed to unmarshal into Config struct: %w", err)
-	}
-
-	if err := c.koanfCli.Load(rawbytes.Provider(confBytes), koanfJson.Parser()); err != nil {
-		return fmt.Errorf("⚠️  Config parsing failed %s: %v\n", path, err)
-	}
-	return nil
-}
 // resolveJsonEnv replaces ${ENV} or ${ENV:-fallback} with actual values
 func (c *ConfLib) resolveJsonEnv(input string) string {
-	return reJsonEnv.ReplaceAllStringFunc(input, func(match string) string {
+	out := reJsonEnv.ReplaceAllStringFunc(input, func(match string) string {
 		sub := reJsonEnv.FindStringSubmatch(match)
 		key, def := sub[1], sub[3] // ENV, fallback
 
@@ -137,10 +131,43 @@ func (c *ConfLib) resolveJsonEnv(input string) string {
 		// No value, no fallback
 		return "__REMOVE__"
 	})
+	// fmt.Printf("\n%s\n", out)
+	return out
+
 }
 
 func (c *ConfLib) cleanJson(input string) string {
-	return reJsonEnvPost.ReplaceAllString(input, "")
+	// Remove "__REMOVE__"
+	out := reJsonEnvPost.ReplaceAllString(input, "")
+
+	// Optionally: fix trailing commas, multiple newlines, etc.
+	out = strings.ReplaceAll(out, ",\n}", "\n}")
+	out = strings.ReplaceAll(out, ",\n]", "\n]")
+
+	// Fix ""value"" to "value", but skip empty ""
+	out = reJsonDoubleQuote.ReplaceAllString(out, `"$1"`)
+
+	out = reJsonIntCast.ReplaceAllString(out, ": $1")
+
+	// Replaces string "true"/"false" -> true/false
+	out = reJsonBoolStr.ReplaceAllStringFunc(out, func(match string) string {
+		// Extract actual boolean value from the match using the submatch
+		submatches := reJsonBoolStr.FindStringSubmatch(match)
+		if len(submatches) < 2 {
+			return match
+		}
+
+		switch strings.ToLower(submatches[1]) {
+		case "true":
+			return ": true"
+		case "false":
+			return ": false"
+		}
+		return match // fallback
+	})
+
+	// fmt.Printf("\n%s\n", out)
+	return out
 }
 
 // resolveJsonVars walks entire koanf data and resolves {{key.path}} expressions
@@ -215,6 +242,27 @@ func (c *ConfLib) resolveJsonVars() {
 	c.koanfCli = k
 }
 
+// sync json connfig with existing config
+func (c *ConfLib) postSetup(jsonMap map[string]any) error {
+	// Convert map[string]any to proper []byte(json) for further processing
+	jsonBytes, err := json.Marshal(jsonMap)
+	if err != nil {
+		return fmt.Errorf("⚠️  [Conf] PostSetup WRN: failed to marshal DataJson: %w", err)
+	}
+
+	// store
+	if err := json.Unmarshal(jsonBytes, cfg.Get()); err != nil {
+		return fmt.Errorf("⚠️  [Conf] PostSetup WRN: failed to unmarshal into Config struct: %w", err)
+		// fmt.Printf("--> Default:\n%v\nMap:\n%v\nJson:\n%s\n", pageDefault, c.AllMapStruct(), c.AllJsonStruct())
+	}
+
+	if err := c.koanfCli.Load(rawbytes.Provider(jsonBytes), koanfJson.Parser()); err != nil {
+		return fmt.Errorf("⚠️  [Conf] PostSetup WRN: Failed to load JSON config into Koanf: %w", err)
+		// fmt.Printf("--> Default:\n%v\nMap:\n%v\nJson:\n%s\n", pageDefault, c.AllMapStruct(), c.AllJsonStruct())
+	}
+	return nil
+}
+
 func (c *ConfLib) Daemon() error {
 	if c.watch != nil {
 		return nil // already watching
@@ -225,7 +273,7 @@ func (c *ConfLib) Daemon() error {
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		log.Printf("⚠️ Config Err: failed to create daemon: %v", err)
+		log.Printf("⚠️  [Conf] Daemon WRN: failed to create: %v", err)
 		return err
 	}
 	c.watch = watcher
@@ -260,10 +308,10 @@ func (c *ConfLib) Daemon() error {
 		// Ensure file exists before watching (else no event will be triggered)
 		if _, err := os.Stat(path); err == nil {
 			if err := watcher.Add(path); err != nil {
-				log.Printf("⚠️ Config daemon failed to watch %s: %v", path, err)
+				log.Printf("⚠️  [Conf] Daemon WRN: failed to watch %s: %v", path, err)
 			}
 		} else {
-			log.Printf("⚠️ Config missing file: %s", path)
+			log.Printf("⚠️  [Conf] Daemon WRN: missing file: %s", path)
 		}
 	}
 

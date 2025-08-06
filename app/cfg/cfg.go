@@ -1,11 +1,18 @@
 package cfg
 
-import "xi/app/lib/schema"
-
-var Global schema.Config
+import "xi/app/model"
 
 var (
-	App  *schema.AppConf
-	Db   *schema.DbConf
-	View *schema.ViewConf
+	global = &model.Config{}
+	App    = &global.App
+	Db     = &global.Db
+	View   = &global.View
 )
+
+func Update(cfg model.Config) {
+	*global = cfg // copies all values into the pointed struct
+}
+
+func Get() *model.Config {
+	return global
+}

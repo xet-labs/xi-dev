@@ -32,9 +32,9 @@ func (e *EnvLib) InitCore() {
 	defer e.mu.Unlock()
 
 	if err := godotenv.Load(); err != nil {
-		log.Printf("⚠️  Env couldnt be loaded: %v", err)
+		log.Printf("⚠️  [Env] WRN: failed to loaded: %v", err)
 	} else {
-		log.Println("✅ Env loaded..")
+		log.Println("✅ [Env] loaded..")
 	}
 
 	for _, kv := range os.Environ() {

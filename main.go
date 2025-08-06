@@ -16,7 +16,7 @@ func init() {
 
 func main() {
 	// Init Gin Engine
-	gin.SetMode(Env.Get("APP_MODE", "debug"))
+	gin.SetMode(Env.Get("APP_MODE", "release"))
 	app := gin.Default()
 
 	// Init routes

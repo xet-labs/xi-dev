@@ -51,7 +51,7 @@ func (d *DBLib) GetCli(name ...string) *gorm.DB {
 		return db
 	}
 
-	log.Printf("⚠️  Database '%s' not found", dbName)
+	log.Printf("⚠️  [DB] '%s' not found", dbName)
 	return nil
 }
 

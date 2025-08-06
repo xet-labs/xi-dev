@@ -3,11 +3,12 @@ package lib
 import (
 	"log"
 	"maps"
+	// "xi/app/cfg"
 )
 
 func (c *ConfLib) ConfPostView() {
 	
-	c.Hook.AddPost("ConfPostView - setup", c.ConfPostView)
+	// c.Hook.AddPost("ConfPostView - setup", c.ConfPostView)
 
 	pageDefault := c.GetMap("view.default")
 	pages := c.GetMap("view.pages")
@@ -15,16 +16,14 @@ func (c *ConfLib) ConfPostView() {
 	rawJson := c.AllMap()
 	viewPages, ok := rawJson["view"].(map[string]any)["pages"].(map[string]any)
 	if !ok {
-		log.Printf("Config Err Post::view 'view.pages' is missing or not a valid map inside intermediate JSON")
+		log.Printf("⚠️  [Conf] Postview ERR: 'view.pages' is missing or not a valid map inside intermediate JSON")
 		return
 	}
 
-
 	for page, val := range pages {
-		// pageKey := fmt.Sprintf("view.pages.%s", page)
 		pageConf, ok := val.(map[string]any)
 		if !ok {
-			log.Printf("Config Err Post::view::%s Page data clone failed", page)
+			log.Printf("⚠️  [Conf] Postview ERR: '%s' data setup failed", page)
 			continue
 		}
 
@@ -33,9 +32,13 @@ func (c *ConfLib) ConfPostView() {
 		maps.Copy(rawConf, pageDefault)
 		maps.Copy(rawConf, pageConf)
 
-		// Store into final merged output
 		viewPages[page] = rawConf
 	}
 
-	c.DataJson = []byte(rawJson)
+	
+	c.postSetup(rawJson)
+
+	// fmt.Printf("-->\n%s\n%s\n", cfg.Global, "")
+	// fmt.Printf("--> Default:\n%v\nMap:\n%v\nJson:\n%s\n", pageDefault, c.AllMap(), c.AllJsonPretty())
+	// fmt.Printf("--> Default:\n%v\nMap:\n%v\nJson:\n%s\n", pageDefault, c.AllMapStruct(), c.AllJsonStruct())
 }

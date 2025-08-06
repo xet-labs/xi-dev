@@ -27,27 +27,27 @@
     "conn": {
       "db": {
         "enable": true,
-        "db": "${DB_XI:-XI}",
-        "user": "${DB_XI_USER:-XI_u}",
-        "pass": "${DB_XI_PASS}",
-        "driver": "${DB_XI_DRIVER:-mysql}",
-        "host": "${DB_XI_HOST:-127.0.0.1}",
-        "port": "${DB_XI_PORT:-3306}",
-        "charset": "${DB_XI_CHARSET:-utf8mb4}",
-        "engine": "${DB_XI_ENGINE}",
-        "collation": "${DB_XI_COLLATION:-utf8mb4_unicode_ci}",
-        "socket": "${DB_XI_SOCKET}",
-        "prefix": "${DB_XI_PREFIX}",
+        "db": "${DB:-XI}",
+        "user": "${DB_USER:-XI_u}",
+        "pass": "${DB_PASS}",
+        "driver": "${DB_DRIVER:-mysql}",
+        "host": "${DB_HOST:-127.0.0.1}",
+        "port": "${DB_PORT:-3306}",
+        "charset": "${DB_CHARSET:-utf8mb4}",
+        "engine": "${DB_ENGINE}",
+        "collation": "${DB_COLLATION:-utf8mb4_unicode_ci}",
+        "socket": "${DB_SOCKET}",
+        "prefix": "${DB_PREFIX}",
         "prefixindexes": true,
         "strict": true
       },
       "rdb": {
         "enable": "${RDB_ENABLE:-true}",
-        "rdb": "${RDB:-0}",
+        "rdb": "${RDB:-0}.int",
         "driver": "redis",
         "host": "${RDB_HOST:-127.0.0.1}",
         "port": "${RDB_PORT:-6379}",
-        "pass": ""
+        "pass": 3
       }
     }
   },
@@ -60,8 +60,8 @@
       "view/partials",
       "view/pages"
     ],
-    "page": {
-      "app": "{{app}}",
+    "default": {
+      "app": {},
       "layout": "layout/base",
       "nav_menu": [
         {

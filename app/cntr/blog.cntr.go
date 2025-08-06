@@ -3,7 +3,6 @@ package cntr
 
 import (
 	"html/template"
-	"maps"
 	"net/http"
 	"net/url"
 	"xi/app/lib"
@@ -39,12 +38,8 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	}
 
 	// Build data
-	P := make(map[string]any)
-	maps.Copy(P, cfg.View.PageData)
-	if pd, ok := cfg.View.Pages["blogs"]; ok {
-		maps.Copy(P, pd)
-	}
-	P["url"] = c.Request.URL.String()
+	P := cfg.View.Pages["blogs"]
+	P.Data["url"] = c.Request.URL.String()
 
 	// Cache renderer
 	lib.View.RenderAndCache(c, "layout/blogs", refKey, P)
@@ -78,16 +73,12 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	}
 
 	// Prep data
-	P := make(map[string]any)
-	maps.Copy(P, cfg.View.PageData)
-	if pd, ok := cfg.View.Pages["blog"]; ok {
-		maps.Copy(P, pd)
-	}
-	P["B"] = BlogView{
+	P := cfg.View.Pages["blog"]
+	P.Data["url"] = c.Request.URL.String()
+	P.Data["B"] = BlogView{
 		Blog:    blog,
 		Content: template.HTML(blog.Content),
 	}
-	P["url"] = c.Request.URL.String()
 
 	// Cache renderer
 	lib.View.RenderAndCache(c, "layout/blog", refKey, P)

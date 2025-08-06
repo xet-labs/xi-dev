@@ -25,21 +25,27 @@ func init() {
 	lib.DB.RegisterLazyFn(DB.Init)
 	lib.Redis.RegisterLazyFn(DB.Init)
 }
+// Init initializes DBs once
+func (d *DBService) Init() { d.once.Do(d.InitForce) }
 
-func (d *DBService) preInit() {
+func (d *DBService) initPre() {
+	lib.Cfg.Init()
+	
 	// Set global Redis and DB defaults
 	lib.DB.SetDefault(cfg.Db.DbDefault)
 	lib.Redis.SetCtx(context.Background())
 	lib.Redis.SetDefault(cfg.Db.RdbDefault)
 	lib.Redis.SetPrefix(cfg.Db.RdbPrefix)
 }
-
-func (d *DBService) postInit() {}
+func (d *DBService) initPost() {}
 
 // Initializes all DBs and Redis clients (forced)
 func (d *DBService) InitForce() {
-	d.preInit()
+	d.initPre()
 
+	if cfg.Db.Conn == nil {
+		log.Println("⚠️  [DB] WRN: No connections were configured")
+	}
 	for profile, c := range cfg.Db.Conn {
 		if !c.Enable {
 			continue
@@ -89,10 +95,5 @@ func (d *DBService) InitForce() {
 		}
 	}
 	
-	d.postInit()
-}
-
-// Init initializes DBs once
-func (d *DBService) Init() {
-	d.once.Do(d.InitForce)
+	d.initPost()
 }
