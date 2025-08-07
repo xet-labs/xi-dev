@@ -26,7 +26,7 @@ type BlogApiCntr struct {
 
 // Singleton controller
 var BlogApi = &BlogApiCntr{
-	db:    lib.DB.GetCli(),
+	db:    lib.Db.GetCli(),
 	blog:  model.Blog{},
 	blogs: []model.Blog{},
 }
@@ -50,7 +50,7 @@ func (b *BlogApiCntr) Index(c *gin.Context) {
 	var blogs []model.Blog
 
 	// Try cache
-	if err := lib.Redis.GetJson(refKey, &blogs); err == nil {
+	if err := lib.Rdb.GetJson(refKey, &blogs); err == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"blogsExhausted": len(blogs) == 0,
 			"blogs":          blogs,
@@ -71,7 +71,7 @@ func (b *BlogApiCntr) Index(c *gin.Context) {
 
 	// Async cache
 	go func(data []model.Blog) {
-		if err := lib.Redis.SetJson(refKey, data, 10*time.Minute); err != nil {
+		if err := lib.Rdb.SetJson(refKey, data, 10*time.Minute); err != nil {
 			log.Printf("Redis SET err (%s): %v", refKey, err)
 		}
 	}(blogs)
@@ -97,7 +97,7 @@ func (b *BlogApiCntr) Show(c *gin.Context) {
 	var blog model.Blog
 
 	// Try cache
-	if err := lib.Redis.GetJson(refKey, &blog); err == nil {
+	if err := lib.Rdb.GetJson(refKey, &blog); err == nil {
 		c.JSON(http.StatusOK, blog)
 		return
 	}
@@ -122,7 +122,7 @@ func (b *BlogApiCntr) Show(c *gin.Context) {
 
 	// Cache asynchronously
 	go func(data model.Blog) {
-		if err := lib.Redis.SetJson(refKey, data, 10*time.Minute); err != nil {
+		if err := lib.Rdb.SetJson(refKey, data, 10*time.Minute); err != nil {
 			log.Printf("Redis SET err (%s): %v", refKey, err)
 		}
 	}(blog)
@@ -179,7 +179,7 @@ func (b *BlogApiCntr) Post(c *gin.Context) {
 	c.JSON(http.StatusCreated, blog)
 
 	// Invalidate blog list cache
-	lib.Redis.Del("blogs:all")
+	lib.Rdb.Del("blogs:all")
 }
 
 // PUT api/blog/uid/id
@@ -207,7 +207,7 @@ func (b *BlogApiCntr) Put(c *gin.Context) {
 	c.JSON(http.StatusOK, blog)
 
 	// Invalidate caches
-	lib.Redis.Del("blogs:all", "blogs:id:"+id)
+	lib.Rdb.Del("blogs:all", "blogs:id:"+id)
 }
 
 // DELETE api/blog/uid/id
@@ -220,7 +220,7 @@ func (b *BlogApiCntr) Delete(c *gin.Context) {
 	}
 
 	// Invalidate caches
-	lib.Redis.Del("blogs:all", "blogs:id:"+id)
+	lib.Rdb.Del("blogs:all", "blogs:id:"+id)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted"})
 }

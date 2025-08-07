@@ -64,7 +64,7 @@ type PageParam struct {
 	LibHLJS     bool           `json:"lib_hljs,omitempty"`
 	Js99        []string       `json:"js99,omitempty"`
 	Meta        *PageMeta      `json:"meta,omitempty"`
-	Data        map[string]any `json:"data,omitempty"`
+	Data        map[string]any `json:"data"`
 }
 
 type PageMeta struct {

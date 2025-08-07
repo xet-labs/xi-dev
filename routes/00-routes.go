@@ -1,18 +1,14 @@
 package routes
 
 import (
-	"html/template"
 	"log"
 	"xi/app/lib"
-	"xi/app/cfg"
-	"xi/util"
+	"xi/app/lib/cfg"
 
 	"github.com/gin-gonic/gin"
 )
 
 type RouteStruct struct {
-	Ecli      *gin.Engine
-	Tcli      *template.Template
 	templates []string
 }
 
@@ -24,16 +20,11 @@ var r *gin.Engine
 
 // Initializes all routes and templates
 func (rt *RouteStruct) Init(engine *gin.Engine) {
-	rt.Ecli = engine
-	r = rt.Ecli
+	lib.View.Ecli = engine	// Engine_cli
+	r = engine
 
-	rt.Tcli = util.NewTmpl("base", ".html", rt.templates...) // Load templates
-	r.SetHTMLTemplate(rt.Tcli)
-
-	// propagate to global lib.View
-	lib.View.Ecli = rt.Ecli					// Engine_cli
-	lib.View.Tcli = rt.Tcli					// Template_cli
-	lib.View.RawTcli, _ = rt.Tcli.Clone()	// RawTemplate_cli
+	// Register templates
+	r.SetHTMLTemplate(lib.View.NewTmpl("base", ".html", rt.templates...))
 
 	// Register routes
 	rt.registerCore()
@@ -45,5 +36,5 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 	// Optional: Middleware (e.g. gzip)
 	// r.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	log.Println("✅ [Route] All routes registered..")
+	log.Println("✅ [Route] \tRoutes registered.")
 }

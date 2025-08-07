@@ -1,4 +1,4 @@
-package lib
+package minify
 
 import (
 	"bytes"
@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tdewolff/minify/v2"
-	mincss "github.com/tdewolff/minify/v2/css"
-	minhtml "github.com/tdewolff/minify/v2/html"
+	min3 "github.com/tdewolff/minify/v2"
+	min3css "github.com/tdewolff/minify/v2/css"
+	min3html "github.com/tdewolff/minify/v2/html"
 )
 
 type MinifyLib struct {
@@ -20,7 +20,7 @@ type MinifyLib struct {
 
 var (
 	Minify   = &MinifyLib{}
-	minifier = minify.New()
+	minifier = min3.New()
 
 	// CSS Regex
 	reComment     = regexp.MustCompile(`(?s)/\*.*?\*/`)
@@ -30,11 +30,11 @@ var (
 )
 
 func init() {
-	minifier.Add("text/css", &mincss.Minifier{
+	minifier.Add("text/css", &min3css.Minifier{
 		// KeepCSS2: false,
 	})
 
-	minifier.Add("text/html", &minhtml.Minifier{
+	minifier.Add("text/html", &min3html.Minifier{
 		KeepWhitespace:        false, // collapse all whitespace
 		KeepComments:          false, // remove comments
 		KeepConditionalComments: false, // remove IE conditionals too

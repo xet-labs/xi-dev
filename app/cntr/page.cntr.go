@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 	"xi/app/lib"
-	"xi/app/cfg"
+	"xi/app/lib/cfg"
 	"xi/app/model"
 	"github.com/gin-gonic/gin"
 )
@@ -30,7 +30,7 @@ func (p *PageCntr) Tcnt(title, rawPath string, ttl ...time.Duration) gin.Handler
 		refKey := "page:" + c.Request.URL.String()
 
 		// Return from cache if available
-		if data, err := lib.Redis.GetBytes(refKey); err == nil {
+		if data, err := lib.Rdb.GetBytes(refKey); err == nil {
 			c.Data(http.StatusOK, "text/html; charset=utf-8", data)
 			return
 		}
@@ -57,7 +57,7 @@ func (p *PageCntr) Tcnt(title, rawPath string, ttl ...time.Duration) gin.Handler
 			if len(ttl) > 0 {
 				expire = ttl[0]
 			}
-			if err := lib.Redis.Set(refKey, data, expire); err != nil {
+			if err := lib.Rdb.Set(refKey, data, expire); err != nil {
 				log.Printf("Redis SET err (%s): %v", refKey, err)
 			}
 		}(rendered)

@@ -1,12 +1,13 @@
-package service
+package db
 
 import (
 	"context"
 	"fmt"
 	"log"
 	"sync"
-	"xi/app/lib"
-	"xi/app/cfg"
+	"xi/app/lib/conf"
+	"xi/app/lib/cfg"
+	"xi/app/lib/env"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
@@ -14,33 +15,43 @@ import (
 	"gorm.io/gorm"
 )
 
-type DBService struct {
-	once sync.Once
+// Central utility
+type DbLib struct {
+	clients   map[string]*gorm.DB
+	defaultCli string
+	mu        sync.RWMutex
+	once      sync.Once
+	lazyInit  func()
 }
 
-var DB = &DBService{}
-
-func init() {
-	// Ensure the 'DB.Init' is called in lib.{DB, Redis} so that core env is setup
-	lib.DB.RegisterLazyFn(DB.Init)
-	lib.Redis.RegisterLazyFn(DB.Init)
+// Global instance
+var Db = &DbLib{
+	defaultCli: "database",
+	clients:   make(map[string]*gorm.DB),
 }
+
+// RegisterLazyFn sets a callback for deferred initialization.
+func (d *DbLib) RegisterLazyFn(fn func()) {
+	d.lazyInit = fn
+}
+
 // Init initializes DBs once
-func (d *DBService) Init() { d.once.Do(d.InitForce) }
+func init() { Db.Init() }
+func (d *DbLib) Init() { d.once.Do(d.InitForce) }
 
-func (d *DBService) initPre() {
-	lib.Cfg.Init()
+func (d *DbLib) initPre() {
+	conf.Conf.Init()
 	
 	// Set global Redis and DB defaults
-	lib.DB.SetDefault(cfg.Db.DbDefault)
-	lib.Redis.SetCtx(context.Background())
-	lib.Redis.SetDefault(cfg.Db.RdbDefault)
-	lib.Redis.SetPrefix(cfg.Db.RdbPrefix)
+	d.SetDefault(cfg.Db.DbDefault)
+	Rdb.SetCtx(context.Background())
+	Rdb.SetDefault(cfg.Db.RdbDefault)
+	Rdb.SetPrefix(cfg.Db.RdbPrefix)
 }
-func (d *DBService) initPost() {}
+func (d *DbLib) initPost() {}
 
 // Initializes all DBs and Redis clients (forced)
-func (d *DBService) InitForce() {
+func (d *DbLib) InitForce() {
 	d.initPre()
 
 	if cfg.Db.Conn == nil {
@@ -56,7 +67,7 @@ func (d *DBService) InitForce() {
 			c.User = c.Db + "_u"
 		}
 		if c.Pass == "" {
-			c.Pass = lib.Env.Get("DB_PASS")
+			c.Pass = env.Env.Get("DB_PASS")
 		}
 
 		switch c.Driver {
@@ -67,16 +78,16 @@ func (d *DBService) InitForce() {
 			if err != nil {
 				log.Fatalf("❌ Could not connect to DB '%s': %v", profile, err)
 			}
-			lib.DB.SetCli(profile, dbConn)
-			log.Printf("✅ DB connected '%s' (MySQL)", profile)
+			Db.SetCli(profile, dbConn)
+			log.Printf("✅ [DB] \tConnected '%s' (MySQL)", profile)
 
 		case "sqlite":
 			dbConn, err := gorm.Open(sqlite.Open(c.Db), &gorm.Config{})
 			if err != nil {
 				log.Fatalf("❌ Could not connect to DB '%s': %v", profile, err)
 			}
-			lib.DB.SetCli(profile, dbConn)
-			log.Printf("✅ DB connected '%s' (SQLite)", profile)
+			Db.SetCli(profile, dbConn)
+			log.Printf("✅ [DB] \tConnected '%s' (SQLite)", profile)
 
 		case "redis":
 			rdb := redis.NewClient(&redis.Options{
@@ -87,8 +98,8 @@ func (d *DBService) InitForce() {
 			if err := rdb.Ping(context.Background()).Err(); err != nil {
 				log.Fatalf("❌ Could not connect to Redis '%s': %v", profile, err)
 			}
-			lib.Redis.SetCli(profile, rdb)
-			log.Printf("✅ DB connected '%s' (Redis)", profile)
+			Rdb.SetCli(profile, rdb)
+			log.Printf("✅ [DB] \tConnected '%s' (Redis)", profile)
 
 		default:
 			log.Printf("⚠️  Unsupported DB driver '%s' for DB '%s'", c.Driver, profile)

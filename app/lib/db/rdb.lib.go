@@ -1,4 +1,4 @@
-package lib
+package db
 
 import (
 	"context"
@@ -26,7 +26,7 @@ type RedisLib struct {
 }
 
 // Global instance
-var Redis = &RedisLib{
+var Rdb = &RedisLib{
 	prefix:     "app",
 	defaultCli: "redis",
 	clients:    sharedClients,
@@ -49,6 +49,7 @@ func (r *RedisLib) lazyFnOnce() {
 
 // New returns a new RedisLib instance with optional prefix/context
 func (r *RedisLib) New(defaultCli string, opts ...any) *RedisLib {
+	Db.Init()
 	r.lazyFnOnce()
 
 	prefix, ctx := r.prefix, r.ctx

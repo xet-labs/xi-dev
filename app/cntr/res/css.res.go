@@ -6,8 +6,7 @@ import (
 	"time"
 
 	"xi/app/lib"
-	"xi/app/cfg"
-	"xi/util"
+	"xi/app/lib/cfg"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +20,7 @@ var (
 
 func init() {
 	var err error
-	cssFiles, err = util.GetExtFiles(".css", CssDir...)
+	cssFiles, err = lib.File.GetExt(".css", CssDir...)
 	if err != nil {
 		log.Println("CSS Err loading files:", err)
 	}
@@ -36,13 +35,13 @@ func Css(c *gin.Context) {
 	c.Header("Content-Type", "text/css")
 
 	// Try Redis cache
-	if cached, err := lib.Redis.Get(refKey); err == nil && cached != "" {
+	if cached, err := lib.Rdb.Get(refKey); err == nil && cached != "" {
 		c.String(http.StatusOK, cached)
 		return
 	}
 
 	// Merge and minify CSS
-	cssCnt := lib.Merge.FilesByte(cssFiles)
+	cssCnt := lib.File.MergeByte(cssFiles)
 	cssMin, err := lib.Minify.CssHybrid(cssCnt)
 	if err != nil {
 		log.Printf("CSS Minify Err: %v", err)
@@ -56,7 +55,7 @@ func Css(c *gin.Context) {
 
 	// Cache it in background
 	go func(data any) {
-		if err := lib.Redis.Set(refKey, data, CssRedisTTL); err != nil {
+		if err := lib.Rdb.Set(refKey, data, CssRedisTTL); err != nil {
 			log.Printf("Redis SET err (%s): %v", refKey, err)
 		}
 	}(cssMin)

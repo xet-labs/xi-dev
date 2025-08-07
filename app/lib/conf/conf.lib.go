@@ -1,4 +1,4 @@
-package lib
+package conf
 
 import (
 	"encoding/json"
@@ -6,12 +6,13 @@ import (
 	"log"
 	"os"
 	"regexp"
-	// "strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"xi/app/cfg"
+	"xi/app/lib/hook"
+	"xi/app/lib/env"
+	"xi/app/lib/cfg"
 
 	"github.com/fsnotify/fsnotify"
 	koanfJson "github.com/knadh/koanf/parsers/json"
@@ -24,7 +25,7 @@ type ConfLib struct {
 	FilesLoaded  []string
 	FilesDefault []string
 	koanfCli     *koanf.Koanf
-	Hook         Hook
+	Hook         hook.Hook
 
 	IntermediateMap  map[string]any
 	IntermediateJson []byte
@@ -35,7 +36,7 @@ type ConfLib struct {
 }
 
 var (
-	Cfg = &ConfLib{
+	Conf = &ConfLib{
 		koanfCli: koanf.New("."),
 		FilesDefault: []string{
 			// "app/data/config/config.json",
@@ -49,13 +50,13 @@ var (
 	
 	reJsonIntCast     = regexp.MustCompile(`:\s*"(-?\d+)\.int"`)
 	reJsonBoolStr     = regexp.MustCompile(`:\s*"(true|false|1|0)"`)
-	// reJsonBoolStr = regexp.MustCompile(`:\s*"(?i:true|false|1|0)"`) // detects "true", "false", "1", "0" as string values
+
 	reJsonVar = regexp.MustCompile(`\$\{([^}:]*)(:-([^}]*))?\}|\$\{\}`)
 )
 
 func init() {
-	Cfg.Init()
-	if err := Cfg.Daemon(); err != nil {
+	Conf.Init()
+	if err := Conf.Daemon(); err != nil {
 		log.Printf("⚠️ [Conf] Daemon WRN: setup failed: %v", err)
 	}
 }
@@ -64,7 +65,7 @@ func (c *ConfLib) Init(filePath ...string) { c.once.Do(func() { c.InitCore(fileP
 
 func (c *ConfLib) InitCore(filePath ...string) error {
 	// Init Env and pre funcs
-	Env.Init()
+	env.Env.Init()
 	// c.Hook.RunPre()
 
 	// Assign Config Files
@@ -106,7 +107,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	// c.Hook.RunPost()
 
 	if len(c.FilesLoaded) > 0 {
-		log.Printf("✅ [Conf] loaded: %s\n", c.FilesLoaded)
+		log.Printf("✅ [Conf] \tLoaded: %s\n", c.FilesLoaded)
 	} else {
 		log.Printf("⚠️  [Conf] Init WRN: No config loaded.")
 	}

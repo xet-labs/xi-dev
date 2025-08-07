@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"xi/app/lib"
 	"xi/app/model"
-	"xi/app/cfg"
+	"xi/app/lib/cfg"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -22,7 +22,7 @@ type AuthCntr struct {
 
 // Singleton controller
 var Auth = &AuthCntr{
-	db:        lib.DB.GetCli(),
+	db:        lib.Db.GetCli(),
 	jwtSecret: []byte("supersecretkey"),
 }
 

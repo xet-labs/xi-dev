@@ -1,4 +1,4 @@
-package lib
+package file
 
 import (
 	"bytes"
@@ -6,12 +6,8 @@ import (
 	"strings"
 )
 
-type MergeLib struct{}
-
-var Merge = &MergeLib{}
-
 // Combines all files content
-func (m *MergeLib) Files(files []string) string {
+func (f *FileLib) Merge(files []string) string {
 	var sb strings.Builder
 	for _, file := range files {
 		if data, err := os.ReadFile(file); err == nil {
@@ -20,7 +16,8 @@ func (m *MergeLib) Files(files []string) string {
 	}
 	return sb.String()
 }
-func (m *MergeLib) FilesByte(files []string) []byte {
+
+func (f *FileLib) MergeByte(files []string) []byte {
 	var buf bytes.Buffer
 	for _, file := range files {
 		if data, err := os.ReadFile(file); err == nil {

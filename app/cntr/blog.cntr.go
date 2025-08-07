@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"xi/app/lib"
 	"xi/app/model"
-	"xi/app/cfg"
+	"xi/app/lib/cfg"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -23,14 +23,15 @@ type BlogCntr struct {
 
 // Singleton controller
 var Blog = &BlogCntr{
-	db:    lib.DB.GetCli(),
+	db:    lib.Db.GetCli(),
 	blog:  model.Blog{},
 	blogs: []model.Blog{},
 }
 
 // GET /blog or /blog?Page=2&Limit=6
 func (b *BlogCntr) Index(c *gin.Context) {
-	refKey := "/blog"
+	
+	refKey := url.QueryEscape(c.Request.URL.String())
 
 	// Try cache
 	if lib.View.RenderCache(c, "layout/blog", refKey) {
@@ -48,7 +49,8 @@ func (b *BlogCntr) Index(c *gin.Context) {
 func (b *BlogCntr) Show(c *gin.Context) {
 	rawUID := c.Param("uid") // @username or UID
 	rawID := c.Param("id")   // blog ID or slug
-	refKey := "/blog/" + url.QueryEscape(rawUID) + "/" + url.QueryEscape(rawID)
+	// refKey := "/blog/" + url.QueryEscape(rawUID + "/" + rawID) + "/" + url.QueryEscape(rawID)
+	refKey := "/blog/" + url.QueryEscape(rawUID + "/" + rawID)
 	var blog model.Blog
 
 	// Try cache

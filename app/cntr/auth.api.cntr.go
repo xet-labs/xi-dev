@@ -2,8 +2,6 @@
 package cntr
 
 import (
-	"xi/app/lib"
-
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
@@ -14,8 +12,6 @@ type AuthApiCntr struct {
 }
 
 // Singleton controller
-var AuthApi = &BlogApiCntr{
-	db:    lib.DB.GetCli(),
-}
+var AuthApi = &BlogApiCntr{}
 
 

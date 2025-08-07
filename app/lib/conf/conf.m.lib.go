@@ -1,9 +1,9 @@
-package lib
+package conf
 
 import (
 	"encoding/json"
 	"log"
-	"xi/app/cfg"
+	"xi/app/lib/cfg"
 	"xi/app/model"
 )
 

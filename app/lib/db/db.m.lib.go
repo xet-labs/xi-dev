@@ -1,34 +1,14 @@
-package lib
+package db
 
 import (
 	"log"
-	"sync"
 
 	"gorm.io/gorm"
 )
 
-// Central utility
-type DBLib struct {
-	clients   map[string]*gorm.DB
-	defaultCli string
-	mu        sync.RWMutex
-	once      sync.Once
-	lazyInit  func()
-}
-
-// Global instance
-var DB = &DBLib{
-	defaultCli: "database",
-	clients:   make(map[string]*gorm.DB),
-}
-
-// RegisterLazyFn sets a callback for deferred initialization.
-func (d *DBLib) RegisterLazyFn(fn func()) {
-	d.lazyInit = fn
-}
 
 // Ensures lazyInit runs once
-func (d *DBLib) lazyFnOnce() {
+func (d *DbLib) lazyFnOnce() {
 	d.once.Do(func() {
 		if d.lazyInit != nil {
 			d.lazyInit()
@@ -37,8 +17,8 @@ func (d *DBLib) lazyFnOnce() {
 }
 
 // Get returns the DB instance by name or default
-func (d *DBLib) GetCli(name ...string) *gorm.DB {
-	d.lazyFnOnce()
+func (d *DbLib) GetCli(name ...string) *gorm.DB {
+	d.Init()
 	d.mu.RLock()
 	defer d.mu.RUnlock()
 
@@ -56,14 +36,14 @@ func (d *DBLib) GetCli(name ...string) *gorm.DB {
 }
 
 // Set sets a DB by name
-func (d *DBLib) SetCli(name string, db *gorm.DB) {
+func (d *DbLib) SetCli(name string, db *gorm.DB) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.clients[name] = db
 }
 
 // SetDefault sets the default DB name
-func (d *DBLib) SetDefault(name string) {
+func (d *DbLib) SetDefault(name string) {
 	d.defaultCli = name
 }
 

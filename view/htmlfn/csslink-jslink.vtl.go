@@ -1,4 +1,4 @@
-package vtl
+package htmlfn
 
 import (
 	"html/template"

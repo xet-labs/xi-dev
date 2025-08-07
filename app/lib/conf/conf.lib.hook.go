@@ -1,4 +1,4 @@
-package lib
+package conf
 
 import (
 	"log"
@@ -35,7 +35,6 @@ func (c *ConfLib) ConfPostView() {
 		viewPages[page] = rawConf
 	}
 
-	
 	c.postSetup(rawJson)
 
 	// fmt.Printf("-->\n%s\n%s\n", cfg.Global, "")

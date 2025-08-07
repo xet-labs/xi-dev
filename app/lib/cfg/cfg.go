@@ -2,6 +2,10 @@ package cfg
 
 import "xi/app/model"
 
+type CfgLib struct{}
+
+// var Cfg = &CfgLib{}
+
 var (
 	global = &model.Config{}
 	App    = &global.App
@@ -10,7 +14,7 @@ var (
 )
 
 func Update(cfg model.Config) {
-	*global = cfg // copies all values into the pointed struct
+	*global = cfg
 }
 
 func Get() *model.Config {

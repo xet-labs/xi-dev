@@ -47,7 +47,7 @@
         "driver": "redis",
         "host": "${RDB_HOST:-127.0.0.1}",
         "port": "${RDB_PORT:-6379}",
-        "pass": 3
+        "pass": ""
       }
     }
   },
@@ -62,6 +62,9 @@
     ],
     "default": {
       "app": {},
+      "data": {
+        "title": "XetIndustries"
+      },
       "layout": "layout/base",
       "nav_menu": [
         {

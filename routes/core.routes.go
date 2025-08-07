@@ -2,7 +2,7 @@ package routes
 
 import (
 	"xi/app/cntr"
-	"xi/app/cfg"
+	"xi/app/lib/cfg"
 )
 
 func (rt *RouteStruct) registerCore() {
