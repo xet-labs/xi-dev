@@ -40,11 +40,10 @@ func (b *BlogApiCntr) Index(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Page or Limit"})
 		return
 	}
-
 	
 	// Try cache
 	blogs := []model.Blog{}
-	rdbKey := "blogs:page:" + page + ":limit:" + limit
+	rdbKey := "/api/blog/?Page=" + page + "&Limit=" + limit
 	if err := lib.Rdb.GetJson(rdbKey, &blogs); err == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"blogsExhausted": len(blogs) == 0,
@@ -88,7 +87,7 @@ func (b *BlogApiCntr) Show(c *gin.Context) {
 	
 	// Try cache
 	blog := model.Blog{}
-	rdbKey := "blogs:uid:" + rawUID + ":" + rawID
+	rdbKey := "/api/blog/" + rawUID + "/" + rawID
 	if err := lib.Rdb.GetJson(rdbKey, &blog); err == nil {
 		c.JSON(http.StatusOK, blog)
 		return

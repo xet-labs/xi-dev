@@ -54,20 +54,22 @@ type PageParam struct {
 	Title       string         `json:"title,omitempty"`
 	Route       string         `json:"route,omitempty"`
 	Description string         `json:"description,omitempty"`
-	Layout      string         `json:"layout,omitempty"`
+	RenderType  string         `json:"render_type"`
 	File        string         `json:"file,omitempty"`
-	FullHtml    string         `json:"full_html"`
-	BodyHtml    string         `json:"body_html"`
-	PartHtml    string         `json:"part_html"`
-	Template    string         `json:"template,omitempty"`
-	App         AppConf        `json:"app"`
+	Layout      string         `json:"layout,omitempty"`
+	FullHtml    string         `json:"full_html,omitempty"`
+	BodyHtml    string         `json:"body_html,omitempty"`
+	PartHtml    string         `json:"part_html,omitempty"`
 	SubBrand    string         `json:"sub_brand,omitempty"`
-	NavMenu     []MenuItem     `json:"nav_menu,omitempty"`
 	Menu        string         `json:"menu,omitempty"`
+	Lib         []string       `json:"lib,omitempty"`
+	LibHljs     bool           `json:"lib_hljs,omitempty"`
+	Css         []string       `json:"css,omitempty"`
 	Js          []string       `json:"js,omitempty"`
 	Js99        []string       `json:"js99,omitempty"`
-	LibHLJS     bool           `json:"lib_hljs,omitempty"`
-	Meta        *PageMeta      `json:"meta,omitempty"`
+	Meta        PageMeta       `json:"meta"`
+	App         AppConf        `json:"app"`
+	NavMenu     []MenuItem     `json:"nav_menu,omitempty"`
 	Data        map[string]any `json:"data"`
 }
 

@@ -20,8 +20,8 @@ type BlogCntr struct {
 	blog  model.Blog
 	blogs []model.Blog
 
-	mu         sync.RWMutex
-	once       sync.Once
+	mu   sync.RWMutex
+	once sync.Once
 }
 
 // Singleton controller
@@ -31,33 +31,37 @@ var Blog = &BlogCntr{
 	blogs: []model.Blog{},
 }
 
-// GET /blog or /blog?Page=2&Limit=6
+// GET /blog
 func (b *BlogCntr) Index(c *gin.Context) {
-	// rdbKey := "/blog"
-	rdbKey := c.Request.URL.String()
+	rdbKey := "/blog"
 
-	// Try cache
-	if lib.View.RenderCache(c, rdbKey).Html() { return }
+	if lib.View.OutCache(c, rdbKey).Html() {
+		return
+	} // Try cache
 
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	
 	// Build data
-	b.mu.Lock()
-	defer b.mu.Unlock()
 	P := cfg.View.Pages["blogs"]
-	if P.Data == nil {
-		P.Data = make(map[string]any)
+	P.Data = map[string]any{
+		"Url":     c.Request.URL.String(),
 	}
-	P.Data["url"] = c.Request.URL.String()
 
-	// Cache renderer
-	lib.View.RenderAndCache(c, rdbKey, P)
+	lib.View.OutHtmlLyt(c, P, rdbKey) // Cache renderer
 }
 
 func (b *BlogCntr) Show(c *gin.Context) {
 	rawUID := c.Param("uid") // @username or UID
 	rawID := c.Param("id")   // blog ID or slug
 	rdbKey := "/blog/" + rawUID + "/" + rawID
-	
-	if lib.View.RenderCache(c, rdbKey).Html() { return }
+
+	if lib.View.OutCache(c, rdbKey).Html() {
+		return
+	} // Try cache
+
+	b.mu.Lock()
+	defer b.mu.Unlock()
 
 	blog := model.Blog{}
 	if err := BlogApi.Validate(rawUID, rawID); err != nil {
@@ -65,8 +69,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 		return
 	}
 	
-	// Fallback to DB
-	if err := BlogApi.ShowCore(&blog, rawUID, rawID); err != nil {
+	if err := BlogApi.ShowCore(&blog, rawUID, rawID); err != nil { // Fallback to DB
 		status := http.StatusNotFound
 		if err == ErrInvalidUID {
 			status = http.StatusBadRequest
@@ -75,16 +78,14 @@ func (b *BlogCntr) Show(c *gin.Context) {
 		return
 	}
 
-	// Prep data
-	b.mu.Lock()
-	defer b.mu.Unlock()
 	P := cfg.View.Pages["blog"]
-	P.Data["B"] = blog
-	P.Data["Content"] = template.HTML(blog.Content)
-	P.Data["Url"] = c.Request.URL.String()
+	P.Data = map[string]any{
+		"B":       blog,
+		"Content": template.HTML(blog.Content),
+		"Url":     c.Request.URL.String(),
+	}
 
-	// Cache renderer
-	lib.View.RenderAndCache(c, rdbKey, P)
+	lib.View.OutHtmlLyt(c, P, rdbKey)
 }
 
 // POST api/blog/uid/id

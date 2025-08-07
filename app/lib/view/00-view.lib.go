@@ -13,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
 type ViewLib struct {
 	Ecli    *gin.Engine
 	Tcli    *template.Template
@@ -20,7 +21,7 @@ type ViewLib struct {
 }
 
 type RenderData struct {
-	c *gin.Context
+	c    *gin.Context
 	data []byte
 	ok   bool
 	err  error
@@ -53,30 +54,83 @@ func (r RenderData) Css() bool {
 }
 
 // Render from Cache
-func (v *ViewLib) RenderCache(c *gin.Context, rdbKey string) RenderData {
-	cache, err := db.Rdb.GetBytes(rdbKey);
-	return RenderData{c:c, data: cache, ok: err == nil}
+func (v *ViewLib) OutCache(c *gin.Context, rdbKey string) RenderData {
+	cache, err := db.Rdb.GetBytes(rdbKey)
+	return RenderData{c: c, data: cache, ok: err == nil}
 }
 
 // Render and Cache Minified HTML
-func (v *ViewLib) RenderAndCache(c *gin.Context, rdbKey string, P model.PageParam) bool {
-	var buf bytes.Buffer
-	if err := v.Tcli.ExecuteTemplate(&buf, P.Layout, gin.H{"P": P}); err != nil {
-		log.Printf("[View] RenderAndCache ERR: %s: %v", rdbKey, err)
+func (v *ViewLib) OutHtmlLyt(c *gin.Context, P model.PageParam, args ...string) bool {
+	argsLen := len(args)
+
+	// Render html via template
+	page := bytes.Buffer{}
+	if err := v.Tcli.ExecuteTemplate(&page, P.Layout, gin.H{"P": P}); err != nil {
+		log.Printf("[View] OutHtmlLyt execTemplate ERR: %s: %v", c.Request.URL, err)
 		c.Status(http.StatusInternalServerError)
 		return false
 	}
 
 	// Minify HTML
-	minified, err := minify.Minify.Html(buf.Bytes())
+	pageMin, err := minify.Minify.Html(page.Bytes())
 	if err != nil {
-		log.Printf("[View] RenderAndCache ERR: for %s: %v", rdbKey, err)
-		c.Data(http.StatusOK, "text/html; charset=utf-8", buf.Bytes())
+		log.Printf("[View] OutHtmlLyt minify ERR: for %s: %v", c.Request.URL, err)
+
+		// Serve the response with optional cache if rdbKey is provided in args[0]
+		c.Data(http.StatusOK, "text/html; charset=utf-8", page.Bytes())
+		if argsLen > 0 && args[0] != "" {
+			go func(data any) { db.Rdb.Set(args[0], data, 10*time.Minute) }(pageMin)
+		}
+		return true
+	}
+
+	// Serve the response with optional cache if rdbKey is provided in args[0]
+	c.Data(http.StatusOK, "text/html; charset=utf-8", pageMin)
+	if argsLen > 0 && args[0] != "" {
+		go func(data any) { db.Rdb.Set(args[0], data, 10*time.Minute) }(pageMin)
+	}
+	return true
+}
+
+func (v *ViewLib) OutCss(c *gin.Context, css []byte, args ...string) bool {
+	argsLen := len(args)
+
+	// Minify the CSS
+	cssMin, err := minify.Minify.CssHybrid(css)
+	if err != nil {
+		log.Printf("[OutCss] Minify error: %v", err)
+		c.Data(http.StatusOK, "text/css; charset=utf-8", css)
+		return true
+	}
+
+	// Serve the response with optional cache if rdbKey is provided in args[0]
+	c.Data(http.StatusOK, "text/css; charset=utf-8", cssMin)
+	if argsLen > 0 && args[0] != "" {
+		go func(data any) { db.Rdb.Set(args[0], data, 10*time.Minute) }(cssMin)
+	}
+	return true
+}
+
+func (v *ViewLib) OutJson(c *gin.Context, rdbKey string, P model.PageParam, cache ...bool) bool {
+	page := bytes.Buffer{}
+	if err := v.Tcli.ExecuteTemplate(&page, P.Layout, gin.H{"P": P}); err != nil {
+		log.Printf("[View] OutJson ERR: %s: %v", rdbKey, err)
+		c.Status(http.StatusInternalServerError)
+		return false
+	}
+
+	// Minify HTML
+	pageMin, err := minify.Minify.Html(page.Bytes())
+	if err != nil {
+		log.Printf("[View] OutJson ERR: for %s: %v", rdbKey, err)
+		c.Data(http.StatusOK, "text/html; charset=utf-8", page.Bytes())
 		return true
 	}
 
 	// Send response and cache
-	c.Data(http.StatusOK, "text/html; charset=utf-8", minified)
-	go func(data any) { db.Rdb.Set(rdbKey, data, 10*time.Minute) }(minified)
+	c.Data(http.StatusOK, "text/html; charset=utf-8", pageMin)
+	if cache[0] {
+		go func(data any) { db.Rdb.Set(rdbKey, data, 10*time.Minute) }(pageMin)
+	}
 	return true
 }

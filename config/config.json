@@ -133,7 +133,9 @@
         "layout": "layout/blog",
         "menu": "Blog",
         "sub_brand": "Blog",
-        "lib_hljs": true,
+        "lib": [
+          "hljs"
+        ],
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",

@@ -1,5 +1,3 @@
 {{ define "prtls/body.script" }}
-{{ with .P.Js }} {{ range . }}
-  {{ linkJs . }}
-{{ end }} {{ end }}
+{{ linkJsSlice "preload" .P.Js }}
 {{ end }}

@@ -59,14 +59,14 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 	rdbKey := "/auth/" + url.QueryEscape(rawUID) + "/" + url.QueryEscape(rawID)
 
 	// Try cache
-	if lib.View.RenderCache(c, rdbKey).Html() { return }
+	if lib.View.OutCache(c, rdbKey).Html() { return }
 
 	// Prep data
 	P := cfg.View.Pages["auth"]
 	P.Data["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	lib.View.RenderAndCache(c, rdbKey, P)
+	lib.View.OutHtmlLyt(c, P, rdbKey)
 }
 
 func (a *AuthCntr) ShowSignout(c *gin.Context) {}
@@ -78,14 +78,14 @@ func (a *AuthCntr) Logins(c *gin.Context) {
 	rdbKey := "/auth"
 
 	// Try cache
-	if lib.View.RenderCache(c, rdbKey).Html() { return }
+	if lib.View.OutCache(c, rdbKey).Html() { return }
 
 	// Build data
 	P := cfg.View.Pages["auths"]
 	P.Data["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	lib.View.RenderAndCache(c, rdbKey, P)
+	lib.View.OutHtmlLyt(c, P, rdbKey)
 }
 
 func (a *AuthCntr) Login(c *gin.Context) {
@@ -120,14 +120,14 @@ func (a *AuthCntr) ShowLogin(c *gin.Context) {
 	rdbKey := "/auth/" + url.QueryEscape(rawUID) + "/" + url.QueryEscape(rawID)
 
 	// Try cache
-	if lib.View.RenderCache(c, rdbKey).Html() { return }
+	if lib.View.OutCache(c, rdbKey).Html() { return }
 
 	// Prep data
 	P := cfg.View.Pages["auth"]
 	P.Data["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	lib.View.RenderAndCache(c, rdbKey, P)
+	lib.View.OutHtmlLyt(c, P, rdbKey)
 }
 
 func (a *AuthCntr) ShowLogout(c *gin.Context) {}

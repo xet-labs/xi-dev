@@ -2,7 +2,6 @@ package res
 
 import (
 	"log"
-	"net/http"
 	"time"
 
 	"xi/app/lib"
@@ -13,7 +12,6 @@ import (
 
 var (
 	CssDir      = cfg.View.CssDir
-	refKey      = "res:app.css"
 	CssRedisTTL = 12 * time.Hour
 	cssFiles    []string
 )
@@ -29,34 +27,14 @@ func init() {
 	}
 }
 
-
 // Css handler: serves combined+cssMin CSS (Redis cached)
 func Css(c *gin.Context) {
 	c.Header("Content-Type", "text/css")
+	rdbKey := c.Request.URL.String()
 
-	// Try Redis cache
-	if cached, err := lib.Rdb.Get(refKey); err == nil && cached != "" {
-		c.String(http.StatusOK, cached)
+	if lib.View.OutCache(c, rdbKey).Css() {
 		return
 	}
 
-	// Merge and minify CSS
-	cssCnt := lib.File.MergeByte(cssFiles)
-	cssMin, err := lib.Minify.CssHybrid(cssCnt)
-	if err != nil {
-		log.Printf("CSS Minify Err: %v", err)
-		c.Data(http.StatusOK, "text/css; charset=utf-8", cssCnt)
-		return
-	}
-
-	// Serve response
-	c.Data(http.StatusOK, "text/css; charset=utf-8", cssMin)
-
-
-	// Cache it in background
-	go func(data any) {
-		if err := lib.Rdb.Set(refKey, data, CssRedisTTL); err != nil {
-			log.Printf("Redis SET err (%s): %v", refKey, err)
-		}
-	}(cssMin)
+	lib.View.OutCss(c, lib.File.MergeByte(cssFiles))
 }
