@@ -2,9 +2,7 @@
 package cntr
 
 import (
-	"log"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -31,34 +29,32 @@ var BlogApi = &BlogApiCntr{
 	blogs: []model.Blog{},
 }
 
-
-
 // GET /blog or /blog?Page=2&Limit=6
 func (b *BlogApiCntr) Index(c *gin.Context) {
 	page := c.DefaultQuery("Page", "1")
 	limit := c.DefaultQuery("Limit", "6")
-
 	pageNum, err1 := strconv.Atoi(page)
 	limitNum, err2 := strconv.Atoi(limit)
+
 	if err1 != nil || err2 != nil || pageNum <= 0 || limitNum <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Page or Limit"})
 		return
 	}
 
-	offset := (pageNum - 1) * limitNum
-	refKey := "blogs:page:" + url.QueryEscape(page) + ":limit:" + url.QueryEscape(limit)
-	var blogs []model.Blog
-
+	
 	// Try cache
-	if err := lib.Rdb.GetJson(refKey, &blogs); err == nil {
+	blogs := []model.Blog{}
+	rdbKey := "blogs:page:" + page + ":limit:" + limit
+	if err := lib.Rdb.GetJson(rdbKey, &blogs); err == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"blogsExhausted": len(blogs) == 0,
 			"blogs":          blogs,
 		})
 		return
 	}
-
+	
 	// Fallback to DB
+	offset := (pageNum - 1) * limitNum
 	if err := b.IndexCore(&blogs, offset, limitNum); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch blogs"})
 		return
@@ -70,11 +66,7 @@ func (b *BlogApiCntr) Index(c *gin.Context) {
 	})
 
 	// Async cache
-	go func(data []model.Blog) {
-		if err := lib.Rdb.SetJson(refKey, data, 10*time.Minute); err != nil {
-			log.Printf("Redis SET err (%s): %v", refKey, err)
-		}
-	}(blogs)
+	go func(data any) { lib.Rdb.SetJson(rdbKey, data, 10*time.Minute) }(blogs)
 }
 
 func (b *BlogApiCntr) IndexCore(blogs *[]model.Blog, offset, limit int) error {
@@ -93,11 +85,11 @@ func (b *BlogApiCntr) Show(c *gin.Context) {
 	rawUID := c.Param("uid") // @username or UID
 	rawID := c.Param("id")   // blog ID or slug
 
-	refKey := "blogs:uid:" + url.QueryEscape(rawUID) + ":" + url.QueryEscape(rawID)
-	var blog model.Blog
-
+	
 	// Try cache
-	if err := lib.Rdb.GetJson(refKey, &blog); err == nil {
+	blog := model.Blog{}
+	rdbKey := "blogs:uid:" + rawUID + ":" + rawID
+	if err := lib.Rdb.GetJson(rdbKey, &blog); err == nil {
 		c.JSON(http.StatusOK, blog)
 		return
 	}
@@ -121,11 +113,7 @@ func (b *BlogApiCntr) Show(c *gin.Context) {
 	c.JSON(http.StatusOK, blog)
 
 	// Cache asynchronously
-	go func(data model.Blog) {
-		if err := lib.Rdb.SetJson(refKey, data, 10*time.Minute); err != nil {
-			log.Printf("Redis SET err (%s): %v", refKey, err)
-		}
-	}(blog)
+	go func(data model.Blog) { lib.Rdb.SetJson(rdbKey, data, 10*time.Minute) }(blog)
 }
 
 // FetchBlog fetches a blog and stores it in the given pointer.
@@ -238,7 +226,7 @@ func isNumeric(s string) bool {
 func (b *BlogApiCntr) Validate(rawUID, rawID string) error {
 	if strings.HasPrefix(rawUID, "@") {
 		if !lib.Validate.Uname(rawUID) {
-			return ErrInvalidUsername
+			return ErrInvalidUserName
 		}
 	} else if !lib.Validate.UID(rawUID) {
 		return ErrInvalidUID

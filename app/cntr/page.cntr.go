@@ -27,10 +27,10 @@ func (p *PageCntr) Tmpl(title, tmpl string) gin.HandlerFunc {
 // Renders raw HTML file inside a base layout and caches it
 func (p *PageCntr) Tcnt(title, rawPath string, ttl ...time.Duration) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		refKey := "page:" + c.Request.URL.String()
+		rdbKey := "page:" + c.Request.URL.String()
 
 		// Return from cache if available
-		if data, err := lib.Rdb.GetBytes(refKey); err == nil {
+		if data, err := lib.Rdb.GetBytes(rdbKey); err == nil {
 			c.Data(http.StatusOK, "text/html; charset=utf-8", data)
 			return
 		}
@@ -57,8 +57,8 @@ func (p *PageCntr) Tcnt(title, rawPath string, ttl ...time.Duration) gin.Handler
 			if len(ttl) > 0 {
 				expire = ttl[0]
 			}
-			if err := lib.Rdb.Set(refKey, data, expire); err != nil {
-				log.Printf("Redis SET err (%s): %v", refKey, err)
+			if err := lib.Rdb.Set(rdbKey, data, expire); err != nil {
+				log.Printf("Redis SET err (%s): %v", rdbKey, err)
 			}
 		}(rendered)
 	}

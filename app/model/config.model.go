@@ -24,7 +24,6 @@ type DbConf struct {
 	RdbPrefix  string             `json:"rdb_prefix"`
 	Conn       map[string]DbParam `json:"conn"`
 }
-
 type DbParam struct {
 	Enable        bool   `json:"enable"`
 	Db            string `json:"db"`
@@ -42,6 +41,7 @@ type DbParam struct {
 	PrefixIndexes bool   `json:"prefixindexes"`
 	Strict        bool   `json:"strict"`
 }
+
 type ViewConf struct {
 	CssDir      []string             `json:"css_dir,omitempty"`
 	TemplateDir []string             `json:"template_dir,omitempty"`
@@ -51,19 +51,22 @@ type ViewConf struct {
 }
 
 type PageParam struct {
-	App         AppConf        `json:"app"`
-	Layout      string         `json:"layout,omitempty"`
-	NavMenu     []MenuItem     `json:"nav_menu,omitempty"`
-	Route       string         `json:"route,omitempty"`
 	Title       string         `json:"title,omitempty"`
-	File        string         `json:"file,omitempty"`
-	Template    string         `json:"template,omitempty"`
-	Menu        string         `json:"menu,omitempty"`
+	Route       string         `json:"route,omitempty"`
 	Description string         `json:"description,omitempty"`
+	Layout      string         `json:"layout,omitempty"`
+	File        string         `json:"file,omitempty"`
+	FullHtml    string         `json:"full_html"`
+	BodyHtml    string         `json:"body_html"`
+	PartHtml    string         `json:"part_html"`
+	Template    string         `json:"template,omitempty"`
+	App         AppConf        `json:"app"`
 	SubBrand    string         `json:"sub_brand,omitempty"`
-	LibHLJS     bool           `json:"lib_hljs,omitempty"`
-	Js        []string       `json:"js,omitempty"`
+	NavMenu     []MenuItem     `json:"nav_menu,omitempty"`
+	Menu        string         `json:"menu,omitempty"`
+	Js          []string       `json:"js,omitempty"`
 	Js99        []string       `json:"js99,omitempty"`
+	LibHLJS     bool           `json:"lib_hljs,omitempty"`
 	Meta        *PageMeta      `json:"meta,omitempty"`
 	Data        map[string]any `json:"data"`
 }

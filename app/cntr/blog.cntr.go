@@ -4,10 +4,10 @@ package cntr
 import (
 	"html/template"
 	"net/http"
-	"net/url"
+	"sync"
 	"xi/app/lib"
-	"xi/app/model"
 	"xi/app/lib/cfg"
+	"xi/app/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -19,6 +19,9 @@ type BlogCntr struct {
 	rdb   *redis.Client
 	blog  model.Blog
 	blogs []model.Blog
+
+	mu         sync.RWMutex
+	once       sync.Once
 }
 
 // Singleton controller
@@ -30,14 +33,15 @@ var Blog = &BlogCntr{
 
 // GET /blog or /blog?Page=2&Limit=6
 func (b *BlogCntr) Index(c *gin.Context) {
-	refKey := url.QueryEscape(c.Request.URL.String())
+	// rdbKey := "/blog"
+	rdbKey := c.Request.URL.String()
 
 	// Try cache
-	if lib.View.RenderCache(c, "layout/blog", refKey) {
-		return
-	}
+	if lib.View.RenderCache(c, rdbKey).Html() { return }
 
 	// Build data
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	P := cfg.View.Pages["blogs"]
 	if P.Data == nil {
 		P.Data = make(map[string]any)
@@ -45,24 +49,22 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	P.Data["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	lib.View.RenderAndCache(c, P.Layout, refKey, P)
+	lib.View.RenderAndCache(c, rdbKey, P)
 }
 
 func (b *BlogCntr) Show(c *gin.Context) {
 	rawUID := c.Param("uid") // @username or UID
 	rawID := c.Param("id")   // blog ID or slug
-	refKey := "/blog/" + url.QueryEscape(rawUID + "/" + rawID)
-	var blog model.Blog
+	rdbKey := "/blog/" + rawUID + "/" + rawID
+	
+	if lib.View.RenderCache(c, rdbKey).Html() { return }
 
-	if lib.View.RenderCache(c, "layout/blog", refKey) {
-		return
-	}
-
+	blog := model.Blog{}
 	if err := BlogApi.Validate(rawUID, rawID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	
 	// Fallback to DB
 	if err := BlogApi.ShowCore(&blog, rawUID, rawID); err != nil {
 		status := http.StatusNotFound
@@ -74,18 +76,15 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	}
 
 	// Prep data
+	b.mu.Lock()
+	defer b.mu.Unlock()
 	P := cfg.View.Pages["blog"]
-	if P.Data == nil {
-		P.Data = make(map[string]any)
-	}
-	P.Data["url"] = c.Request.URL.String()
-	P.Data["B"] = BlogView{
-		Blog:    blog,
-		Content: template.HTML(blog.Content),
-	}
+	P.Data["B"] = blog
+	P.Data["Content"] = template.HTML(blog.Content)
+	P.Data["Url"] = c.Request.URL.String()
 
 	// Cache renderer
-	lib.View.RenderAndCache(c, P.Layout, refKey, P)
+	lib.View.RenderAndCache(c, rdbKey, P)
 }
 
 // POST api/blog/uid/id
@@ -96,9 +95,3 @@ func (b *BlogCntr) Put(c *gin.Context) {}
 
 // DELETE api/blog/uid/id
 func (b *BlogCntr) Delete(c *gin.Context) {}
-
-// --HELPERS--
-type BlogView struct {
-	model.Blog
-	Content template.HTML
-}

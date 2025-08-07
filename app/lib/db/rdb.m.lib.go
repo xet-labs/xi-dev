@@ -3,6 +3,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+	"log"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -15,14 +16,24 @@ func (r *RedisLib) Set(k string, v any, ttl time.Duration) error {
 	if r.client == nil {
 		return redis.ErrClosed
 	}
-	return r.client.Set(r.ctx, r.key(k), v, ttl).Err()
+	 
+	if err := r.client.Set(r.ctx, r.key(k), v, ttl).Err(); err != nil {
+		log.Printf("Rdb SET ERR: '%s': %v", k, err)
+		return err
+	}
+	return nil
 }
 
 func (r *RedisLib) Get(k string) (string, error) {
 	if r.client == nil {
 		return "", redis.ErrClosed
 	}
-	return r.client.Get(r.ctx, r.key(k)).Result()
+	
+	v, err := r.client.Get(r.ctx, r.key(k)).Result()
+	if err != nil {
+		log.Printf("Rdb GET ERR: '%s': %v", k, err)
+	}
+	return v, err
 }
 
 func (r *RedisLib) GetBytes(k string) ([]byte, error) {
