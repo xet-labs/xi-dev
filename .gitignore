@@ -12,8 +12,11 @@ xi
 /vendor/bin
 
 # OS/IDE's
-.vscode/
+.cjl-kondo/
 .idea/
+.lsp/
+.vscode/
+
 *.swp
 .DS_Store
 Thumbs.db
