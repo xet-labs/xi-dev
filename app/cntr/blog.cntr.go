@@ -30,7 +30,6 @@ var Blog = &BlogCntr{
 
 // GET /blog or /blog?Page=2&Limit=6
 func (b *BlogCntr) Index(c *gin.Context) {
-	
 	refKey := url.QueryEscape(c.Request.URL.String())
 
 	// Try cache
@@ -40,25 +39,25 @@ func (b *BlogCntr) Index(c *gin.Context) {
 
 	// Build data
 	P := cfg.View.Pages["blogs"]
+	if P.Data == nil {
+		P.Data = make(map[string]any)
+	}
 	P.Data["url"] = c.Request.URL.String()
 
 	// Cache renderer
-	lib.View.RenderAndCache(c, "layout/blogs", refKey, P)
+	lib.View.RenderAndCache(c, P.Layout, refKey, P)
 }
 
 func (b *BlogCntr) Show(c *gin.Context) {
 	rawUID := c.Param("uid") // @username or UID
 	rawID := c.Param("id")   // blog ID or slug
-	// refKey := "/blog/" + url.QueryEscape(rawUID + "/" + rawID) + "/" + url.QueryEscape(rawID)
 	refKey := "/blog/" + url.QueryEscape(rawUID + "/" + rawID)
 	var blog model.Blog
 
-	// Try cache
 	if lib.View.RenderCache(c, "layout/blog", refKey) {
 		return
 	}
 
-	// Validate params
 	if err := BlogApi.Validate(rawUID, rawID); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -76,6 +75,9 @@ func (b *BlogCntr) Show(c *gin.Context) {
 
 	// Prep data
 	P := cfg.View.Pages["blog"]
+	if P.Data == nil {
+		P.Data = make(map[string]any)
+	}
 	P.Data["url"] = c.Request.URL.String()
 	P.Data["B"] = BlogView{
 		Blog:    blog,
@@ -83,7 +85,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	}
 
 	// Cache renderer
-	lib.View.RenderAndCache(c, "layout/blog", refKey, P)
+	lib.View.RenderAndCache(c, P.Layout, refKey, P)
 }
 
 // POST api/blog/uid/id

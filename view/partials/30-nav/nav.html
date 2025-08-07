@@ -169,12 +169,12 @@
 			</a>
 			<a href="/" class="b-logo icon" data-svg-src="/res/static/brand/brand-logo.svg"></a>
 
-			{{ if .P.subBrand }}
+			{{ if .P.SubBrand }}
 			<div class="sub-brand-wrap">
 				<div class="line-y"></div>
 				<div class="sub-brand">
-					{{ range .P.navMenu }}
-					{{ if eq .Label $.P.subBrand }}
+					{{ range .P.NavMenu }}
+					{{ if eq .Label $.P.SubBrand }}
 					<a href="{{ .Href }}">{{ .Label }}</a>
 					{{ end }}
 					{{ end }}
@@ -186,8 +186,8 @@
 
 		<div class="nav-m">
 			<div class="menu">
-				{{ range .P.navMenu }}
-				{{ if eq .Label $.P.menu }}
+				{{ range .P.NavMenu }}
+				{{ if eq .Label $.P.Menu }}
 				<a href="{{ .Href }}" class="menu-current">{{ .Label }}</a>
 				{{ else }}
 				<a href="{{ .Href }}">{{ .Label }}</a>

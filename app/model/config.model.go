@@ -62,6 +62,7 @@ type PageParam struct {
 	Description string         `json:"description,omitempty"`
 	SubBrand    string         `json:"sub_brand,omitempty"`
 	LibHLJS     bool           `json:"lib_hljs,omitempty"`
+	Js        []string       `json:"js,omitempty"`
 	Js99        []string       `json:"js99,omitempty"`
 	Meta        *PageMeta      `json:"meta,omitempty"`
 	Data        map[string]any `json:"data"`

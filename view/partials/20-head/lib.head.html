@@ -1,6 +1,6 @@
 {{ define "prtls/head.lib" }}
 
-{{ with .P.lib_hljs }}
+{{ with .P.Data.lib_hljs }}
 	{{ if . }}
 		{{ linkCss "/res/lib/hljs/styles/atom-one-dark.css" }}
 		{{ linkJs "/res/lib/hljs/hl.min.js" 1 }}
@@ -8,19 +8,19 @@
 	{{ end }}
 {{ end }}
 
-{{ with .P.lib_prism }}
+{{ with .P.Data.lib_prism }}
 	{{ if . }}
 		{{ linkCss "/res/lib/prism/prism.css" }}
 	{{ end }}
 {{ end }}
 
-{{ with .P.lib.tw }}
+{{ with .P.Data.lib.tw }}
 	{{ if . }}
 		{{ linkCss "/res/lib/tailwind/tailwind.css" }}
 	{{ end }}
 {{ end }}
 
-{{ with .P.lib.fa }}
+{{ with .P.Data.lib.fa }}
 	{{ if . }}
 		{{ linkCss "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" }}
 	{{ end }}

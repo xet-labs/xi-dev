@@ -114,7 +114,7 @@
       },
       "blogs": {
         "route": "/blog",
-        "template": "layout/blogs",
+        "layout": "layout/blogs",
         "menu": "Blog",
         "sub_brand": "Blog",
         "title": "Blog | XetIndustries",
@@ -130,7 +130,7 @@
       },
       "blog": {
         "route": "/blog/*",
-        "template": "layout/blog",
+        "layout": "layout/blog",
         "menu": "Blog",
         "sub_brand": "Blog",
         "lib_hljs": true,

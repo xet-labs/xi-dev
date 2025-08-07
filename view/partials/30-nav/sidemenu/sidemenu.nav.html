@@ -28,8 +28,8 @@
         </div>
 
         <div class="menu">
-            {{ range .P.navMenu }}
-            {{ if eq .Label $.P.menu }}
+            {{ range .P.NavMenu }}
+            {{ if eq .Label $.P.Menu }}
             <a href="{{ .Href }}" class="menu-current">{{ .Label }}</a>
             {{ else }}
             <a href="{{ .Href }}">{{ .Label }}</a>
