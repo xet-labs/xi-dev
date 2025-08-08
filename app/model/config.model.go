@@ -62,11 +62,12 @@ type PageParam struct {
 	PartHtml    string         `json:"part_html,omitempty"`
 	SubBrand    string         `json:"sub_brand,omitempty"`
 	Menu        string         `json:"menu,omitempty"`
-	Lib         []string       `json:"lib,omitempty"`
-	LibHljs     bool           `json:"lib_hljs,omitempty"`
 	Css         []string       `json:"css,omitempty"`
 	Js          []string       `json:"js,omitempty"`
 	Js99        []string       `json:"js99,omitempty"`
+	HeadLib     []string       `json:"Head_lib,omitempty"`
+	Lib         []string       `json:"lib,omitempty"`
+	Lib99       []string       `json:"lib99,omitempty"`
 	Meta        PageMeta       `json:"meta"`
 	App         AppConf        `json:"app"`
 	NavMenu     []MenuItem     `json:"nav_menu,omitempty"`

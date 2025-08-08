@@ -6,11 +6,17 @@ import (
 	"strings"
 )
 
-func LoadLibsSlice(libs []string) template.HTML {
-	return LoadLibs(libs...)
+func LoadLibSlice(libs []string) template.HTML {
+	if len(libs) == 0 {
+		return ""
+	}
+	return LoadLib(libs...)
 }
-func LoadLibs(libs ...string) template.HTML {
-
+func LoadLib(libs ...string) template.HTML {
+	if len(libs) == 0 {
+		return ""
+	}
+	
 	var b strings.Builder
 
 	for _, lib := range libs {

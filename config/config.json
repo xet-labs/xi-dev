@@ -133,14 +133,14 @@
         "layout": "layout/blog",
         "menu": "Blog",
         "sub_brand": "Blog",
-        "lib": [
-          "hljs"
-        ],
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",
           "/res/util/copy-code.util.js",
           "/res/util/h2-clickable.util.js"
+        ],
+        "lib99": [
+          "hljs"
         ]
       }
     }
