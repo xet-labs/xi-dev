@@ -79,7 +79,7 @@ func (d *DbLib) InitForce() {
 				log.Fatalf("❌ Could not connect to DB '%s': %v", profile, err)
 			}
 			Db.SetCli(profile, dbConn)
-			log.Printf("✅ [DB] \tConnected '%s' (MySQL)", profile)
+			log.Printf("✅ [DB] Connected '%s' (MySQL)", profile)
 
 		case "sqlite":
 			dbConn, err := gorm.Open(sqlite.Open(c.Db), &gorm.Config{})
@@ -87,7 +87,7 @@ func (d *DbLib) InitForce() {
 				log.Fatalf("❌ Could not connect to DB '%s': %v", profile, err)
 			}
 			Db.SetCli(profile, dbConn)
-			log.Printf("✅ [DB] \tConnected '%s' (SQLite)", profile)
+			log.Printf("✅ [DB] Connected '%s' (SQLite)", profile)
 
 		case "redis":
 			rdb := redis.NewClient(&redis.Options{
@@ -99,7 +99,7 @@ func (d *DbLib) InitForce() {
 				log.Fatalf("❌ Could not connect to Redis '%s': %v", profile, err)
 			}
 			Rdb.SetCli(profile, rdb)
-			log.Printf("✅ [DB] \tConnected '%s' (Redis)", profile)
+			log.Printf("✅ [DB] Connected '%s' (Redis)", profile)
 
 		default:
 			log.Printf("⚠️  Unsupported DB driver '%s' for DB '%s'", c.Driver, profile)

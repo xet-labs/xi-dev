@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-func LoadLibSlice(libs []string) template.HTML {
+func LinkLibSlice(libs []string) template.HTML {
 	if len(libs) == 0 {
 		return ""
 	}
-	return LoadLib(libs...)
+	return LinkLib(libs...)
 }
-func LoadLib(libs ...string) template.HTML {
+func LinkLib(libs ...string) template.HTML {
 	if len(libs) == 0 {
 		return ""
 	}

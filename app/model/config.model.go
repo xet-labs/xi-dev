@@ -65,7 +65,7 @@ type PageParam struct {
 	Css         []string       `json:"css,omitempty"`
 	Js          []string       `json:"js,omitempty"`
 	Js99        []string       `json:"js99,omitempty"`
-	HeadLib     []string       `json:"Head_lib,omitempty"`
+	HeadLib     []string       `json:"head_lib,omitempty"`
 	Lib         []string       `json:"lib,omitempty"`
 	Lib99       []string       `json:"lib99,omitempty"`
 	Meta        PageMeta       `json:"meta"`

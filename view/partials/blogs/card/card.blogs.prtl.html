@@ -3,17 +3,15 @@
 <article class="card" data-href="{{ .B.url }}" tabindex="0" role="link" aria-label="Read more about {{ .B.title }}">
 		
     <figure class="card-hero">
-        <a href="{{ .B.url }}" {{ if ne .B.Status "published" }}rel="nofollow"{{ end }}>
-            <img src="{{ index .B.FeaturedImg 0 }}" alt="{{ .B.title }}" loading="lazy" class="lazyload">
+        <a href="{{ .B.url }}">
+            <img src="{{ index .B.FeaturedImg 0 }}" alt="{{ .B.title }}" loading="lazy">
         </a>
     </figure>
     
     <div class="card-info">
 
         <h2 class="card-title" title="{{ .B.title }}">
-            <a href="{{ .B.url }}" {{ if ne .B.Status "published" }}rel="nofollow"{{ end }}>
-                {{ .B.headline }}
-            </a>
+            <a href="{{ .B.url }}">{{ .B.headline }}</a>
         </h2>
 
         <p class="card-exrpt">{{ .Description }}</p>
@@ -30,9 +28,7 @@
                 <div class="meta-info">
 
                     <div class="meta-author">
-                        <a href="/@{{ .B.username }}" title="@{{ .B.username }}">
-                            {{ .B.name }}
-                        </a>
+                        <a href="/@{{ .B.username }}" title="@{{ .B.username }}">{{ .B.name }}</a>
 
                         {{ if .B.verified }}
                             <i class="icon meta-verified" title="Verified">
@@ -43,9 +39,7 @@
                         {{ end }}
                     </div>
 
-                    <div class="meta-time">
-                        <time>{{ .B.timeAgo }}</time>
-                    </div>
+                    <div class="meta-time"> <time>{{ .B.timeAgo }}</time> </div>
                 
                 </div>
 

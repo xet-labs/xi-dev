@@ -1,6 +1,8 @@
 package cfg
 
-import "xi/app/model"
+import (
+	"xi/app/model"
+)
 
 type CfgLib struct{}
 
@@ -13,8 +15,15 @@ var (
 	View   = &global.View
 )
 
+func Set(cfg model.Config) {
+	*global = cfg
+}
+
 func Update(cfg model.Config) {
 	*global = cfg
+	App = &global.App
+	Db = &global.Db
+	View = &global.View
 }
 
 func Get() *model.Config {

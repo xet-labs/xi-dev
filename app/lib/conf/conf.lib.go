@@ -6,13 +6,15 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
 	"sync"
 	"time"
 
-	"xi/app/lib/hook"
-	"xi/app/lib/env"
 	"xi/app/lib/cfg"
+	"xi/app/lib/env"
+	"xi/app/lib/hook"
+	"xi/app/model"
 
 	"github.com/fsnotify/fsnotify"
 	koanfJson "github.com/knadh/koanf/parsers/json"
@@ -30,14 +32,14 @@ type ConfLib struct {
 	IntermediateMap  map[string]any
 	IntermediateJson []byte
 
-	watch *fsnotify.Watcher
-	mu    sync.RWMutex
-	once  sync.Once
+	hasInitialized bool
+	watch          *fsnotify.Watcher
+	mu             sync.RWMutex
+	once           sync.Once
 }
 
 var (
 	Conf = &ConfLib{
-		koanfCli: koanf.New("."),
 		FilesDefault: []string{
 			// "app/data/config/config.json",
 			"config/config.json",
@@ -47,11 +49,9 @@ var (
 	reJsonEnv         = regexp.MustCompile(`\$\{([A-Z0-9_]+)(:-([^}]*))?\}`)
 	reJsonEnvPost     = regexp.MustCompile(`(?m)(,\s*)?__REMOVE__(,\s*)?|^__REMOVE__(,\s*)?`)
 	reJsonDoubleQuote = regexp.MustCompile(`""([^"\n\r]+?)""`)
-	
 	reJsonIntCast     = regexp.MustCompile(`:\s*"(-?\d+)\.int"`)
 	reJsonBoolStr     = regexp.MustCompile(`:\s*"(true|false|1|0)"`)
-
-	reJsonVar = regexp.MustCompile(`\$\{([^}:]*)(:-([^}]*))?\}|\$\{\}`)
+	reJsonVar         = regexp.MustCompile(`\$\{([^}:]*)(:-([^}]*))?\}|\$\{\}`)
 )
 
 func init() {
@@ -64,53 +64,82 @@ func init() {
 func (c *ConfLib) Init(filePath ...string) { c.once.Do(func() { c.InitCore(filePath...) }) }
 
 func (c *ConfLib) InitCore(filePath ...string) error {
-	// Init Env and pre funcs
 	env.Env.Init()
-	// c.Hook.RunPre()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 
-	// Assign Config Files
-	c.FilesLoaded = nil
-	c.Files = c.FilesDefault
+	// Only clone defaults on first run if Files not set
+	if !c.hasInitialized && c.Files == nil {
+		c.Files = slices.Clone(c.FilesDefault)
+	}
 	if len(filePath) > 0 {
 		c.Files = filePath
 	}
 
-	// Overlay Resolved Config Files
+	// Backup old states so if smthng goes wrong, restoration homecoming !!
+	oldKoanfCli := c.koanfCli
+	oldFilesLoaded := c.FilesLoaded
+	oldIntermediateMap := c.IntermediateMap
+	oldIntermediateJson := c.IntermediateJson
+
+	okStatus := "Loaded"
+	errStatus := "No config loaded."
+	if c.hasInitialized {
+		okStatus = "Reloaded"
+		errStatus = "Config did not reload."
+	}
+
+	// Create a new Koanf instance for atomic reload
+	newKoanf := koanf.New(".")
+
+	var newFilesLoaded []string
+
+	// Load all config files into newKoanf
 	for _, path := range c.Files {
 		raw, err := os.ReadFile(path)
 		if err != nil {
-			log.Printf("⚠️  [Conf] Init WRN: Skipped '%s': %v\n", path, err)
+			log.Printf("⚠️  [Conf] Init WRN: Skipped '%s': %v", path, err)
 			continue
 		}
 
-		// Resolve ${ENV} | ${ENV:-fallback}
-		resolvedJsonEnv := []byte(c.cleanJson(c.resolveJsonEnv(string(raw))))
-
-		if err := c.koanfCli.Load(rawbytes.Provider(resolvedJsonEnv), koanfJson.Parser()); err != nil {
-			log.Printf("⚠️  [Conf] Init WRN: Parsing failed '%s': %v\n", path, err)
+		resolved, err := c.resolveJsonVars(c.cleanJson(c.resolveJsonEnv(string(raw))))
+		if err != nil {
+			log.Printf("⚠️  [Conf] Init WRN: Resolving failed '%s': %v", path, err)
 			continue
 		}
-
-		c.FilesLoaded = append(c.FilesLoaded, path)
+		if err := newKoanf.Load(rawbytes.Provider([]byte(resolved)), koanfJson.Parser()); err != nil {
+			log.Printf("⚠️  [Conf] Init WRN: Parsing failed '%s': %v", path, err)
+			continue
+		}
+		newFilesLoaded = append(newFilesLoaded, path)
 	}
 
-	// fmt.Printf("-->\n%s\n%s\n", c.AllMap(), c.AllJson())
-	// Preserve intermediate data, to be used in future features
+	// Fail and rollback if nothing loaded
+	if len(newFilesLoaded) == 0 {
+		log.Printf("⚠️  [Conf] WRN: %s", errStatus)
+		if c.hasInitialized {
+			// restore old state
+			c.koanfCli = oldKoanfCli
+			c.FilesLoaded = oldFilesLoaded
+			c.IntermediateMap = oldIntermediateMap
+			c.IntermediateJson = oldIntermediateJson
+		}
+		return fmt.Errorf("no config files loaded successfully")
+	}
+
+	// Temporarily assign newKoanf to c so we can use c methods
+	c.koanfCli = newKoanf
+	c.FilesLoaded = newFilesLoaded
+
+	// Preserve intermediate data
 	c.IntermediateMap = c.AllMap()
-	// c.IntermediateJson = c.AllJson()
+	c.IntermediateJson = c.AllJson()
 
 	c.ConfPostView()
 
-	// Resolve internal refs ${ref} | ${ref:-fallback}
-	c.resolveJsonVars()
+	log.Printf("✅ [Conf] %s: %s", okStatus, newFilesLoaded)
+	c.hasInitialized = true
 
-	// c.Hook.RunPost()
-
-	if len(c.FilesLoaded) > 0 {
-		log.Printf("✅ [Conf] \tLoaded: %s\n", c.FilesLoaded)
-	} else {
-		log.Printf("⚠️  [Conf] Init WRN: No config loaded.")
-	}
 	return nil
 }
 
@@ -172,10 +201,13 @@ func (c *ConfLib) cleanJson(input string) string {
 }
 
 // resolveJsonVars walks entire koanf data and resolves {{key.path}} expressions
-func (c *ConfLib) resolveJsonVars() {
-	var nested = c.AllMap()
+func (c *ConfLib) resolveJsonVars(input string) (string, error) {
+	var data any
+	if err := json.Unmarshal([]byte(input), &data); err != nil {
+		return "", err
+	}
 
-	var resolveValue func(val any) any
+	var resolveValue func(any) any
 
 	resolveValue = func(val any) any {
 		switch v := val.(type) {
@@ -200,11 +232,10 @@ func (c *ConfLib) resolveJsonVars() {
 					if val != nil {
 						switch typed := val.(type) {
 						case map[string]any, []any:
-							// If the string is exactly like "{{key}}", we replace whole field with object/array
-							if str == "{{"+key+"}}" {
+							// If exactly like "${key}", replace whole field with object/array
+							if str == "${"+key+"}" {
 								v[k] = typed
 							} else {
-								// Otherwise just resolve it to string
 								v[k] = str
 							}
 						case string:
@@ -230,17 +261,19 @@ func (c *ConfLib) resolveJsonVars() {
 				v[i] = resolveValue(vv)
 			}
 			return v
+
 		default:
 			return v
 		}
 	}
 
-	resolved := resolveValue(nested).(map[string]any)
+	resolved := resolveValue(data)
 
-	newData, _ := json.Marshal(resolved)
-	k := koanf.New(".")
-	_ = k.Load(rawbytes.Provider(newData), koanfJson.Parser())
-	c.koanfCli = k
+	outBytes, err := json.Marshal(resolved)
+	if err != nil {
+		return "", err
+	}
+	return string(outBytes), nil
 }
 
 // sync json connfig with existing config
@@ -248,18 +281,21 @@ func (c *ConfLib) postSetup(jsonMap map[string]any) error {
 	// Convert map[string]any to proper []byte(json) for further processing
 	jsonBytes, err := json.Marshal(jsonMap)
 	if err != nil {
-		return fmt.Errorf("⚠️  [Conf] PostSetup WRN: failed to marshal DataJson: %w", err)
+		log.Printf("⚠️  [Conf] PostSetup WRN: failed to marshal DataJson: %v", err)
+		return err
 	}
 
 	// store
-	if err := json.Unmarshal(jsonBytes, cfg.Get()); err != nil {
-		return fmt.Errorf("⚠️  [Conf] PostSetup WRN: failed to unmarshal into Config struct: %w", err)
-		// fmt.Printf("--> Default:\n%v\nMap:\n%v\nJson:\n%s\n", pageDefault, c.AllMapStruct(), c.AllJsonStruct())
+	rawCfg := model.Config{}
+	if err := json.Unmarshal(jsonBytes, &rawCfg); err != nil {
+		log.Printf("⚠️  [Conf] PostSetup WRN: failed to unmarshal into Config struct: %v", err)
+		return err
 	}
+	cfg.Update(rawCfg)
 
 	if err := c.koanfCli.Load(rawbytes.Provider(jsonBytes), koanfJson.Parser()); err != nil {
-		return fmt.Errorf("⚠️  [Conf] PostSetup WRN: Failed to load JSON config into Koanf: %w", err)
-		// fmt.Printf("--> Default:\n%v\nMap:\n%v\nJson:\n%s\n", pageDefault, c.AllMapStruct(), c.AllJsonStruct())
+		log.Printf("⚠️  [Conf] PostSetup WRN: Failed to load JSON config into Koanf: %v", err)
+		return err
 	}
 	return nil
 }
@@ -287,20 +323,20 @@ func (c *ConfLib) Daemon() error {
 					return
 				}
 				if event.Op&(fsnotify.Write|fsnotify.Create|fsnotify.Remove|fsnotify.Rename) != 0 {
-					log.Printf("🔄 Config changed: %s (%s)", event.Name, event.Op)
+					log.Printf("🔄 [Conf] Changed: %s (%s)", event.Name, event.Op)
+
+					if err := c.InitCore(); err != nil {
+						log.Printf("⚠️  [Conf] Reload failed: %v", err)
+					}
 					// Sleep briefly to avoid partial writes
 					time.Sleep(100 * time.Millisecond)
-					err := c.InitCore(c.Files...)
-					if err != nil {
-						log.Printf("⚠️ Config reload failed: %v", err)
-					}
 				}
 
 			case err, ok := <-watcher.Errors:
 				if !ok {
 					return
 				}
-				log.Printf("⚠️ Config daemon Err: %v", err)
+				log.Printf("⚠️  [Conf] daemon Err: %v", err)
 			}
 		}
 	}()

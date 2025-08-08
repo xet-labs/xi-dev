@@ -36,5 +36,5 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 	// Optional: Middleware (e.g. gzip)
 	// r.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	log.Println("✅ [Route] \tRoutes registered.")
+	log.Println("✅ [Route] Routes registered")
 }

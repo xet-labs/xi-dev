@@ -4,8 +4,8 @@
 
 <body>
 
-	{{/* template "prtls/body.lib" . */}}
-	{{ template "prtls/body.script" . }}
+	{{ linkJsSlice "preload" .P.Js }}
+	{{ linkLibSlice .P.Lib }}
 	{{ template "prtls/nav" . }}
 
 	<main>
@@ -15,8 +15,8 @@
 	</main>
 
 	{{ template "prtls/footer" . }}
-	{{ template "prtls/body.script99" . }}
-	{{/* template "prtls/body.lib99" . */}}
+	{{ linkJsSlice "preload" .P.Js99 }}
+	{{ linkLibSlice .P.Lib99 }}
 	
 </body>
 </html>

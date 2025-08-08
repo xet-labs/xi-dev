@@ -34,7 +34,7 @@ func (e *EnvLib) InitCore() {
 	if err := godotenv.Load(); err != nil {
 		log.Printf("⚠️  [Env] WRN: failed to loaded: %v", err)
 	} else {
-		log.Println("✅ [Env] \tLoaded.")
+		log.Println("✅ [Env] Loaded")
 	}
 
 	for _, kv := range os.Environ() {

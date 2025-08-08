@@ -21,13 +21,13 @@ run:
 
 build:
 	go mod vendor
-	go build -mod=vendor -o xi
+	go build -mod=vendor -o main
 
 
 exe:
-	go build -o xi && ./xi
+	go build -o main && ./main
 
 
 clean:
 	rm -vrf "${PWD}/vendor/bin"
-	rm -vf "${PWD}"/xi*
+	rm -vf "${PWD}"/main

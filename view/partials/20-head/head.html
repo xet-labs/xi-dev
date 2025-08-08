@@ -1,9 +1,10 @@
 {{ define "prtls/head" }}
 
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html itemscope="" itemtype="http://schema.org/WebPage" lang="en-IN">
 
 <head>
+
 	<script>document.documentElement.classList.add(localStorage.getItem("theme"));</script>
 
 	<meta charset="UTF-8">
@@ -24,11 +25,10 @@
 	<!-- FONTS -->
 	<link rel="preload" href="/res/static/fonts/Inter/Inter-VariableFont_slnt_wght.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
-	<!-- CSS -->
-	{{ linkCss "preload" "/res/css/app.css" }}
+
 	{{ linkCssSlice "preload" .P.Css }}
-	
-	{{ template "prtls/head.lib" . }}
+	{{ template "prtls/head.script" . }}
+	{{ linkLibSlice .P.HeadLib }}
 
 </head>
 

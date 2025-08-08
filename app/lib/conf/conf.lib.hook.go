@@ -7,19 +7,33 @@ import (
 )
 
 func (c *ConfLib) ConfPostView() {
-	
+
 	// c.Hook.AddPost("ConfPostView - setup", c.ConfPostView)
 
+	// Fetch defaults and pages
 	pageDefault := c.GetMap("view.default")
 	pages := c.GetMap("view.pages")
-	
+
 	rawJson := c.AllMap()
-	viewPages, ok := rawJson["view"].(map[string]any)["pages"].(map[string]any)
+	if rawJson == nil {
+		log.Printf("⚠️  [Conf] Postview ERR: No Json data to operate on")
+		return
+	}
+	viewData, ok := rawJson["view"].(map[string]any)
 	if !ok {
-		log.Printf("⚠️  [Conf] Postview ERR: 'view.pages' is missing or not a valid map inside intermediate JSON")
+		log.Println("⚠️  [Conf] Postview ERR: 'view' is missing or not a map")
 		return
 	}
 
+	// Ensure "pages" exists inside viewData
+	viewPages, ok := viewData["pages"].(map[string]any)
+	if !ok {
+		// Create it if missing
+		viewPages = make(map[string]any)
+		viewData["pages"] = viewPages
+	}
+
+	// Merge defaults into each page
 	for page, val := range pages {
 		pageConf, ok := val.(map[string]any)
 		if !ok {
@@ -27,17 +41,17 @@ func (c *ConfLib) ConfPostView() {
 			continue
 		}
 
-		// Deep copy viewDefault into rawConf to avoid mutation
+		// Copy defaults first, then page-specific config
 		rawConf := make(map[string]any)
-		maps.Copy(rawConf, pageDefault)
+		if pageDefault != nil {
+			maps.Copy(rawConf, pageDefault)
+		}
 		maps.Copy(rawConf, pageConf)
 
 		viewPages[page] = rawConf
 	}
 
+	// Save merged config
 	c.postSetup(rawJson)
-
-	// fmt.Printf("-->\n%s\n%s\n", cfg.Global, "")
-	// fmt.Printf("--> Default:\n%v\nMap:\n%v\nJson:\n%s\n", pageDefault, c.AllMap(), c.AllJsonPretty())
-	// fmt.Printf("--> Default:\n%v\nMap:\n%v\nJson:\n%s\n", pageDefault, c.AllMapStruct(), c.AllJsonStruct())
+	
 }

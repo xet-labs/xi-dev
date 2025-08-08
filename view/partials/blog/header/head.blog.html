@@ -1,6 +1,5 @@
 {{ define "prtls/blog.header" }}
 
-{{ if gt (len .P.Data.B.Tags) 0 }}
 <div class="blog-head-tags">
     {{ range $i, $tag := slice .P.Data.B.Tags 0 4 }}
     <a href="{{ $tag }}">
@@ -8,7 +7,6 @@
     </a>
     {{ end }}
 </div>
-{{ end }}
 
 <h1 class="blog-head-title" title="{{ .P.Data.B.Title }}">{{ .P.Data.B.Title }}</h1>
 
@@ -41,9 +39,7 @@
         </div>
 
         <div class="meta-time">
-            <time>
-                {{ formatTime .P.Data.B.CreatedAt "January 2, 2006, 3:04 PM" }}
-            </time>
+            <time>{{ formatTime .P.Data.B.CreatedAt "January 2, 2006, 3:04 PM" }}</time>
         </div>
     </div>
 </div>
