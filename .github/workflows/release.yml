@@ -5,14 +5,11 @@ on:
     tags:
       - 'v*.*.*'
 
-env:
-  APP_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
-
 jobs:
   build:
     uses: ./.github/workflows/build-go.yml
     with:
-      appName: ${{ env.APP_NAME }}
+      appName: ${{ github.event.repository.name }}-${{ github.ref_name }}
       version: ${{ github.ref_name }}
 
   release:
@@ -34,4 +31,4 @@ jobs:
             See changelog in private repo.
           repository: xet-labs/xi
           token: ${{ secrets.XI_REPO_TOKEN }}
-          files: ${{ env.APP_NAME }}-*
+          files: ${{ github.event.repository.name }}-${{ github.ref_name }}-*

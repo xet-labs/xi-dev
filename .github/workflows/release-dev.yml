@@ -5,14 +5,11 @@ on:
     tags:
       - 'v*.*.*'
 
-env:
-  APP_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}
-
 jobs:
   build:
     uses: ./.github/workflows/build-go.yml
     with:
-      appName: ${{ env.APP_NAME }}
+      appName: ${{ github.event.repository.name }}-${{ github.ref_name }}
       version: ${{ github.ref_name }}
 
   release:
@@ -23,10 +20,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-binaries
-          
+
       - name: Release Dev Assets
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ env.APP_NAME }}-*
+          files: ${{ github.event.repository.name }}-${{ github.ref_name }}-*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
