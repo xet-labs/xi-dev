@@ -29,6 +29,7 @@ jobs:
       - name: Build GO Binaries
         run: |
           GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o "${{ inputs.appName }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+          ls ./ 
 
       - name: Upload artifact for ${{ matrix.goos }}-${{ matrix.goarch }}
         uses: actions/upload-artifact@v4

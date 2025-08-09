@@ -23,7 +23,7 @@ jobs:
           path: ./build_artifacts
 
       - name: List downloaded files
-        run: ls ./build_artifacts
+        run: ls ./ ./build_artifacts
           
       - name: Release Dev Assets
         uses: softprops/action-gh-release@v1
