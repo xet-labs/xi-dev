@@ -19,8 +19,8 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         # no 'name' means download all artifacts
-        # with:
-        #   path: ./build_artifacts
+        with:
+          path: ./build_artifacts
 
       - name: List downloaded files
         run: ls ./ ./build_artifacts
