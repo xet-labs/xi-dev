@@ -19,15 +19,26 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         # no 'name' means download all artifacts
-        with:
-          path: ./build_artifacts
+        # with:
+        #   path: ./build_artifacts
 
       - name: List downloaded files
         run: ls ./ ./build_artifacts
+
+      - name: Generate file list for release
+        id: file_list
+        run: |
+          if [[ -d build_artifacts ]];then
+            files=$(find build_artifacts -type f | grep ${{ github.event.repository.name }}-${{ github.ref_name }}-* | paste -sd " " -)
+            echo "files=$files" >> $GITHUB_OUTPUT
+          else
+            echo "Artifacts werent found"
+            exit 1
+          fi
           
       - name: Release Dev Assets
         uses: softprops/action-gh-release@v1
         with:
-          files: ./build_artifacts/${{ github.event.repository.name }}-${{ github.ref_name }}-*
+          files: ${{ github.event.repository.name }}-${{ github.ref_name }}-*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

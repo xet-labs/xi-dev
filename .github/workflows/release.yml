@@ -25,6 +25,17 @@ jobs:
       - name: List downloaded files
         run: ls ./ ./build_artifacts
 
+      - name: Generate file list for release
+        id: file_list
+        run: |
+          if [[ -d build_artifacts ]];then
+            files=$(find build_artifacts -type f | grep ${{ github.event.repository.name }}-${{ github.ref_name }}-* | paste -sd " " -)
+            echo "files=$files" >> $GITHUB_OUTPUT
+          else
+            echo "Artifacts werent found"
+            exit 1
+          fi
+
       - name: Release Public Assets
         uses: softprops/action-gh-release@v2
         with:
@@ -35,4 +46,4 @@ jobs:
             See changelog in private repo.
           repository: xet-labs/xi
           token: ${{ secrets.XI_REPO_TOKEN }}
-          files: ./build_artifacts/${{ github.event.repository.name }}-${{ github.ref_name }}-*
+          files: ${{ steps.file_list.outputs.files }}
