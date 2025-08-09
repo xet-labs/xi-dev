@@ -28,11 +28,16 @@ jobs:
       - name: Generate file list for release
         id: file_list
         run: |
-          if [[ -d build_artifacts ]];then
-            files=$(find build_artifacts -type f | grep ${{ github.event.repository.name }}-${{ github.ref_name }}-* | paste -sd " " -)
+          REPO_NAME="${{ github.event.repository.name }}"
+          REF_NAME="${{ github.ref_name }}"
+          ARTIFACT_DIR=build_artifacts
+
+          if [[ -d "$ARTIFACT_DIR" ]]; then
+            # Find all files that match your pattern
+            files=$(find "$ARTIFACT_DIR" -type f | grep "${REPO_NAME}-${REF_NAME}-" | paste -sd " " -)
             echo "files=$files" >> $GITHUB_OUTPUT
           else
-            echo "Artifacts werent found"
+            echo "Artifacts were not found"
             exit 1
           fi
 
