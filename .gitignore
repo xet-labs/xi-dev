@@ -4,7 +4,7 @@
 *.out
 *.test
 *.log
-xi
+
 
 # Dependency files
 /bin/

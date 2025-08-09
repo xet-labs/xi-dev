@@ -28,6 +28,6 @@ jobs:
       - name: Release Dev Assets
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ github.event.repository.name }}-${{ github.ref_name }}-*
+          files: ./build_artifacts/${{ github.event.repository.name }}-${{ github.ref_name }}-*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

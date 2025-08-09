@@ -24,7 +24,7 @@ jobs:
 
       - name: List downloaded files
         run: ls ./build_artifacts
-        
+
       - name: Release Public Assets
         uses: softprops/action-gh-release@v2
         with:
@@ -35,4 +35,4 @@ jobs:
             See changelog in private repo.
           repository: xet-labs/xi
           token: ${{ secrets.XI_REPO_TOKEN }}
-          files: ${{ github.event.repository.name }}-${{ github.ref_name }}-*
+          files: ./build_artifacts/${{ github.event.repository.name }}-${{ github.ref_name }}-*

@@ -1,10 +1,17 @@
 # makefile
 
+APP_NAME ?= myapp
+VERSION ?= v0.1.0
+
+OS := linux windows darwin
+ARCH := amd64 arm64
+
+BUILD_DIR := build
+
 mod:
 	go mod tidy -v                   
 	go mod download
 	go mod vendor
-
 
 run:
 	@AppBin="${PWD}/vendor/bin"; \
@@ -18,16 +25,22 @@ run:
 	\
 	$$AppBin/air
 
-
 build:
 	go mod vendor
-	go build -mod=vendor -o main
+	@mkdir -p $(BUILD_DIR)
+	go build -mod=vendor -o $(BUILD_DIR)/main
 
+.PHONY: all clean
 
-exe:
-	go build -o main && ./main
+all: $(foreach os,$(OS),$(foreach arch,$(ARCH),$(BUILD_DIR)/$(APP_NAME)-$(VERSION)-$(os)-$(arch)))
 
+$(BUILD_DIR)/$(APP_NAME)-$(VERSION)-%:
+	@mkdir -p $(BUILD_DIR)
+	@echo "Building $@"
+	OS=$$(echo $* | rev | cut -d'-' -f2 | rev)
+	ARCH=$$(echo $* | rev | cut -d'-' -f1 | rev)
+	GOOS=$$OS GOARCH=$$ARCH go build -o $@
 
 clean:
-	rm -vrf "${PWD}/vendor/bin"
-	rm -vf "${PWD}"/main
+	rm -rvf "vendor/bin"
+	rm -rvf "$(BUILD_DIR)"
