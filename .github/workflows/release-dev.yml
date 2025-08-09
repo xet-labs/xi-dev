@@ -22,8 +22,8 @@ jobs:
         with:
           path: ./build_artifacts
 
-      - name: List downloaded files
-        run: ls ./ ./build_artifacts
+      - name: Debug build artifacts structure
+        run: tree -a build_artifacts || ls -lR build_artifacts
 
       - name: Generate file list for release
         id: file_list
@@ -33,9 +33,10 @@ jobs:
           ARTIFACT_DIR=build_artifacts
 
           if [[ -d "$ARTIFACT_DIR" ]]; then
-            # Find all files that match your pattern
-            files=$(find "$ARTIFACT_DIR" -type f | grep "${REPO_NAME}-${REF_NAME}-" | paste -sd " " -)
-            echo "files=$files" >> $GITHUB_OUTPUT
+            files=$(find "$ARTIFACT_DIR" -type f | grep "${REPO_NAME}-${REF_NAME}-")
+            echo "files<<EOF" >> $GITHUB_OUTPUT
+            echo "$files" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
             echo "Artifacts were not found"
             exit 1
