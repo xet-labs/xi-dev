@@ -1,4 +1,4 @@
-name: Release Public
+name: Release Dev
 
 on:
   push:
@@ -23,15 +23,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-binaries
-
-      - name: Release Public Assets
-        uses: softprops/action-gh-release@v2
+          
+      - name: Release Dev Assets
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          name: "Release ${{ github.ref_name }}"
-          body: |
-            Public release of version ${{ github.ref_name }}.
-            See changelog in private repo.
-          repository: xet-labs/xi
-          token: ${{ secrets.XI_REPO_TOKEN }}
           files: ${{ env.APP_NAME }}-*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
