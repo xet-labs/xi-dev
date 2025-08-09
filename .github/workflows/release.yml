@@ -18,9 +18,13 @@ jobs:
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
+        # no 'name' means download all artifacts
         with:
-          name: app-binaries
+          path: ./build_artifacts
 
+      - name: List downloaded files
+        run: ls ./build_artifacts
+        
       - name: Release Public Assets
         uses: softprops/action-gh-release@v2
         with:
