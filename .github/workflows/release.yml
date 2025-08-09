@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/build-go.yml
+    uses: ./.github/workflows/build-go.p.yml
     with:
       appName: ${{ github.event.repository.name }}-${{ github.ref_name }}
       version: ${{ github.ref_name }}
