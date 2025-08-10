@@ -1,18 +1,21 @@
 package env
 
 import (
-	"log"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 
+	"xi/app/lib/logger"
+
+	"github.com/rs/zerolog/log"
 	"github.com/joho/godotenv"
 )
 
 type EnvLib struct {
 	app  map[string]any // store Runtime env
 	sys  map[string]any // store Systems env
+	
 	once sync.Once
 	mu   sync.RWMutex
 }
@@ -28,13 +31,14 @@ func (e *EnvLib) Init() { e.once.Do(e.InitCore) }
 
 // InitCore, reload .env and OS env variables forcibly
 func (e *EnvLib) InitCore() {
+	logger.Logger.Init()
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
 	if err := godotenv.Load(); err != nil {
-		log.Printf("⚠️  [Env] WRN: failed to loaded: %v", err)
+		log.Warn().Msgf("Env failed to loaded: %v", err)
 	} else {
-		log.Println("✅ [Env] Loaded")
+		log.Info().Msg("Env loaded")
 	}
 
 	for _, kv := range os.Environ() {

@@ -2,10 +2,10 @@ package db
 
 import (
 	"context"
-	"log"
 	"strings"
 	"sync"
 
+	"github.com/rs/zerolog/log"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -79,11 +79,11 @@ func (r *RedisLib) SetCli(name string, client *redis.Client) {
 	defer r.mu.Unlock()
 
 	if _, exists := r.clients[name]; exists {
-		log.Printf("⚠️  Redis client '%s' already exists", name)
+		log.Warn().Msgf("Redis client '%s' already exists", name)
 	}
 	for n, c := range r.clients {
 		if c == client {
-			log.Printf("⚠️  Redis client already registered as '%s'", n)
+			log.Warn().Msgf("Redis client already registered as '%s'", n)
 			break
 		}
 	}
@@ -121,9 +121,9 @@ func (r *RedisLib) SetDefault(name string) {
 	if cli, ok := r.clients[name]; ok {
 		r.defaultCli = name
 		r.client = cli
-		log.Printf("✅ Redis default: client set to '%s'", name)
+		log.Info().Msgf("Redis default: client set to '%s'", name)
 	} else {
-		log.Printf("⚠️  Redis default: client '%s' not found", name)
+		log.Warn().Msgf("Redis default: client '%s' not found", name)
 	}
 }
 

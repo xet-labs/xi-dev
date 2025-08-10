@@ -5,9 +5,12 @@ import (
 	"xi/app/lib/db"
 	"xi/app/lib/env"
 	"xi/app/lib/file"
-	"xi/app/lib/minify"
-	"xi/app/lib/view"
+	"xi/app/lib/logger"
+	// "github.com/rs/zerolog/log"
 	// "xi/app/lib/hook"
+	"xi/app/lib/minify"
+	"xi/app/lib/util"
+	"xi/app/lib/view"
 )
 
 var (
@@ -16,7 +19,10 @@ var (
 	Rdb = db.Rdb
 	Env = env.Env
 	File = file.File
+	Log = logger.Logger.Log
+	Logger = logger.Logger
 	// Hook = &hook.Hook{}
 	Minify = minify.Minify
+	Util = util.Util
 	View = view.View
 )

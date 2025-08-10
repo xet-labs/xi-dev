@@ -3,12 +3,12 @@ package db
 import (
 	"context"
 	"fmt"
-	"log"
 	"sync"
 	"xi/app/lib/conf"
 	"xi/app/lib/cfg"
 	"xi/app/lib/env"
 
+	"github.com/rs/zerolog/log"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -55,7 +55,7 @@ func (d *DbLib) InitForce() {
 	d.initPre()
 
 	if cfg.Db.Conn == nil {
-		log.Println("⚠️  [DB] WRN: No connections were configured")
+		log.Warn().Msgf("DB WRN: No connections were configured")
 	}
 	for profile, c := range cfg.Db.Conn {
 		if !c.Enable {
@@ -76,18 +76,18 @@ func (d *DbLib) InitForce() {
 				c.User, c.Pass, c.Host, c.Port, c.Db, c.Charset)
 			dbConn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 			if err != nil {
-				log.Fatalf("❌ Could not connect to DB '%s': %v", profile, err)
+				log.Error().Msgf("DB couldn't connect '%s': %v", profile, err)
 			}
 			Db.SetCli(profile, dbConn)
-			log.Printf("✅ [DB] Connected '%s' (MySQL)", profile)
+			log.Info().Msgf("DB connected '%s' MySQL", profile)
 
 		case "sqlite":
 			dbConn, err := gorm.Open(sqlite.Open(c.Db), &gorm.Config{})
 			if err != nil {
-				log.Fatalf("❌ Could not connect to DB '%s': %v", profile, err)
+				log.Error().Msgf("DB couldn't connect'%s': %v", profile, err)
 			}
 			Db.SetCli(profile, dbConn)
-			log.Printf("✅ [DB] Connected '%s' (SQLite)", profile)
+			log.Info().Msgf("DB connected '%s' SQLite", profile)
 
 		case "redis":
 			rdb := redis.NewClient(&redis.Options{
@@ -96,13 +96,13 @@ func (d *DbLib) InitForce() {
 				DB:       c.Rdb,
 			})
 			if err := rdb.Ping(context.Background()).Err(); err != nil {
-				log.Fatalf("❌ Could not connect to Redis '%s': %v", profile, err)
+				log.Error().Msgf("DB couldn't connect to Redis '%s': %v", profile, err)
 			}
 			Rdb.SetCli(profile, rdb)
-			log.Printf("✅ [DB] Connected '%s' (Redis)", profile)
+			log.Info().Msgf("DB connected '%s' Redis", profile)
 
 		default:
-			log.Printf("⚠️  Unsupported DB driver '%s' for DB '%s'", c.Driver, profile)
+			log.Warn().Msgf("DB Unsupported driver '%s' for DB '%s'", c.Driver, profile)
 		}
 	}
 	

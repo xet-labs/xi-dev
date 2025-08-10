@@ -76,10 +76,9 @@
 
 /* --Theme-- */
 :root {color-scheme: light;
-    --bg: #f7f7f7;
-    /* --bg: rgb(254, 250, 243); */
-    /* --bg: #fff; */
+    /* --bg: #f7f7f7; */
     /* --bg: #f8f8f8; */
+    --bg: #fff;
     --colr-txt: #26272e;
     --colr-txt-1: #606060;
 

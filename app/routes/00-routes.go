@@ -1,9 +1,10 @@
 package routes
 
 import (
-	"log"
 	"xi/app/lib"
 	"xi/app/lib/cfg"
+
+		"github.com/rs/zerolog/log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,5 +37,5 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 	// Optional: Middleware (e.g. gzip)
 	// r.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	log.Println("✅ [Route] Routes registered")
+	log.Info().Msg("Routes registered")
 }

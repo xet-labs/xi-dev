@@ -3,9 +3,10 @@ package view
 import (
 	"html"
 	"html/template"
-	"log"
 	"net/url"
 	"strings"
+
+		"github.com/rs/zerolog/log"
 
 	"xi/app/lib/file"
 	"xi/view/htmlfn"
@@ -30,7 +31,7 @@ var HtmlFn = template.FuncMap{
 func (v *ViewLib) NewTmpl(Name, ext string, dirs ...string) *template.Template {
 	files, err := file.File.GetExt(ext, dirs...)
 	if err != nil {
-		log.Fatalf("Route: template load error: %v", err)
+		log.Fatal().Msgf("View NewTmpl: Load err: %v", err)
 	}
 
 	tcli := template.Must(template.New(Name).
@@ -46,7 +47,7 @@ func (v *ViewLib) NewTmpl(Name, ext string, dirs ...string) *template.Template {
 		if rawTcli, err := tcli.Clone(); err == nil {
 			v.RawTcli = rawTcli
 		} else {
-			log.Printf("[View] NewTmpl clone ERR: %s: %v", Name, err)
+			log.Fatal().Msgf("View NewTmpl: Clone err: %s: %v", Name, err)
 		}
 	}
 

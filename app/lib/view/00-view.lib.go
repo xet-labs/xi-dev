@@ -3,7 +3,6 @@ package view
 import (
 	"bytes"
 	"html/template"
-	"log"
 	"net/http"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"xi/app/lib/minify"
 	"xi/app/model"
 
+	"github.com/rs/zerolog/log"
 	"github.com/gin-gonic/gin"
 )
 
@@ -66,7 +66,7 @@ func (v *ViewLib) OutHtmlLyt(c *gin.Context, P model.PageParam, args ...string) 
 	// Render html via template
 	page := bytes.Buffer{}
 	if err := v.Tcli.ExecuteTemplate(&page, P.Layout, gin.H{"P": P}); err != nil {
-		log.Printf("[View] OutHtmlLyt execTemplate ERR: %s: %v", c.Request.URL, err)
+		log.Error().Msgf("View OutHtmlLyt execTemplate: %s: %v", c.Request.URL, err)
 		c.Status(http.StatusInternalServerError)
 		return false
 	}
@@ -74,7 +74,7 @@ func (v *ViewLib) OutHtmlLyt(c *gin.Context, P model.PageParam, args ...string) 
 	// Minify HTML
 	pageMin, err := minify.Minify.Html(page.Bytes())
 	if err != nil {
-		log.Printf("[View] OutHtmlLyt minify ERR: for %s: %v", c.Request.URL, err)
+		log.Error().Msgf("View OutHtmlLyt minify: for %s: %v", c.Request.URL, err)
 
 		// Serve the response with optional cache if rdbKey is provided in args[0]
 		c.Data(http.StatusOK, "text/html; charset=utf-8", page.Bytes())
@@ -98,7 +98,7 @@ func (v *ViewLib) OutCss(c *gin.Context, css []byte, args ...string) bool {
 	// Minify the CSS
 	cssMin, err := minify.Minify.CssHybrid(css)
 	if err != nil {
-		log.Printf("[OutCss] Minify error: %v", err)
+		log.Error().Msgf("View OutCss Minify: %v", err)
 		c.Data(http.StatusOK, "text/css; charset=utf-8", css)
 		return true
 	}

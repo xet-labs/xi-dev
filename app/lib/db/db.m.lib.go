@@ -1,11 +1,9 @@
 package db
 
 import (
-	"log"
-
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
-
 
 // Ensures lazyInit runs once
 func (d *DbLib) lazyFnOnce() {
@@ -31,7 +29,7 @@ func (d *DbLib) GetCli(name ...string) *gorm.DB {
 		return db
 	}
 
-	log.Printf("⚠️  [DB] '%s' not found", dbName)
+	log.Warn().Msgf("DB '%s' not found", dbName)
 	return nil
 }
 

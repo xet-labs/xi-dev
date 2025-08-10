@@ -4,7 +4,7 @@ import (
 	"xi/app/model"
 )
 
-type CfgLib struct{}
+type Lib struct{}
 
 // var Cfg = &CfgLib{}
 

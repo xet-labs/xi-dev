@@ -3,7 +3,6 @@ package conf
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"slices"
@@ -12,10 +11,12 @@ import (
 	"time"
 
 	"xi/app/lib/cfg"
+	"xi/app/lib/util"
 	"xi/app/lib/env"
 	"xi/app/lib/hook"
 	"xi/app/model"
 
+	"github.com/rs/zerolog/log"
 	"github.com/fsnotify/fsnotify"
 	koanfJson "github.com/knadh/koanf/parsers/json"
 	"github.com/knadh/koanf/providers/rawbytes"
@@ -57,7 +58,7 @@ var (
 func init() {
 	Conf.Init()
 	if err := Conf.Daemon(); err != nil {
-		log.Printf("⚠️ [Conf] Daemon WRN: setup failed: %v", err)
+		log.Warn().Msgf("Config Daemon: setup failed: %v", err)
 	}
 }
 
@@ -82,7 +83,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	oldIntermediateMap := c.IntermediateMap
 	oldIntermediateJson := c.IntermediateJson
 
-	okStatus := "Loaded"
+	okStatus := "loaded"
 	errStatus := "No config loaded."
 	if c.hasInitialized {
 		okStatus = "Reloaded"
@@ -98,17 +99,17 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	for _, path := range c.Files {
 		raw, err := os.ReadFile(path)
 		if err != nil {
-			log.Printf("⚠️  [Conf] Init WRN: Skipped '%s': %v", path, err)
+			log.Warn().Msgf("Config Init: Skipped '%s': %v", path, err)
 			continue
 		}
 
 		resolved, err := c.resolveJsonVars(c.cleanJson(c.resolveJsonEnv(string(raw))))
 		if err != nil {
-			log.Printf("⚠️  [Conf] Init WRN: Resolving failed '%s': %v", path, err)
+			log.Warn().Msgf("Config Init: Resolving failed '%s': %v", path, err)
 			continue
 		}
 		if err := newKoanf.Load(rawbytes.Provider([]byte(resolved)), koanfJson.Parser()); err != nil {
-			log.Printf("⚠️  [Conf] Init WRN: Parsing failed '%s': %v", path, err)
+			log.Warn().Msgf("Config Init: Parsing failed '%s': %v", path, err)
 			continue
 		}
 		newFilesLoaded = append(newFilesLoaded, path)
@@ -116,7 +117,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 
 	// Fail and rollback if nothing loaded
 	if len(newFilesLoaded) == 0 {
-		log.Printf("⚠️  [Conf] WRN: %s", errStatus)
+		log.Warn().Msgf("Config %s", errStatus)
 		if c.hasInitialized {
 			// restore old state
 			c.koanfCli = oldKoanfCli
@@ -124,7 +125,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 			c.IntermediateMap = oldIntermediateMap
 			c.IntermediateJson = oldIntermediateJson
 		}
-		return fmt.Errorf("no config files loaded successfully")
+		return fmt.Errorf("no config files could be loaded")
 	}
 
 	// Temporarily assign newKoanf to c so we can use c methods
@@ -137,7 +138,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 
 	c.ConfPostView()
 
-	log.Printf("✅ [Conf] %s: %s", okStatus, newFilesLoaded)
+	log.Info().Msgf("Config %s %s", okStatus, util.Util.QuoteSlice(newFilesLoaded))
 	c.hasInitialized = true
 
 	return nil
@@ -281,20 +282,20 @@ func (c *ConfLib) postSetup(jsonMap map[string]any) error {
 	// Convert map[string]any to proper []byte(json) for further processing
 	jsonBytes, err := json.Marshal(jsonMap)
 	if err != nil {
-		log.Printf("⚠️  [Conf] PostSetup WRN: failed to marshal DataJson: %v", err)
+		log.Warn().Msgf("Config PostSetup: failed to marshal DataJson: %v", err)
 		return err
 	}
 
 	// store
 	rawCfg := model.Config{}
 	if err := json.Unmarshal(jsonBytes, &rawCfg); err != nil {
-		log.Printf("⚠️  [Conf] PostSetup WRN: failed to unmarshal into Config struct: %v", err)
+		log.Warn().Msgf("Config PostSetup: Failed to unmarshal into Config struct: %v", err)
 		return err
 	}
 	cfg.Update(rawCfg)
 
 	if err := c.koanfCli.Load(rawbytes.Provider(jsonBytes), koanfJson.Parser()); err != nil {
-		log.Printf("⚠️  [Conf] PostSetup WRN: Failed to load JSON config into Koanf: %v", err)
+		log.Warn().Msgf("Config PostSetup: Failed to load JSON config into Koanf: %v", err)
 		return err
 	}
 	return nil
@@ -310,7 +311,7 @@ func (c *ConfLib) Daemon() error {
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		log.Printf("⚠️  [Conf] Daemon WRN: failed to create: %v", err)
+		log.Warn().Msgf("Config Daemon WRN: failed to create: %v", err)
 		return err
 	}
 	c.watch = watcher
@@ -326,7 +327,7 @@ func (c *ConfLib) Daemon() error {
 					log.Printf("🔄 [Conf] Changed: %s (%s)", event.Name, event.Op)
 
 					if err := c.InitCore(); err != nil {
-						log.Printf("⚠️  [Conf] Reload failed: %v", err)
+						log.Warn().Msgf("Config Reload failed: %v", err)
 					}
 					// Sleep briefly to avoid partial writes
 					time.Sleep(100 * time.Millisecond)
@@ -336,7 +337,7 @@ func (c *ConfLib) Daemon() error {
 				if !ok {
 					return
 				}
-				log.Printf("⚠️  [Conf] daemon Err: %v", err)
+				log.Warn().Msgf("Config Daemon: %v", err)
 			}
 		}
 	}()
@@ -345,10 +346,10 @@ func (c *ConfLib) Daemon() error {
 		// Ensure file exists before watching (else no event will be triggered)
 		if _, err := os.Stat(path); err == nil {
 			if err := watcher.Add(path); err != nil {
-				log.Printf("⚠️  [Conf] Daemon WRN: failed to watch %s: %v", path, err)
+				log.Warn().Msgf("Config Daemon WRN: failed to watch %s: %v", path, err)
 			}
 		} else {
-			log.Printf("⚠️  [Conf] Daemon WRN: missing file: %s", path)
+			log.Warn().Msgf("Config Daemon WRN: missing file: %s", path)
 		}
 	}
 
