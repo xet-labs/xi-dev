@@ -6,8 +6,9 @@ import (
 	"net/url"
 	"strings"
 
-		"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/log"
 
+	"xi/app/lib/util"
 	"xi/app/lib/file"
 	"xi/view/htmlfn"
 )
@@ -28,13 +29,14 @@ var HtmlFn = template.FuncMap{
 	"urlEscape":    url.QueryEscape,
 }
 
-func (v *ViewLib) NewTmpl(Name, ext string, dirs ...string) *template.Template {
+func (v *ViewLib) NewTmpl(name, ext string, dirs ...string) *template.Template {
 	files, err := file.File.GetExt(ext, dirs...)
 	if err != nil {
-		log.Fatal().Msgf("View NewTmpl: Load err: %v", err)
+		log.Error().Err(err).Str("cli", name).Str("template-dir", util.Util.QuoteSlice(dirs)).
+		Msg("View NewTmpl: couldnt get template files")
 	}
 
-	tcli := template.Must(template.New(Name).
+	tcli := template.Must(template.New(name).
 		Funcs(HtmlFn).
 		// Funcs(HtmlFuncs).
 		// Funcs(timeutil.Funcs).
@@ -44,11 +46,12 @@ func (v *ViewLib) NewTmpl(Name, ext string, dirs ...string) *template.Template {
 	// Store instance globally so it can be used alter by other functions for rendering pages
 	if v.Tcli == nil {
 		v.Tcli = tcli
-		if rawTcli, err := tcli.Clone(); err == nil {
-			v.RawTcli = rawTcli
-		} else {
-			log.Fatal().Msgf("View NewTmpl: Clone err: %s: %v", Name, err)
+		rawTcli, err := tcli.Clone();
+		if err != nil {
+			log.Error().Err(err).Str("cli", name).
+			Msg("View NewTmpl: cli")
 		}
+		v.RawTcli = rawTcli
 	}
 
 	return tcli

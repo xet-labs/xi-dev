@@ -61,11 +61,11 @@
       "view/pages"
     ],
     "default": {
-      "app": {},
+      "app": "",
       "data": {
         "title": "XetIndustries"
       },
-      "layout": "layout/base",
+      "layout": "layout/default",
       "nav_menu": [
         {
           "label": "Home",

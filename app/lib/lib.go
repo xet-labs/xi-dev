@@ -7,22 +7,21 @@ import (
 	"xi/app/lib/file"
 	"xi/app/lib/logger"
 	// "github.com/rs/zerolog/log"
-	// "xi/app/lib/hook"
+	"xi/app/lib/hook"
 	"xi/app/lib/minify"
 	"xi/app/lib/util"
 	"xi/app/lib/view"
 )
 
 var (
-	Conf = conf.Conf
-	Db = db.Db
-	Rdb = db.Rdb
-	Env = env.Env
-	File = file.File
-	Log = logger.Logger.Log
+	Conf   = conf.Conf
+	Db     = db.Db
+	Rdb    = db.Rdb
+	Env    = env.Env
+	File   = file.File
+	Hook   = &hook.Hook{}
 	Logger = logger.Logger
-	// Hook = &hook.Hook{}
 	Minify = minify.Minify
-	Util = util.Util
-	View = view.View
+	Util   = util.Util
+	View   = view.View
 )

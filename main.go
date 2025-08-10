@@ -2,7 +2,7 @@
 package main
 
 import (
-	"xi/app/lib"
+	"xi/app/lib/cfg"
 	"xi/app/routes"
 	"xi/app/service"
 
@@ -15,7 +15,7 @@ func init() {
 
 func main() {
 	// Init Gin Engine
-	gin.SetMode(lib.Env.Get("APP_MODE", "release"))
+	gin.SetMode(cfg.App.Mode)
 	app := gin.Default()
 
 	// Init routes

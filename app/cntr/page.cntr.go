@@ -2,13 +2,15 @@ package cntr
 
 import (
 	"bytes"
-	"log"
 	"net/http"
 	"os"
 	"time"
+
 	"xi/app/lib"
 	"xi/app/lib/cfg"
 	"xi/app/model"
+
+	"github.com/rs/zerolog/log"
 	"github.com/gin-gonic/gin"
 )
 

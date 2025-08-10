@@ -4,28 +4,24 @@ import (
 	"xi/app/lib"
 	"xi/app/lib/cfg"
 
-		"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/log"
 
 	"github.com/gin-gonic/gin"
 )
 
-type RouteStruct struct {
-	templates []string
-}
+type RouteStruct struct {}
 
-var Route = &RouteStruct{
-	templates: cfg.View.TemplateDir,
-}
+var Route = &RouteStruct{}
 
 var r *gin.Engine
 
 // Initializes all routes and templates
 func (rt *RouteStruct) Init(engine *gin.Engine) {
-	lib.View.Ecli = engine	// Engine_cli
+	lib.View.Ecli = engine // Engine_cli
 	r = engine
 
 	// Register templates
-	r.SetHTMLTemplate(lib.View.NewTmpl("base", ".html", rt.templates...))
+	r.SetHTMLTemplate(lib.View.NewTmpl("main", ".html", cfg.View.TemplateDir...))
 
 	// Register routes
 	rt.registerCore()
