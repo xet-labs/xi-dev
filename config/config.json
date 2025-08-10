@@ -61,7 +61,7 @@
       "view/pages"
     ],
     "default": {
-      "app": "",
+      "app": {},
       "data": {
         "title": "XetIndustries"
       },
