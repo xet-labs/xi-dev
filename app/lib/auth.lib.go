@@ -3,7 +3,7 @@ package lib
 import (
 	"sync"
 	"time"
-    "xi/app/model"
+	"xi/app/model"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -49,30 +49,30 @@ func (a *AuthLib) ParseToken(tokenStr string) (jwt.MapClaims, error) {
 }
 
 func (a *AuthLib) Hash(pw string) (string, error) {
-    bytes, err := bcrypt.GenerateFromPassword([]byte(pw), 14)
-    return string(bytes), err
+	bytes, err := bcrypt.GenerateFromPassword([]byte(pw), 14)
+	return string(bytes), err
 }
 
 // -------------------------------------------------------------
 func (a *AuthLib) GenerateJWT(user model.User) (string, error) {
-    claims := jwt.MapClaims{
-        "username": user.Username,
-        "exp":      time.Now().Add(time.Hour * 72).Unix(),
-    }
+	claims := jwt.MapClaims{
+		"username": user.Username,
+		"exp":      time.Now().Add(time.Hour * 72).Unix(),
+	}
 
-    token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-    return token.SignedString(a.jwtSecret)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(a.jwtSecret)
 }
 
 func (a *AuthLib) GenerateApiKey() string {
-    return a.RandString(32)
+	return a.RandString(32)
 }
 
 func (a *AuthLib) RandString(n int) string {
-    const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    b := make([]byte, n)
-    for i := range b {
-        b[i] = letters[i%len(letters)]
-    }
-    return string(b)
+	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letters[i%len(letters)]
+	}
+	return string(b)
 }

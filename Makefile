@@ -13,6 +13,10 @@ mod:
 	go mod download
 	go mod vendor
 
+check:
+	go fmt ./...
+	go vet ./...
+
 run:
 	@AppBin="${PWD}/vendor/bin"; \
 	echo "Creating bin dir at $$AppBin"; \

@@ -55,7 +55,7 @@ func (c *ConfLib) ConfPostView() error {
 	}
 
 	// Save merged config
-	if err := c.postSetup(rawJson); err != nil{
+	if err := c.postSetup(rawJson); err != nil {
 		log.Error().Msgf("Config Postview: failed to sync: %v", err)
 		return err
 	}

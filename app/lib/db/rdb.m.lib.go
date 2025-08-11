@@ -1,10 +1,11 @@
 package db
+
 import (
 	"encoding/json"
 	"time"
 
-	"github.com/rs/zerolog/log"
 	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog/log"
 )
 
 func (r *RedisLib) key(k string) string {
@@ -15,7 +16,7 @@ func (r *RedisLib) Set(k string, v any, ttl time.Duration) error {
 	if r.client == nil {
 		return redis.ErrClosed
 	}
-	 
+
 	if err := r.client.Set(r.ctx, r.key(k), v, ttl).Err(); err != nil {
 		log.Warn().Msgf("Rdb SET ERR: '%s': %v", k, err)
 		return err
@@ -27,7 +28,7 @@ func (r *RedisLib) Get(k string) (string, error) {
 	if r.client == nil {
 		return "", redis.ErrClosed
 	}
-	
+
 	v, err := r.client.Get(r.ctx, r.key(k)).Result()
 	if err != nil {
 		log.Warn().Msgf("Rdb GET ERR: '%s': %v", k, err)

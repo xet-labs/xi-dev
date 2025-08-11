@@ -16,7 +16,7 @@ func LinkLib(libs ...string) template.HTML {
 	if len(libs) == 0 {
 		return ""
 	}
-	
+
 	var b strings.Builder
 
 	for _, lib := range libs {

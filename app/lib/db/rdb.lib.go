@@ -5,8 +5,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/rs/zerolog/log"
 	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog/log"
 )
 
 // Shared global Redis clients
@@ -20,9 +20,9 @@ type RedisLib struct {
 	client     *redis.Client
 	ctx        context.Context
 	lazyInit   func()
-	
-	mu         sync.RWMutex
-	once       sync.Once
+
+	mu   sync.RWMutex
+	once sync.Once
 }
 
 // Global instance
@@ -166,4 +166,3 @@ func (r *RedisLib) GetDefault() string {
 func (r *RedisLib) With(cliName string) *RedisLib {
 	return r.New(cliName, r.prefix)
 }
-

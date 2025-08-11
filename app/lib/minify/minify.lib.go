@@ -35,13 +35,13 @@ func init() {
 	})
 
 	minifier.Add("text/html", &min3html.Minifier{
-		KeepWhitespace:        false, // collapse all whitespace
-		KeepComments:          false, // remove comments
+		KeepWhitespace:          false, // collapse all whitespace
+		KeepComments:            false, // remove comments
 		KeepConditionalComments: false, // remove IE conditionals too
-		KeepDefaultAttrVals:   false, // remove default values (e.g., type="text")
-		KeepDocumentTags:      false, // remove <!DOCTYPE> if possible
-		KeepEndTags:           false, // remove optional closing tags (</li>, etc.)
-		KeepQuotes:            false, // remove attribute quotes where safe
+		KeepDefaultAttrVals:     false, // remove default values (e.g., type="text")
+		KeepDocumentTags:        false, // remove <!DOCTYPE> if possible
+		KeepEndTags:             false, // remove optional closing tags (</li>, etc.)
+		KeepQuotes:              false, // remove attribute quotes where safe
 	})
 }
 

@@ -34,7 +34,6 @@ func (c *CssRes) Get(g *gin.Context) {
 	lib.View.OutCss(g, lib.File.MergeByte(c.Files), rdbKey)
 }
 
-
 func (c *CssRes) getFiles() {
 	var err error
 	Css.Files, err = lib.File.GetExt(".css", cfg.View.CssDir...)

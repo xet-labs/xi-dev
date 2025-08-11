@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"net/url"
 	"xi/app/lib"
-	"xi/app/model"
 	"xi/app/lib/cfg"
+	"xi/app/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -59,7 +59,9 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 	rdbKey := "/auth/" + url.QueryEscape(rawUID) + "/" + url.QueryEscape(rawID)
 
 	// Try cache
-	if lib.View.OutCache(c, rdbKey).Html() { return }
+	if lib.View.OutCache(c, rdbKey).Html() {
+		return
+	}
 
 	// Prep data
 	P := cfg.View.Pages["auth"]
@@ -72,13 +74,15 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 func (a *AuthCntr) ShowSignout(c *gin.Context) {}
 
 func (a *AuthCntr) Signout(c *gin.Context) {}
- 
+
 // login/logout
 func (a *AuthCntr) Logins(c *gin.Context) {
 	rdbKey := "/auth"
 
 	// Try cache
-	if lib.View.OutCache(c, rdbKey).Html() { return }
+	if lib.View.OutCache(c, rdbKey).Html() {
+		return
+	}
 
 	// Build data
 	P := cfg.View.Pages["auths"]
@@ -120,7 +124,9 @@ func (a *AuthCntr) ShowLogin(c *gin.Context) {
 	rdbKey := "/auth/" + url.QueryEscape(rawUID) + "/" + url.QueryEscape(rawID)
 
 	// Try cache
-	if lib.View.OutCache(c, rdbKey).Html() { return }
+	if lib.View.OutCache(c, rdbKey).Html() {
+		return
+	}
 
 	// Prep data
 	P := cfg.View.Pages["auth"]

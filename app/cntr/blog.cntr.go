@@ -41,11 +41,11 @@ func (b *BlogCntr) Index(c *gin.Context) {
 
 	b.mu.RLock()
 	defer b.mu.RUnlock()
-	
+
 	// Build data
 	P := cfg.View.Pages["blogs"]
 	P.Data = map[string]any{
-		"Url":     c.Request.URL.String(),
+		"Url": c.Request.URL.String(),
 	}
 
 	lib.View.OutHtmlLyt(c, P, rdbKey) // Cache renderer
@@ -68,7 +68,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	if err := BlogApi.ShowCore(&blog, rawUID, rawID); err != nil { // Fallback to DB
 		status := http.StatusNotFound
 		if err == ErrInvalidUID {

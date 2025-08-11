@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type RouteStruct struct {}
+type RouteStruct struct{}
 
 var Route = &RouteStruct{}
 

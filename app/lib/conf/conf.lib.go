@@ -165,7 +165,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 
 	c.ConfPostView()
 
-	log.Info().Str("files", util.Util.QuoteSlice(newFilesLoaded)).Msgf("Config %s", okStatus, )
+	log.Info().Str("files", util.Util.QuoteSlice(newFilesLoaded)).Msgf("Config %s", okStatus)
 	c.hasInitialized = true
 
 	return nil

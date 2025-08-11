@@ -12,7 +12,7 @@ import (
 func main() {
 	// Init services
 	service.Init()
-	
+
 	// Init Gin Engine
 	gin.SetMode(cfg.App.Mode)
 	app := gin.Default()

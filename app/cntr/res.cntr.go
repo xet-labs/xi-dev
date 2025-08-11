@@ -10,4 +10,3 @@ var Res = struct {
 }{
 	Css: res.Css,
 }
-

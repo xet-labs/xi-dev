@@ -10,8 +10,8 @@ import (
 	"xi/app/lib/cfg"
 	"xi/app/model"
 
-	"github.com/rs/zerolog/log"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 )
 
 type PageCntr struct{}
@@ -78,7 +78,7 @@ func (p *PageCntr) renderTcnt(c *gin.Context, title, content string) ([]byte, er
 	}
 
 	P := p.buildData(c, title)
-	
+
 	var out bytes.Buffer
 	if err := t.ExecuteTemplate(&out, P.Layout, gin.H{"P": P}); err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (p *PageCntr) renderTcnt(c *gin.Context, title, content string) ([]byte, er
 }
 
 // Combines global and per-page config data
-func (p *PageCntr) buildData(c *gin.Context, title string) model.PageParam{
+func (p *PageCntr) buildData(c *gin.Context, title string) model.PageParam {
 	data := cfg.View.Pages[title]
 	data.Data["url"] = c.Request.URL.String()
 	return data
