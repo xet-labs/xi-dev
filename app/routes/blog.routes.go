@@ -14,7 +14,7 @@ func (rt *RouteStruct) registerBlog() {
 		blogApi.DELETE("/:uid/:id", cntr.BlogApi.Delete)
 	}
 
-		blog := r.Group("/blog")
+	blog := r.Group("/blog")
 	{
 		blog.GET("", cntr.Blog.Index)
 		blog.GET("/:uid/:id", cntr.Blog.Show)

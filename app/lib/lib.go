@@ -20,7 +20,7 @@ var (
 	Env    = env.Env
 	File   = file.File
 	Hook   = &hook.Hook{}
-	Log = logger.Logger.Log
+	Log    = logger.Logger.Log
 	Logger = logger.Logger
 	Minify = minify.Minify
 	Util   = util.Util

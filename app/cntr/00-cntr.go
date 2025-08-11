@@ -10,4 +10,3 @@ var (
 	ErrInvalidSlug     = errors.New("invalid slug")
 	ErrBlogNotFound    = errors.New("blog not found")
 )
-

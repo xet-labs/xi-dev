@@ -13,7 +13,7 @@ func Debug(r *gin.Engine) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		routes, _ := routeData(r)
 		c.JSON(http.StatusOK, gin.H{
-			"route":         routes,
+			"route": routes,
 			// "routeDetailed": detailed,
 			"conf": lib.Conf.AllMap(),
 		})

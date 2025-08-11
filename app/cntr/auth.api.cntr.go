@@ -7,11 +7,9 @@ import (
 )
 
 type AuthApiCntr struct {
-	db    *gorm.DB
-	rdb   *redis.Client
+	db  *gorm.DB
+	rdb *redis.Client
 }
 
 // Singleton controller
 var AuthApi = &BlogApiCntr{}
-
-

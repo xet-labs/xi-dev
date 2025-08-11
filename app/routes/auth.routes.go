@@ -25,7 +25,6 @@ func (rt *RouteStruct) registerAuth() {
 		authApi.POST("/signout", cntr.Auth.Signout)
 	}
 
-
 	login := r.Group("/login")
 	{
 		login.GET("", cntr.Auth.ShowLogin)

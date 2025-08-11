@@ -47,4 +47,3 @@ func (f *FileLib) GetExts(exts []string, baseDirs ...string) ([]string, error) {
 
 	return files, nil
 }
-

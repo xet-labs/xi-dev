@@ -12,7 +12,7 @@ func (rt *RouteStruct) registerDebug() {
 	r.GET("/d/j", func(c *gin.Context) {
 		c.Data(200, "application/json", lib.Conf.AllJsonPretty())
 	})
-		r.GET("/d/js", func(c *gin.Context) {
+	r.GET("/d/js", func(c *gin.Context) {
 		c.Data(200, "application/json", lib.Conf.AllJsonStructPretty())
 	})
 }

@@ -35,4 +35,3 @@ func Update(cfg model.Config) {
 	Db = &global.Db
 	View = &global.View
 }
-

@@ -40,7 +40,7 @@ func (b *BlogApiCntr) Index(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Page or Limit"})
 		return
 	}
-	
+
 	// Try cache
 	blogs := []model.Blog{}
 	rdbKey := "/api/blog/?Page=" + page + "&Limit=" + limit
@@ -51,7 +51,7 @@ func (b *BlogApiCntr) Index(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	// Fallback to DB
 	offset := (pageNum - 1) * limitNum
 	if err := b.IndexCore(&blogs, offset, limitNum); err != nil {
@@ -84,7 +84,6 @@ func (b *BlogApiCntr) Show(c *gin.Context) {
 	rawUID := c.Param("uid") // @username or UID
 	rawID := c.Param("id")   // blog ID or slug
 
-	
 	// Try cache
 	blog := model.Blog{}
 	rdbKey := "/api/blog/" + rawUID + "/" + rawID
