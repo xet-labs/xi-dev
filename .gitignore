@@ -1,13 +1,20 @@
 # Go build
 /build/
-*.exe
-*.out
-*.test
 *.log
 
+# Binaries for programs and plugins
+*.out
+*.test
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.db
 
 # Dependency files
 /tmp/
+/bin/
 /vendor/bin
 
 # OS/IDE's
