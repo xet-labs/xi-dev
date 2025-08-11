@@ -23,8 +23,3 @@ type User struct {
 	Password   string     `gorm:"type:varchar(255)"             json:"-"`
 	Blogs      []Blog     `gorm:"foreignKey:UID;references:UID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"blogs,omitempty"` // Relation
 }
-
-// TableName returns the table name for User
-func (User) TableName() string {
-	return "users"
-}

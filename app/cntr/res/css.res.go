@@ -20,7 +20,22 @@ var Css = &CssRes{
 	RdbTTL: 12 * time.Hour,
 }
 
-func init() {
+// Css handler: serves combined+cssMin CSS (Redis cached)
+func (c *CssRes) Get(g *gin.Context) {
+	if c.Files == nil {
+		c.getFiles()
+	}
+	rdbKey := g.Request.URL.String()
+
+	if lib.View.OutCache(g, rdbKey).Css() {
+		return
+	}
+
+	lib.View.OutCss(g, lib.File.MergeByte(c.Files), rdbKey)
+}
+
+
+func (c *CssRes) getFiles() {
 	var err error
 	Css.Files, err = lib.File.GetExt(".css", cfg.View.CssDir...)
 	if err != nil {
@@ -29,16 +44,4 @@ func init() {
 	if len(Css.Files) == 0 {
 		log.Warn().Msgf("Controller CSS no files found in directory: %s", lib.Util.QuoteSlice(cfg.View.CssDir))
 	}
-}
-
-// Css handler: serves combined+cssMin CSS (Redis cached)
-func (c *CssRes) Get(g *gin.Context) {
-	g.Header("Content-Type", "text/css")
-	rdbKey := g.Request.URL.String()
-
-	if lib.View.OutCache(g, rdbKey).Css() {
-		return
-	}
-
-	lib.View.OutCss(g, lib.File.MergeByte(c.Files), rdbKey)
 }

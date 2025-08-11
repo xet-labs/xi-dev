@@ -1,6 +1,6 @@
 # makefile
 
-APP_NAME ?= myapp
+APP_NAME ?= xi
 VERSION ?= v0.1.0
 
 OS := linux windows darwin

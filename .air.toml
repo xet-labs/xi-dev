@@ -1,0 +1,23 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+bin = "tmp/main"
+cmd = "go build -o ./tmp/main \
+  -ldflags=\"-X 'xi/app/lib/cfg.BuildDate=$(date +%Y-%m-%d:%H:%M:%S:%Z)' \
+             -X 'xi/app/lib/cfg.BuildRevision=$(git rev-parse --short HEAD)' \
+             -X 'xi/app/lib/cfg.BuildVersion=$(git describe --tags --match v*.*.* --abbrev=0 2>/dev/null || echo dev)'\" \
+  ."
+delay = 1000
+
+[log]
+time = true
+color = true
+prefix = "air:"
+
+[watch]
+extensions = ["go", "tpl", "tmpl", "html", "toml", "yaml"]
+ignore = ["tmp", "vendor", "node_modules"]
+
+[screen]
+clear_on_rebuild = true

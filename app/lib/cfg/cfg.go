@@ -6,26 +6,33 @@ import (
 
 type Lib struct{}
 
-// var Cfg = &CfgLib{}
-
 var (
 	global = &model.Config{}
+	Build  = &global.Build
 	App    = &global.App
 	Db     = &global.Db
 	View   = &global.View
 )
 
-func Set(cfg model.Config) {
-	*global = cfg
+func init() {
+	*Build = model.BuildConf{
+		Date:     BuildDate,
+		Revision: BuildRevision,
+		Version:  BuildVersion,
+	}
 }
+
+func GetStatic() any { return globalStatic }
+
+func Set(cfg model.Config) { *global = cfg }
+
+func Get() *model.Config { return global }
 
 func Update(cfg model.Config) {
 	*global = cfg
+	Build = &global.Build
 	App = &global.App
 	Db = &global.Db
 	View = &global.View
 }
 
-func Get() *model.Config {
-	return global
-}

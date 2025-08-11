@@ -1,9 +1,16 @@
 package model
 
 type Config struct {
-	App  AppConf  `json:"app"`
-	Db   DbConf   `json:"db"`
-	View ViewConf `json:"view"`
+	Build BuildConf `json:"build"`
+	App   AppConf   `json:"app"`
+	Db    DbConf    `json:"db"`
+	View  ViewConf  `json:"view"`
+}
+
+type BuildConf struct {
+	Date     string `json:"build_date,omitempty"`
+	Revision string `json:"revision,omitempty"`
+	Version  string `json:"version,omitempty"`
 }
 
 type AppConf struct {
@@ -46,8 +53,7 @@ type ViewConf struct {
 	CssDir      []string             `json:"css_dir,omitempty"`
 	TemplateDir []string             `json:"template_dir,omitempty"`
 	Default     PageParam            `json:"default,omitempty"`
-	Page        PageParam            `json:"page,omitempty"`
-	Pages       map[string]PageParam `json:"pages"`
+	Pages       map[string]PageParam `json:"pages,omitempty"`
 }
 
 type PageParam struct {

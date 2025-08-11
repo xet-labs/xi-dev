@@ -4,44 +4,36 @@ import (
 	"context"
 	"fmt"
 	"sync"
-	"xi/app/lib/conf"
 	"xi/app/lib/cfg"
+	"xi/app/lib/conf"
 	"xi/app/lib/env"
 
-	"github.com/rs/zerolog/log"
 	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog/log"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-// Central utility
 type DbLib struct {
-	clients   map[string]*gorm.DB
+	clients    map[string]*gorm.DB
 	defaultCli string
-	mu        sync.RWMutex
-	once      sync.Once
-	lazyInit  func()
+	mu         sync.RWMutex
+	once       sync.Once
+	lazyInit   func()
 }
 
-// Global instance
 var Db = &DbLib{
 	defaultCli: "database",
-	clients:   make(map[string]*gorm.DB),
-}
-
-// RegisterLazyFn sets a callback for deferred initialization.
-func (d *DbLib) RegisterLazyFn(fn func()) {
-	d.lazyInit = fn
+	clients:    make(map[string]*gorm.DB),
 }
 
 // Init initializes DBs once
-func init() { Db.Init() }
 func (d *DbLib) Init() { d.once.Do(d.InitForce) }
 
 func (d *DbLib) initPre() {
 	conf.Conf.Init()
-	
+
 	// Set global Redis and DB defaults
 	d.SetDefault(cfg.Db.DbDefault)
 	Rdb.SetCtx(context.Background())
@@ -76,18 +68,18 @@ func (d *DbLib) InitForce() {
 				c.User, c.Pass, c.Host, c.Port, c.Db, c.Charset)
 			dbConn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 			if err != nil {
-				log.Error().Msgf("DB couldn't connect '%s': %v", profile, err)
+				log.Error().Err(err).Msgf("DB couldn't connect '%s'", profile)
 			}
 			Db.SetCli(profile, dbConn)
-			log.Info().Msgf("DB connected '%s' MySQL", profile)
+			log.Info().Str("name", "'"+profile+"'").Str("type", "MySQL").Msg("DB connected")
 
 		case "sqlite":
 			dbConn, err := gorm.Open(sqlite.Open(c.Db), &gorm.Config{})
 			if err != nil {
-				log.Error().Msgf("DB couldn't connect'%s': %v", profile, err)
+				log.Error().Err(err).Msgf("DB couldn't connect'%s'", profile)
 			}
 			Db.SetCli(profile, dbConn)
-			log.Info().Msgf("DB connected '%s' SQLite", profile)
+			log.Info().Str("name", "'"+profile+"'").Str("type", "SQLite").Msg("DB connected")
 
 		case "redis":
 			rdb := redis.NewClient(&redis.Options{
@@ -96,15 +88,15 @@ func (d *DbLib) InitForce() {
 				DB:       c.Rdb,
 			})
 			if err := rdb.Ping(context.Background()).Err(); err != nil {
-				log.Error().Msgf("DB couldn't connect to Redis '%s': %v", profile, err)
+				log.Error().Err(err).Msgf("DB couldn't connect to Redis '%s'", profile)
 			}
 			Rdb.SetCli(profile, rdb)
-			log.Info().Msgf("DB connected '%s' Redis", profile)
+			log.Info().Str("name", "'"+profile+"'").Str("type", "Redis").Msg("DB connected")
 
 		default:
 			log.Warn().Msgf("DB Unsupported driver '%s' for DB '%s'", c.Driver, profile)
 		}
 	}
-	
+
 	d.initPost()
 }

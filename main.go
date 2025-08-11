@@ -1,4 +1,3 @@
-// main
 package main
 
 import (
@@ -7,13 +6,13 @@ import (
 	"xi/app/service"
 
 	"github.com/gin-gonic/gin"
+	// "xi/app/lib"
 )
 
-func init() {
-	service.Init()
-}
-
 func main() {
+	// Init services
+	service.Init()
+	
 	// Init Gin Engine
 	gin.SetMode(cfg.App.Mode)
 	app := gin.Default()
@@ -22,6 +21,7 @@ func main() {
 	routes.Route.Init(app)
 
 	// Init server
+
 	err := service.InitServer(app)
 	if err != nil {
 		return

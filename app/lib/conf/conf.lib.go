@@ -55,14 +55,14 @@ var (
 	reJsonVar         = regexp.MustCompile(`\$\{([^}:]*)(:-([^}]*))?\}|\$\{\}`)
 )
 
-func init() {
-	Conf.Init()
-	if err := Conf.Daemon(); err != nil {
-		log.Warn().Msgf("Config Daemon: setup failed: %v", err)
-	}
+func (c *ConfLib) Init(filePath ...string) {
+	c.once.Do(func() {
+		c.InitCore(filePath...)
+		if err := Conf.Daemon(); err != nil {
+			log.Warn().Msgf("Config Daemon: setup failed: %v", err)
+		}
+	})
 }
-
-func (c *ConfLib) Init(filePath ...string) { c.once.Do(func() { c.InitCore(filePath...) }) }
 
 func (c *ConfLib) InitCore(filePath ...string) error {
 	env.Env.Init()
@@ -97,19 +97,19 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	// Load all config files into newKoanf
 	for i, path := range c.Files {
 
-		noConfigKillSwitch := func(err error) {
-			// If nothing loaded so far and this is the last file
-			if len(newFilesLoaded) == 0 && i == len(c.Files)-1 {
+		noConfigKillSwitch := func() {
+			// On initial run if no config file has loaded and this is the last config file with err, exit
+			if !c.hasInitialized && len(newFilesLoaded) == 0 && i == len(c.Files)-1 {
 				log.Fatal().Str("files", util.Util.QuoteSlice(c.Files)).
-				Msg("Startup aborted: no valid configuration could be loaded from any source")
+					Msg("Startup aborted: no valid configuration could be loaded from any source")
 			}
 		}
 
 		raw, err := os.ReadFile(path)
 		if err != nil {
 			log.Warn().Err(err).Str("file", path).
-			Msg("Config Skipped: unable to read file")
-			noConfigKillSwitch(err)
+				Msg("Config Skipped: unable to read file")
+			noConfigKillSwitch()
 			continue
 		}
 
@@ -118,8 +118,8 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 		if err != nil {
 			log.Error().Err(err).Str("file", path).
 				Msg("Config preprocessing failed: unable to resolve environment variables or sanitize JSON")
-			noConfigKillSwitch(err)
-			noConfigKillSwitch(err)
+			noConfigKillSwitch()
+			noConfigKillSwitch()
 			continue
 		}
 
@@ -128,7 +128,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 		if err := json.Unmarshal([]byte(resolved), &tmp); err != nil {
 			log.Error().Str("file", path).Err(err).
 				Msg("Config format invalid: JSON does not match the expected Config structure")
-			noConfigKillSwitch(err)
+			noConfigKillSwitch()
 			continue
 		}
 
@@ -136,7 +136,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 		if err := newKoanf.Load(rawbytes.Provider([]byte(resolved)), koanfJson.Parser()); err != nil {
 			log.Error().Str("file", path).Err(err).
 				Msg("Config load failed: JSON is valid but merging into runtime configuration failed")
-			noConfigKillSwitch(err)
+			noConfigKillSwitch()
 			continue
 		}
 		newFilesLoaded = append(newFilesLoaded, path)
@@ -165,7 +165,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 
 	c.ConfPostView()
 
-	log.Info().Msgf("Config %s %s", okStatus, util.Util.QuoteSlice(newFilesLoaded))
+	log.Info().Str("files", util.Util.QuoteSlice(newFilesLoaded)).Msgf("Config %s", okStatus, )
 	c.hasInitialized = true
 
 	return nil
@@ -307,25 +307,40 @@ func (c *ConfLib) resolveJsonVars(input string) (string, error) {
 // sync json connfig with existing config
 func (c *ConfLib) postSetup(jsonMap map[string]any) error {
 	// Convert map[string]any to proper []byte(json) for further processing
-	jsonBytes, err := json.Marshal(jsonMap)
+	jsonConf, err := json.Marshal(jsonMap)
 	if err != nil {
-		log.Warn().Msgf("Config PostSetup: failed to marshal DataJson: %v", err)
+		log.Warn().Msgf("Config PostSetup: failed to marshal user Config: %v", err)
 		return err
 	}
 
+	// Merge config
+	if err := c.koanfCli.Load(rawbytes.Provider(jsonConf), koanfJson.Parser()); err != nil {
+		log.Warn().Msgf("Config Post-Setup: Failed to load JSON Config into Koanf: %v", err)
+		return err
+	}
+
+	// --Static Conf Merge BEGIN--
+	// overwrits user config for matching staticConf Keys with
+	jsonConfStatic, err := json.MarshalIndent(cfg.GetStatic(), "", "  ")
+	if err != nil {
+		log.Warn().Msgf("Config PostSetup: failed to marshal Static Config: %v", err)
+		return err
+	}
+	// Merge Static config
+	if err := c.koanfCli.Load(rawbytes.Provider(jsonConfStatic), koanfJson.Parser()); err != nil {
+		log.Warn().Msgf("Config Post-Setup: Failed to load JSON Static Config into Koanf: %v", err)
+		return err
+	}
+	// --Static Conf Merge END--
+
 	// Store Config to global 'cfg'
 	rawCfg := model.Config{}
-	if err := json.Unmarshal(jsonBytes, &rawCfg); err != nil {
+	if err := json.Unmarshal(c.AllJson(), &rawCfg); err != nil {
 		log.Warn().Msgf("Config Post-Setup: Failed to unmarshal into Config struct: %v", err)
 		return err
 	}
 	cfg.Update(rawCfg)
 
-	// Merge config
-	if err := c.koanfCli.Load(rawbytes.Provider(jsonBytes), koanfJson.Parser()); err != nil {
-		log.Warn().Msgf("Config Post-Setup: Failed to load JSON config into Koanf: %v", err)
-		return err
-	}
 	return nil
 }
 

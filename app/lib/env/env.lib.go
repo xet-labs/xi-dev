@@ -1,21 +1,21 @@
 package env
 
 import (
-	"os"
+	// "os"
 	"strconv"
-	"strings"
+	// "strings"
 	"sync"
 
 	"xi/app/lib/logger"
 
-	"github.com/rs/zerolog/log"
 	"github.com/joho/godotenv"
+	"github.com/rs/zerolog/log"
 )
 
 type EnvLib struct {
-	app  map[string]any // store Runtime env
-	sys  map[string]any // store Systems env
-	
+	app map[string]any // store Runtime env
+	sys map[string]any // store Systems env
+
 	once sync.Once
 	mu   sync.RWMutex
 }
@@ -23,8 +23,6 @@ type EnvLib struct {
 var Env = &EnvLib{
 	sys: make(map[string]any),
 }
-
-func init() { Env.Init() }
 
 // Init, ensure single-time env initialization
 func (e *EnvLib) Init() { e.once.Do(e.InitCore) }
@@ -36,16 +34,16 @@ func (e *EnvLib) InitCore() {
 	defer e.mu.Unlock()
 
 	if err := godotenv.Load(); err != nil {
-		log.Warn().Msgf("Env failed to loaded: %v", err)
+		log.Warn().Err(err).Msg("Env failed to loaded")
 	} else {
-		log.Info().Msg("Env loaded")
+		log.Info().Msg("Environments loaded..")
 	}
 
-	for _, kv := range os.Environ() {
-		if parts := strings.SplitN(kv, "=", 2); len(parts) == 2 {
-			e.sys[parts[0]] = parts[1]
-		}
-	}
+	// for _, kv := range os.Environ() {
+	// 	if parts := strings.SplitN(kv, "=", 2); len(parts) == 2 {
+	// 		e.sys[parts[0]] = parts[1]
+	// 	}
+	// }
 }
 
 // Get returns string value for key or fallback
