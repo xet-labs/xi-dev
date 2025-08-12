@@ -32,11 +32,12 @@ jobs:
         id: file_list
         run: |
           files=$(find dist -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name 'checksums.txt' \))
-          echo "Files: $files"
           echo "files<<EOF" >> $GITHUB_OUTPUT
           echo "$files" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
+          echo "Release Files: $files"
+          echo "All Files"
+          ls -al
 
       - name: Release Public Assets
         uses: softprops/action-gh-release@v2
