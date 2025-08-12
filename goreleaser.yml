@@ -9,19 +9,18 @@ before:
     - go mod tidy
 
 builds:
-  - main: .
+  - main: ./app
     ldflags:
       - -s -w
-      - -X 'xi/app/lib/cfg.BuildVersion={{.Version}}'
+      - -X 'xi/app/lib/cfg.BuildVersion={{ .ProjectName }}-{{.Version}}'
       - -X 'xi/app/lib/cfg.BuildRevision={{.ShortCommit}}'
       - -X 'xi/app/lib/cfg.BuildDate={{.Date}}'
     env:
       - CGO_ENABLED=0
     goos:
       - linux
-      - darwin
+      # - darwin
       # - windows
-
     ignore:
       - goos: windows
         goarch: "386"
@@ -48,6 +47,9 @@ checksum:
   name_template: "checksums.txt"
 
 # nightly:
+#   version_template: "{{ incpatch .Version }}-nightly"
+
+# dev:
 #   version_template: "{{ incpatch .Version }}-nightly"
 
 snapshot:
