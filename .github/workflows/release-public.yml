@@ -31,7 +31,7 @@ jobs:
       - name: Find release artifacts
         id: file_list
         run: |
-          files=$(find dist -type f)
+          files=$(find dist -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name 'checksums.txt' \))
           echo "Files: $files"
           echo "files<<EOF" >> $GITHUB_OUTPUT
           echo "$files" >> $GITHUB_OUTPUT
