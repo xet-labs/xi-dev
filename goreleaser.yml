@@ -1,3 +1,5 @@
+version: 2
+
 env:
   - GO111MODULE=on
 
@@ -17,11 +19,11 @@ builds:
       - CGO_ENABLED=0
     goos:
       - linux
-      # - windows
-      # - darwin
+      - windows
+      - darwin
 
     ignore:
-      - goos:  linux windows
+      - goos: windows
         goarch: "386"
 
 archives:
