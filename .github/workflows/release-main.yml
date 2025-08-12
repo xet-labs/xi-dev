@@ -2,11 +2,11 @@ name: Release Main
 
 on:
   push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
     branches:
       - main
-      
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -24,11 +24,9 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: "~> v2"
-          args: release --clean --skip=publish
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ProjectName: "xi"
-          BINARY_NAME: "xi"
 
       - name: Find release artifacts
         id: file_list

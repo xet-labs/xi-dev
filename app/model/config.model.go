@@ -8,7 +8,8 @@ type Config struct {
 }
 
 type BuildConf struct {
-	Date     string `json:"build_date,omitempty"`
+	Date     string `json:"date,omitempty"`
+	Name     string `json:"name,omitempty"`
 	Revision string `json:"revision,omitempty"`
 	Version  string `json:"version,omitempty"`
 }

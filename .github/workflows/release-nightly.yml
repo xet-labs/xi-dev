@@ -1,10 +1,11 @@
-name: Release Dev
+name: Release Nightly
 
 on:
   push:
+    branches:
+      - nightly
     tags:
-      - 'v*.*.*'
-
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   release:
@@ -23,12 +24,11 @@ jobs:
         uses: goreleaser/goreleaser-action@v6
         with:
           version: "~> v2"
-          args: release --clean --snapshot
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Release Dev Assets
-      #   uses: softprops/action-gh-release@v2
-      #   with:
-      #     files: ${{ steps.file_list.outputs.files }}
-      #     token: ${{ secrets.GITHUB_TOKEN }}
+      - name: List release artifacts
+        run: |
+          echo "All Files:"
+          tree --dirsfirst ./dist -l -f -a

@@ -14,14 +14,6 @@ var (
 	View   = &global.View
 )
 
-func init() {
-	*Build = model.BuildConf{
-		Date:     BuildDate,
-		Revision: BuildRevision,
-		Version:  BuildVersion,
-	}
-}
-
 func GetStatic() any { return globalStatic }
 
 func Set(cfg model.Config) { *global = cfg }
