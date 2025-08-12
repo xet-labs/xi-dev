@@ -37,7 +37,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
           echo "Release Files: $files"
           echo "All Files"
-          ls -al
+          tree --dirsfirst ./dist -l -f -a
 
       - name: Release Public Assets
         uses: softprops/action-gh-release@v2
