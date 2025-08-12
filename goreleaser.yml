@@ -55,7 +55,7 @@ snapshot:
   version_template: "{{ incpatch .Version }}"
 
 checksum:
-  name_template: "{{ if index .Env \"BuildVerPrepend\" }}{{ .Env.BuildVerPrepend }}{{ else }}{{ .Branch }}{{ end }}-checksums.txt"
+  name_template: "{{ if index .Env \"BuildName\" }}{{ .Env.BuildName }}{{ else }}{{ .ProjectName  }}{{ end }}-{{ if index .Env \"BuildVerPrepend\" }}{{ .Env.BuildVerPrepend }}{{ else }}{{ .Branch }}{{ end }}-checksums.txt"
 
 # changelog:
 #   # name_template: "CHANGELOG-{{ if index .Env \"BuildVerPrepend\" }}{{ .Env.BuildVerPrepend }}{{ else }}{{ .Branch }}{{ end }}.md"
