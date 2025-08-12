@@ -25,7 +25,7 @@ jobs:
           args: release --clean --skip=publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PROJECT_NAME: "xi"
+          ProjectName: "xi"
           BINARY_NAME: "xi"
 
       - name: Find release artifacts
