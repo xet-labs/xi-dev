@@ -19,8 +19,8 @@ builds:
       - CGO_ENABLED=0
     goos:
       - linux
-      - windows
       - darwin
+      # - windows
 
     ignore:
       - goos: windows
@@ -30,7 +30,6 @@ archives:
   - formats: ["tar.gz"]
     name_template: '{{ .ProjectName }}_{{ title .Os }}_{{ if eq .Arch "amd64" }}x86_64{{ else if eq .Arch "386" }}i386{{ else }}{{ .Arch }}{{ end }}'
     files:
-      - .env
       - app/data/**
       - config/**
       - public/**
@@ -40,6 +39,7 @@ archives:
       - view/partials/**
       - LICENSE
       - README.md
+      # - .env
     format_overrides:
       - goos: windows
         formats: ["zip"]
