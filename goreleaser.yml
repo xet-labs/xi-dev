@@ -33,7 +33,9 @@ archives:
       - config/**
       - public/**
       - storage/**
-      - view/**
+      - view/layout/**
+      - view/pages/**
+      - view/partials/**
       - LICENSE
       - README.md
     format_overrides:
