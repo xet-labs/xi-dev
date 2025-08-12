@@ -15,13 +15,13 @@ builds:
       - CGO_ENABLED=0
     ldflags:
       - -s -w
-      - -X 'xi/app/lib/cfg.BuildVersion={{ if index .Env "BuildVersionPrepend" }}{{ .Env.BuildVersionPrepend }}{{ else }}{{ .Branch }}{{ end }}-{{.Version}}'
+      - -X 'xi/app/lib/cfg.BuildVersion={{ if index .Env "BuildVerPrepend" }}{{ .Env.BuildVerPrepend }}{{ else }}{{ .Branch }}{{ end }}-{{.Version}}'
       - -X 'xi/app/lib/cfg.BuildName={{ if index .Env "BuildName" }}{{ .Env.BuildName }}{{ else }}{{ .ProjectName  }}{{ end }}'
       - -X 'xi/app/lib/cfg.BuildRevision={{.ShortCommit}}'
       - -X 'xi/app/lib/cfg.BuildDate={{.Date}}'
     goos:
       - linux
-      # - darwin
+      - darwin
       # - windows
     ignore:
       - goos: windows
@@ -29,7 +29,7 @@ builds:
 
 archives:
   - formats: ["tar.gz"]
-    name_template: '{{ if index .Env "BuildName" }}{{ .Env.BuildName }}{{ else }}{{ .ProjectName  }}{{ end }}-{{ if index .Env "BuildVersionPrepend" }}{{ .Env.BuildVersionPrepend }}{{ else }}{{ .Branch }}{{ end }}-{{.Version}}-{{ .Os }}-{{ if eq .Arch "amd64" }}x86_64{{ else if eq .Arch "386" }}i386{{ else }}{{ .Arch }}{{ end }}'
+    name_template: '{{ if index .Env "BuildName" }}{{ .Env.BuildName }}{{ else }}{{ .ProjectName  }}{{ end }}-{{ if index .Env "BuildVerPrepend" }}{{ .Env.BuildVerPrepend }}{{ else }}{{ .Branch }}{{ end }}-{{.Version}}-{{ .Os }}-{{ if eq .Arch "amd64" }}x86_64{{ else if eq .Arch "386" }}i386{{ else }}{{ .Arch }}{{ end }}'
     files:
       - app/data/**
       - config/**

@@ -27,6 +27,7 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BuildVerPrepend: main
 
       - name: Find release artifacts
         id: file_list
