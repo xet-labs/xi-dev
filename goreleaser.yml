@@ -1,0 +1,63 @@
+version: 2
+
+env:
+  - GO111MODULE=on
+
+before:
+  hooks:
+    - go fmt ./...
+    - go mod tidy
+
+builds:
+  - main: ./app
+    ldflags:
+      - -s -w
+      - -X 'xi/app/lib/cfg.BuildVersion={{ .ProjectName }}-{{.Version}}'
+      - -X 'xi/app/lib/cfg.BuildRevision={{.ShortCommit}}'
+      - -X 'xi/app/lib/cfg.BuildDate={{.Date}}'
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      # - darwin
+      # - windows
+    ignore:
+      - goos: windows
+        goarch: "386"
+
+archives:
+  - formats: ["tar.gz"]
+    name_template: '{{ .ProjectName }}_{{ title .Os }}_{{ if eq .Arch "amd64" }}x86_64{{ else if eq .Arch "386" }}i386{{ else }}{{ .Arch }}{{ end }}'
+    files:
+      - app/data/**
+      - config/**
+      - public/**
+      - storage/**
+      - view/layout/**
+      - view/pages/**
+      - view/partials/**
+      - LICENSE
+      - README.md
+      # - .env
+    format_overrides:
+      - goos: windows
+        formats: ["zip"]
+
+checksum:
+  name_template: "checksums.txt"
+
+# nightly:
+#   version_template: "{{ incpatch .Version }}-nightly"
+
+# dev:
+#   version_template: "{{ incpatch .Version }}-nightly"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  filters:
+    exclude:
+      - polish
+      - bump
+      - typo

@@ -1,5 +1,6 @@
 # Go build
 /build/
+/dist/
 *.log
 
 # Binaries for programs and plugins

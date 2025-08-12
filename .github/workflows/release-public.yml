@@ -3,44 +3,41 @@ name: Release Public
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
-  build:
-    uses: ./.github/workflows/build-go.p.yml
-    with:
-      appName: xi-${{ github.ref_name }}
-      version: ${{ github.ref_name }}
-
   release:
-    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        # no 'name' means download all artifacts
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          path: ./build_artifacts
+          fetch-depth: 0
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
 
-      - name: Debug build artifacts structure
-        run: tree -a build_artifacts || ls -lR build_artifacts
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: "~> v2"
+          args: release --clean --skip=publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROJECT_NAME: "xi"
+          BINARY_NAME: "xi"
 
-      - name: Generate file list for release
+      - name: Find release artifacts
         id: file_list
         run: |
-          APP_NAME="xi-${{ github.ref_name }}"
-          ARTIFACT_DIR=build_artifacts
+          files=$(find dist -type f)
+          echo "Files: $files"
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-          if [[ -d "$ARTIFACT_DIR" ]]; then
-            files=$(find "$ARTIFACT_DIR" -type f | grep "${APP_NAME}-")
-            echo "files<<EOF" >> $GITHUB_OUTPUT
-            echo "$files" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            echo "Artifacts were not found"
-            exit 1
-          fi
-          
+
       - name: Release Public Assets
         uses: softprops/action-gh-release@v2
         with:
@@ -48,7 +45,6 @@ jobs:
           name: "Release ${{ github.ref_name }}"
           body: |
             Public release of version ${{ github.ref_name }}.
-            See changelog in private repo.
           repository: xet-labs/xi
           token: ${{ secrets.XI_REPO_TOKEN }}
           files: ${{ steps.file_list.outputs.files }}
