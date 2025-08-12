@@ -56,6 +56,10 @@ func (l *LogLib) InitCore() {
 	// Update global `log.Logger` too, if needed
 	log.Logger = l.Log
 
-	log.Info().Str("Date", cfg.Build.Date).Str("Revision", cfg.Build.Revision).Str("Version", cfg.Build.Version).Msg("App build")
-
+	log.Info().
+		Str("Date", cfg.Build.Date).
+		Str("Name", cfg.Build.Name).
+		Str("Revision", cfg.Build.Revision).
+		Str("Version", cfg.Build.Version).
+		Msg("App build")
 }
