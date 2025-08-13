@@ -51,6 +51,9 @@
       }
     }
   },
+  "path": {
+    "env": []
+  },
   "view": {
     "css_dir": [
       "view/partials"
