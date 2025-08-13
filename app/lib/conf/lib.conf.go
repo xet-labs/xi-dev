@@ -113,27 +113,28 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 			continue
 		}
 
-		// Preproces Json data
-		resolved, err := c.resolveJsonVars(c.cleanJson(c.resolveJsonEnv(string(raw))))
-		if err != nil {
-			log.Error().Err(err).Str("file", path).
-				Msg("Config preprocessing failed: unable to resolve environment variables or sanitize JSON")
-			noConfigKillSwitch()
-			noConfigKillSwitch()
+		// Preproces and load env from the config
+		// the env needs to be loaded and reprocess the config s it might be using ars from the env
+		if _, tmp, err := c.preProcess(raw); err == nil {
+			for _, file := range tmp.Path.Env {
+				if err := env.Env.Load(file); err != nil {
+					log.Fatal().Err(err).Str("Env", file).Str("file", path).
+						Msg("Config Preprocess failed to load Env")
+					continue
+				}
+			}
+		} else {
+			log.Error().Err(err).Str("file", path).Msg("Config Preprocess failed for env")
 			continue
 		}
 
-		// Validate against config model
-		tmp := model.Config{}
-		if err := json.Unmarshal([]byte(resolved), &tmp); err != nil {
-			log.Error().Str("file", path).Err(err).
-				Msg("Config format invalid: JSON does not match the expected Config structure")
-			noConfigKillSwitch()
-			continue
+		// Fully preprocess data
+		var resolved []byte
+		if resolved, _, err = c.preProcess(raw); err != nil {
+			log.Error().Err(err).Str("file", path).Msg("Config Preprocess failed")
 		}
-
 		// Sync/merge Json data
-		if err := newKoanf.Load(rawbytes.Provider([]byte(resolved)), koanfJson.Parser()); err != nil {
+		if err := newKoanf.Load(rawbytes.Provider(resolved), koanfJson.Parser()); err != nil {
 			log.Error().Str("file", path).Err(err).
 				Msg("Config load failed: JSON is valid but merging into runtime configuration failed")
 			noConfigKillSwitch()
@@ -169,6 +170,25 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	c.hasInitialized = true
 
 	return nil
+}
+
+func (c *ConfLib) preProcess(rawJson []byte) ([]byte, model.Config, error) {
+	// resolve Json varsand cleanups
+	resolved, err := c.resolveJsonVars(c.cleanJson(c.resolveJsonEnv(string(rawJson))))
+	if err != nil {
+		log.Error().Err(fmt.Errorf("unable to resolve environment variables or sanitize JSON")).Msg("Config preprocess failed")
+		return nil, model.Config{}, err
+	}
+
+	// Validate against config model
+	structured := model.Config{}
+	if err := json.Unmarshal([]byte(resolved), &structured); err != nil {
+		log.Error().Err(fmt.Errorf("json does not match the expected Config structure")).
+			Msg("Config preprocess failed, format invalid")
+		return nil, model.Config{}, err
+	}
+
+	return []byte(resolved), structured, nil
 }
 
 // resolveJsonEnv replaces ${ENV} or ${ENV:-fallback} with actual values
@@ -305,7 +325,7 @@ func (c *ConfLib) resolveJsonVars(input string) (string, error) {
 }
 
 // sync json connfig with existing config
-func (c *ConfLib) postSetup(jsonMap map[string]any) error {
+func (c *ConfLib) postProcess(jsonMap map[string]any) error {
 	// Convert map[string]any to proper []byte(json) for further processing
 	jsonConf, err := json.Marshal(jsonMap)
 	if err != nil {

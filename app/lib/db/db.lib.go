@@ -69,6 +69,7 @@ func (d *DbLib) InitForce() {
 			dbConn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 			if err != nil {
 				log.Error().Err(err).Msgf("DB couldn't connect '%s'", profile)
+				continue
 			}
 			Db.SetCli(profile, dbConn)
 			log.Info().Str("name", "'"+profile+"'").Str("type", "MySQL").Msg("DB connected")
@@ -77,6 +78,7 @@ func (d *DbLib) InitForce() {
 			dbConn, err := gorm.Open(sqlite.Open(c.Db), &gorm.Config{})
 			if err != nil {
 				log.Error().Err(err).Msgf("DB couldn't connect'%s'", profile)
+				continue
 			}
 			Db.SetCli(profile, dbConn)
 			log.Info().Str("name", "'"+profile+"'").Str("type", "SQLite").Msg("DB connected")
@@ -89,6 +91,7 @@ func (d *DbLib) InitForce() {
 			})
 			if err := rdb.Ping(context.Background()).Err(); err != nil {
 				log.Error().Err(err).Msgf("DB couldn't connect to Redis '%s'", profile)
+				continue
 			}
 			Rdb.SetCli(profile, rdb)
 			log.Info().Str("name", "'"+profile+"'").Str("type", "Redis").Msg("DB connected")

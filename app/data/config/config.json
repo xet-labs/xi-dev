@@ -51,6 +51,9 @@
       }
     }
   },
+  "path": {
+    "env": []
+  },
   "view": {
     "css_dir": [
       "view/partials"
@@ -88,6 +91,7 @@
           "href": "#"
         }
       ],
+      "css": ["/res/css/app.css"],
       "js99": [
         "/res/js/jquery/jquery.min.js",
         "/res/js/app.js"
@@ -97,10 +101,9 @@
       "home": {
         "route": "/",
         "title": "XetIndustries",
-        "file": "view/pages/home.part.html",
-        "template": "pages/root",
-        "menu": "Home",
         "description": "A Platform for Makers, Creators, and Developers.",
+        "file": "view/pages/home.part.html",
+        "menu": "Home",
         "meta": {
           "canonical": "https://xetindustries.com/",
           "tags": [
@@ -133,14 +136,14 @@
         "layout": "layout/blog",
         "menu": "Blog",
         "sub_brand": "Blog",
-        "lib": [
-          "hljs"
-        ],
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",
           "/res/util/copy-code.util.js",
           "/res/util/h2-clickable.util.js"
+        ],
+        "lib99": [
+          "hljs"
         ]
       }
     }

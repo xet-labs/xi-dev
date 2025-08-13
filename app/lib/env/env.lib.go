@@ -1,9 +1,10 @@
 package env
 
 import (
-	// "os"
+	"fmt"
+	"os"
 	"strconv"
-	// "strings"
+
 	"sync"
 
 	"xi/app/lib/logger"
@@ -33,10 +34,10 @@ func (e *EnvLib) InitCore() {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
-	if err := godotenv.Load(); err != nil {
-		log.Warn().Err(err).Msg("Env failed to loaded")
-	} else {
-		log.Info().Msg("Environments loaded..")
+	if _, err := os.Stat(".env"); err == nil || !os.IsNotExist(err) {
+		if err := godotenv.Load(".env"); err == nil {
+			log.Info().Str("file", ".env").Msg("Env loaded")
+		}
 	}
 
 	// for _, kv := range os.Environ() {
@@ -44,6 +45,22 @@ func (e *EnvLib) InitCore() {
 	// 		e.sys[parts[0]] = parts[1]
 	// 	}
 	// }
+}
+
+func (e *EnvLib) Load(file string) error {
+	if file != "" {
+		if _, err := os.Stat(file); err == nil {
+			if err := godotenv.Load(file); err != nil {
+				return fmt.Errorf("godot: %w", err)
+			}
+		} else if os.IsNotExist(err) {
+			return err
+		} else {
+			return err
+		}
+	}
+	return nil
+
 }
 
 // Get returns string value for key or fallback

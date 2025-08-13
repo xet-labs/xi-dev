@@ -7,9 +7,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (c *ConfLib) ConfPostView() error {
+func (c *ConfLib) ConfPostView() {
 
-	// c.Hook.AddPost("ConfPostView - setup", c.ConfPostView)
+	c.Hook.AddPost("ConfPostView - setup", c.ConfPostView)
 
 	// Fetch defaults and pages
 	pageDefault := c.GetMap("view.default")
@@ -17,15 +17,13 @@ func (c *ConfLib) ConfPostView() error {
 
 	rawJson := c.AllMap()
 	if rawJson == nil {
-		err := "Config Postview: No Json data to operate on"
-		log.Error().Msg(err)
-		return errors.New(err)
+		log.Error().Err(error(errors.New("no Json data to operate on"))).Msg("Config PostView")
+		return
 	}
 	viewData, ok := rawJson["view"].(map[string]any)
 	if !ok {
-		err := "Config Postview: 'view' is missing or not a map"
-		log.Error().Msg(err)
-		return errors.New(err)
+		log.Error().Err(error(errors.New("'view' is missing or not a map"))).Msg("Config PostView")
+		return
 	}
 
 	// Ensure "pages" exists inside viewData
@@ -40,7 +38,7 @@ func (c *ConfLib) ConfPostView() error {
 	for page, val := range pages {
 		pageConf, ok := val.(map[string]any)
 		if !ok {
-			log.Warn().Msgf("Config Postview: '%s' data setup failed", page)
+			log.Warn().Str("page", page).Msg("Config Postview: Page data setup failed")
 			continue
 		}
 
@@ -55,9 +53,9 @@ func (c *ConfLib) ConfPostView() error {
 	}
 
 	// Save merged config
-	if err := c.postSetup(rawJson); err != nil {
-		log.Error().Msgf("Config Postview: failed to sync: %v", err)
-		return err
+	if err := c.postProcess(rawJson); err != nil {
+		log.Error().Err(err).Msg("Config Postview: failed to sync")
+		return
 	}
-	return nil
+	return
 }
