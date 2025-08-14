@@ -2,10 +2,10 @@ name: Release Main
 
 on:
   push:
-    branches:
-      - main
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+    # branches:
+    #   - main
   
 jobs:
   release-main:
@@ -47,6 +47,6 @@ jobs:
           name: "Release ${{ github.ref_name }}"
           body: |
             Public release of version ${{ github.ref_name }}.
-          repository: xet-labs/xi
+          repository: xet-labs/site-xi
           token: ${{ secrets.XI_REPO_TOKEN }}
           files: ${{ steps.file_list.outputs.files }}
