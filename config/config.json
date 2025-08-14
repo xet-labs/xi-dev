@@ -18,7 +18,8 @@
     ],
     "featured_img": [
       "/res/static/brand/brand.svg"
-    ]
+    ],
+    "env_files": []
   },
   "db": {
     "db_default": "${DB_DEFAULT:-db}",
@@ -50,9 +51,6 @@
         "pass": ""
       }
     }
-  },
-  "path": {
-    "env": []
   },
   "view": {
     "css_dir": [

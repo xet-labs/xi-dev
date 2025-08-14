@@ -4,7 +4,6 @@ type Config struct {
 	App   AppConf   `json:"app"`
 	Build BuildConf `json:"build"`
 	Db    DbConf    `json:"db"`
-	Path  PathConf  `json:"path"`
 	View  ViewConf  `json:"view"`
 }
 
@@ -18,6 +17,13 @@ type AppConf struct {
 	Tags        []string `json:"tags,omitempty"`
 	Logo        []string `json:"logo,omitempty"`
 	FeaturedImg []string `json:"featured_img,omitempty"`
+
+	Env          string `json:"env,omitempty"`
+	EnvFiles     []string `json:"env_files,omitempty"`
+	SslCert      string   `json:"ssl_cert,omitempty"`
+	SslCertFiles []string `json:"ssl_cert_files,omitempty"`
+	TlsCert      string   `json:"tls_cert,omitempty"`
+	TlsCertFiles []string `json:"tls_cert_files,omitempty"`
 }
 
 type BuildConf struct {
@@ -25,8 +31,4 @@ type BuildConf struct {
 	Name     string `json:"name,omitempty"`
 	Revision string `json:"revision,omitempty"`
 	Version  string `json:"version,omitempty"`
-}
-
-type PathConf struct {
-	Env []string `json:"env,omitempty"`
 }

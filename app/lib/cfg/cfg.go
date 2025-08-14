@@ -11,7 +11,6 @@ var (
 	App    = &global.App
 	Build  = &global.Build
 	Db     = &global.Db
-	Path   = &global.Path
 	View   = &global.View
 )
 
@@ -24,9 +23,8 @@ func Get() *model.Config { return global }
 func Update(cfg model.Config) {
 	*global = cfg
 
-	App = &global.App
-	Build = &global.Build
-	Db = &global.Db
-	Path = &global.Path
-	View = &global.View
+	// App = &global.App
+	// Build = &global.Build
+	// Db = &global.Db
+	// View = &global.View
 }

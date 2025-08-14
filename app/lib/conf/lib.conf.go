@@ -116,7 +116,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 		// Preproces and load env from the config
 		// the env needs to be loaded and reprocess the config s it might be using ars from the env
 		if _, tmp, err := c.preProcess(raw); err == nil {
-			for _, file := range tmp.Path.Env {
+			for _, file := range tmp.App.EnvFiles {
 				if err := env.Env.Load(file); err != nil {
 					log.Fatal().Err(err).Str("Env", file).Str("file", path).
 						Msg("Config Preprocess failed to load Env")
