@@ -29,7 +29,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BuildVerPrepend: nightly
 
-      - name: List release artifacts
+      - name: Find release artifacts
+        id: file_list
         run: |
+          files=$(find dist -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*checksums.txt' -o -name '*CHANGELOG.md' \))
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo -e "Release Files:\n $files"
           echo "All Files:"
           tree --dirsfirst ./dist -l -f -a
+
+      - name: Release Public Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          body: |
+            Public release of version ${{ github.ref_name }}.
+          repository: xet-labs/site-xi
+          token: ${{ secrets.XI_REPO_TOKEN }}
+          files: ${{ steps.file_list.outputs.files }}
