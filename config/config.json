@@ -62,7 +62,6 @@
       "view/pages"
     ],
     "default": {
-      "app": {},
       "data": {
         "title": "XetIndustries"
       },
@@ -93,7 +92,10 @@
       "js99": [
         "/res/js/jquery/jquery.min.js",
         "/res/js/app.js"
-      ]
+      ],
+      "meta": {
+        
+      }
     },
     "pages": {
       "home": {

@@ -31,9 +31,7 @@ func LinkCss(mode string, urls ...string) template.HTML {
 	return template.HTML(b.String())
 }
 
-func LinkCssSlice(mode string, slice []string) template.HTML {
-	return LinkCss(mode, slice...)
-}
+func LinkCssSlice(mode string, slice []string) template.HTML { return LinkCss(mode, slice...) }
 
 func LinkJs(mode string, urls ...string) template.HTML {
 	var b strings.Builder
@@ -61,6 +59,4 @@ func LinkJs(mode string, urls ...string) template.HTML {
 	return template.HTML(b.String())
 }
 
-func LinkJsSlice(mode string, slice []string) template.HTML {
-	return LinkJs(mode, slice...)
-}
+func LinkJsSlice(mode string, slice []string) template.HTML { return LinkJs(mode, slice...) }

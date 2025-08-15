@@ -42,7 +42,7 @@ type ConfLib struct {
 var (
 	Conf = &ConfLib{
 		FilesDefault: []string{
-			"app/data/config/config.json",
+			"config/default/config.json",
 			"config/config.json",
 		},
 	}

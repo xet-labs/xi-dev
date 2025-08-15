@@ -6,12 +6,6 @@ import (
 	"strings"
 )
 
-func LinkLibSlice(libs []string) template.HTML {
-	if len(libs) == 0 {
-		return ""
-	}
-	return LinkLib(libs...)
-}
 func LinkLib(libs ...string) template.HTML {
 	if len(libs) == 0 {
 		return ""
@@ -45,3 +39,5 @@ func LinkLib(libs ...string) template.HTML {
 
 	return template.HTML(b.String())
 }
+
+func LinkLibSlice(libs []string) template.HTML { return LinkLib(libs...) }

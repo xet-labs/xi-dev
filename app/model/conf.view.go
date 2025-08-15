@@ -31,11 +31,6 @@ type PageParam struct {
 	Data        map[string]any `json:"data"`
 }
 
-type PageMeta struct {
-	Canonical string   `json:"canonical,omitempty"`
-	Tags      []string `json:"tags,omitempty"`
-}
-
 type MenuItem struct {
 	Label string `json:"label,omitempty"`
 	Href  string `json:"href,omitempty"`

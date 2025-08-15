@@ -8,10 +8,10 @@ import (
 )
 
 type RouteStruct struct{}
-
-var Route = &RouteStruct{}
-
-var r *gin.Engine
+var(
+	Route = &RouteStruct{}
+	r *gin.Engine
+)
 
 // Initializes all routes and templates
 func (rt *RouteStruct) Init(engine *gin.Engine) {
@@ -22,11 +22,12 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 	r.SetHTMLTemplate(lib.View.NewTmpl("main", ".html", cfg.View.TemplateDir...))
 
 	// Register routes
+	rt.registerStatic()
 	rt.registerCore()
 	rt.registerBlog()
-	rt.registerRes()
 	rt.registerAuth()
 	rt.registerDebug()
+	rt.registerRes()
 
 	// Optional: Middleware (e.g. gzip)
 	// r.Use(gzip.Gzip(gzip.DefaultCompression))
