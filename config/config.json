@@ -1,25 +1,20 @@
 {
   "app": {
-    "abbr": "${APP_ABBR:-XL}",
-    "name": "${APP_NAME:-XetLabs}",
-    "domain": "${APP_DOMAIN:-localhost}",
-    "url": "${APP_URL:-localhost}",
     "mode": "${APP_MODE:-release}",
     "port": "${APP_PORT:-8080}",
-    "tags": [
-      "XetIndustries",
-      "Xet Industries",
-      "xetindustries",
-      "xet industries",
-      "Xtreme Embedded Tech Industries"
-    ],
+    "env_files": []
+  },
+  "brand": {
+    "name": "${APP_NAME:-XetLabs}",
+    "abbr": "${APP_ABBR:-XL}",
     "logo": [
       "${APP_LOGO}"
     ],
     "featured_img": [
       "/res/static/brand/brand.svg"
     ],
-    "env_files": []
+    "domain": "${APP_DOMAIN:-localhost}",
+    "url": "${APP_URL:-http://localhost}"
   },
   "db": {
     "db_default": "${DB_DEFAULT:-db}",
@@ -88,31 +83,41 @@
           "href": "#"
         }
       ],
-      "css": ["/res/css/app.css"],
+      "css": [
+        "/res/css/app.css"
+      ],
       "js99": [
         "/res/js/jquery/jquery.min.js",
         "/res/js/app.js"
       ],
       "meta": {
-        
+        "referrer": "no-referrer-when-downgrade",
+        "robots": "index, follow",
+        "tags": [
+          "XetIndustries",
+          "Xet Industries",
+          "xetindustries",
+          "xet industries",
+          "Xtreme Embedded Tech Industries"
+        ],
+        "publisher": {
+          "name": "Xet Industries",
+          "url": "https://xetindustries.com"
+        },
+        "brand": {
+          "title_suffix_sep": " | "
+        }
       }
     },
     "pages": {
       "home": {
         "route": "/",
         "title": "XetIndustries",
-        "description": "A Platform for Makers, Creators, and Developers.",
         "file": "view/pages/home.part.html",
         "menu": "Home",
         "meta": {
           "canonical": "https://xetindustries.com/",
-          "tags": [
-            "XetIndustries",
-            "Xet Industries",
-            "xetindustries",
-            "xet industries",
-            "Xtreme Embedded Tech Industries"
-          ]
+          "description": "A Collaborative Platform for Makers, Creators, and Developers."
         }
       },
       "blogs": {
@@ -120,14 +125,14 @@
         "layout": "layout/blogs",
         "menu": "Blog",
         "sub_brand": "Blog",
-        "title": "Blog | XetIndustries",
-        "description": "Discover Insightful Articles, Expert Tips and Inspiring Ideas. Write, Share and Connect with a thriving like-minded community.",
+        "title": "Blog",
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",
           "/res/js/blogs.js"
         ],
         "meta": {
+          "description": "Discover Insightful Articles, Expert Tips and Inspiring Ideas. Write, Share and Connect with a thriving like-minded community.",
           "canonical": "https://xetindustries.com/blog"
         }
       },

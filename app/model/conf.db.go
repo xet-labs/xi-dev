@@ -7,19 +7,19 @@ type DbConf struct {
 	Conn       map[string]DbParam `json:"conn"`
 }
 type DbParam struct {
-	Enable        bool   `json:"enable"`
-	Db            string `json:"db"`
-	Rdb           int    `json:"rdb"`
-	User          string `json:"user"`
+	Enable        bool   `json:"enable,omitempty"`
+	Db            string `json:"db,omitempty"`
+	Rdb           int    `json:"rdb,omitempty"`
+	User          string `json:"user,omitempty"`
 	Pass          string `json:"pass"`
-	Driver        string `json:"driver"`
-	Host          string `json:"host"`
-	Port          string `json:"port"`
-	Engine        string `json:"engine"`
-	Socket        string `json:"socket"`
-	Charset       string `json:"charset"`
-	Collation     string `json:"collation"`
-	Prefix        string `json:"prefix"`
-	PrefixIndexes bool   `json:"prefixindexes"`
-	Strict        bool   `json:"strict"`
+	Driver        string `json:"driver,omitempty"`
+	Host          string `json:"host,omitempty"`
+	Port          string `json:"port,omitempty"`
+	Engine        string `json:"engine,omitempty"`
+	Socket        string `json:"socket,omitempty"`
+	Charset       string `json:"charset,omitempty"`
+	Collation     string `json:"collation,omitempty"`
+	Prefix        string `json:"prefix,omitempty"`
+	PrefixIndexes bool   `json:"prefixindexes,omitempty"`
+	Strict        bool   `json:"strict,omitempty"`
 }

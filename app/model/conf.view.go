@@ -8,27 +8,24 @@ type ViewConf struct {
 }
 
 type PageParam struct {
-	Title       string         `json:"title,omitempty"`
-	Route       string         `json:"route,omitempty"`
-	Description string         `json:"description,omitempty"`
-	RenderType  string         `json:"render_type"`
-	File        string         `json:"file,omitempty"`
-	Layout      string         `json:"layout,omitempty"`
-	FullHtml    string         `json:"full_html,omitempty"`
-	BodyHtml    string         `json:"body_html,omitempty"`
-	PartHtml    string         `json:"part_html,omitempty"`
-	SubBrand    string         `json:"sub_brand,omitempty"`
-	Menu        string         `json:"menu,omitempty"`
-	Css         []string       `json:"css,omitempty"`
-	Js          []string       `json:"js,omitempty"`
-	Js99        []string       `json:"js99,omitempty"`
-	HeadLib     []string       `json:"head_lib,omitempty"`
-	Lib         []string       `json:"lib,omitempty"`
-	Lib99       []string       `json:"lib99,omitempty"`
-	Meta        PageMeta       `json:"meta"`
-	App         AppConf        `json:"app"`
-	NavMenu     []MenuItem     `json:"nav_menu,omitempty"`
-	Data        map[string]any `json:"data"`
+	Route      string         `json:"route,omitempty"`
+	RenderType string         `json:"render_type"`
+	File       string         `json:"file,omitempty"`
+	Layout     string         `json:"layout,omitempty"`
+	FullHtml   string         `json:"full_html,omitempty"`
+	BodyHtml   string         `json:"body_html,omitempty"`
+	PartHtml   string         `json:"part_html,omitempty"`
+	SubBrand   string         `json:"sub_brand,omitempty"`
+	Menu       string         `json:"menu,omitempty"`
+	Css        []string       `json:"css,omitempty"`
+	Js         []string       `json:"js,omitempty"`
+	Js99       []string       `json:"js99,omitempty"`
+	LibHead    []string       `json:"lib_head,omitempty"`
+	Lib        []string       `json:"lib,omitempty"`
+	Lib99      []string       `json:"lib99,omitempty"`
+	NavMenu    []MenuItem     `json:"nav_menu,omitempty"`
+	Meta       PageMeta       `json:"meta"`
+	Data       map[string]any `json:"data"`
 }
 
 type MenuItem struct {

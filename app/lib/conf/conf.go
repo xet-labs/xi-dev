@@ -161,8 +161,8 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 	c.FilesLoaded = newFilesLoaded
 
 	// Preserve intermediate data
-	c.IntermediateMap = c.AllMap()
-	c.IntermediateJson = c.AllJson()
+	// c.IntermediateMap = c.AllMap()
+	// c.IntermediateJson = c.AllJson()
 
 	c.ConfPostView()
 
@@ -338,20 +338,6 @@ func (c *ConfLib) postProcess(jsonMap map[string]any) error {
 		log.Warn().Msgf("Config Post-Setup: Failed to load JSON Config into Koanf: %v", err)
 		return err
 	}
-
-	// --Static Conf Merge BEGIN--
-	// overwrits user config for matching staticConf Keys with
-	jsonConfStatic, err := json.MarshalIndent(cfg.GetStatic(), "", "  ")
-	if err != nil {
-		log.Warn().Msgf("Config PostSetup: failed to marshal Static Config: %v", err)
-		return err
-	}
-	// Merge Static config
-	if err := c.koanfCli.Load(rawbytes.Provider(jsonConfStatic), koanfJson.Parser()); err != nil {
-		log.Warn().Msgf("Config Post-Setup: Failed to load JSON Static Config into Koanf: %v", err)
-		return err
-	}
-	// --Static Conf Merge END--
 
 	// Store Config to global 'cfg'
 	rawCfg := model.Config{}

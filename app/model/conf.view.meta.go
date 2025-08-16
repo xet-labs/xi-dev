@@ -1,16 +1,21 @@
 package model
 
+import "time"
+
 type PageMeta struct {
 	Type string `json:"type,omitempty"` // WebSite, BlogPosting, Product, NewsArticle, Article
 	// Basic SEO
 	Title       string   `json:"title,omitempty"`
-	Description string   `json:"description,omitempty"`
+	URL         string   `json:"url,omitempty"`
 	Canonical   string   `json:"canonical,omitempty"`
-	Images      []Image  `json:"images,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Tagline     string   `json:"tagline,omitempty"`
+	Image      Image  `json:"images,omitempty"`
 	Tags        []string `json:"tags,omitempty"`
-	Locale      string   `json:"locale,omitempty"` // en_US etc (for og:locale)
 	Hrefs       []HrefLang
+	Locale      string   `json:"locale,omitempty"` // en_US etc (for og:locale)
 	Robots      string `json:"robots,omitempty"` // e.g., "index, follow"
+	Referrer    string // default "no-referrer-when-downgrade"
 
 	// Social/owners
 	Author    Author    `json:"author,omitempty"`
@@ -18,12 +23,26 @@ type PageMeta struct {
 	OG        OG        `json:"og,omitempty"`
 	Twitter   Twitter   `json:"twitter,omitempty"`
 
-	// Extras
+	// Article/Product specifics
+	CreatedAt   *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt   *time.Time `json:"updatedAt,omitempty"`
+	ReadingTime string     `json:"readingTime,omitempty"` // e.g., "5 min"
+	Category    string     `json:"category,omitempty"`
+	IsFree      *bool      `json:"isAccessibleForFree,omitempty"`
+
 	Alternate []string `json:"alternate,omitempty"` // hreflang alternate URLs
+
 	// Extra JSON-LD (raw block to merge)
 	LDPre  map[string]any `json:"ld_pre,omitempty"`
 	LDPost map[string]any `json:"ld_post,omitempty"`
 	LD     map[string]any `json:"ld,omitempty"`
+
+	Brand PageBrand `json:"brand"`
+}
+
+type PageBrand struct {
+	IncTitleSuffix *bool  `json:"inc_title_suffix,omitempty"`
+	TitleSuffixSep string `json:"title_suffix_sep,omitempty"`
 }
 
 type Image struct {
@@ -36,6 +55,14 @@ type HrefLang struct {
 	URL  string `json:"url,omitempty"`
 }
 
+type Publisher struct {
+	Name    string `json:"name,omitempty"`
+	AltName string `json:"alt_name,omitempty"`
+	URL     string `json:"url,omitempty"`
+	Logo    string `json:"logo,omitempty"`
+	LogoAlt string `json:"logo_alt,omitempty"`
+}
+
 type Author struct {
 	Name        string `json:"name,omitempty"`
 	URL         string `json:"url,omitempty"`
@@ -45,18 +72,11 @@ type Author struct {
 	SameAs      string `json:"sameAs,omitempty"` // single URL or CSV
 }
 
-type Publisher struct {
-	Name string `json:"name,omitempty"`
-	URL  string `json:"url,omitempty"`
-	Logo string `json:"logo,omitempty"`
-	Alt  string `json:"altName,omitempty"`
-}
-
 type OG struct {
+	Type        string            `json:"type,omitempty"`
+	Title       string            `json:"title,omitempty"`
 	Description string            `json:"description,omitempty"`
 	Image       string            `json:"image,omitempty"`
-	Title       string            `json:"title,omitempty"`
-	Type        string            `json:"type,omitempty"`
 	URL         string            `json:"url,omitempty"`
 	Extra       map[string]string `json:"extra,omitempty"`
 }

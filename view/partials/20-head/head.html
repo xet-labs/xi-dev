@@ -11,23 +11,22 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+	<link rel="icon" href="/favicon.ico" sizes="any">
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-	<link rel="alternate icon" type="image/png" href="/favicon.ico">
-	<link rel="icon" type="image/png" sizes="192x192" href="/res/static/brand/favicon-192x192.png">
-	<link rel="icon" type="image/png" sizes="180x180" href="/res/static/brand/favicon-180x180.png">
-	<link rel="icon" type="image/png" sizes="48x48" href="/res/static/brand/favicon-48x48.png">
-	<link rel="apple-touch-icon" sizes="180x180" href="/res/static/brand/favicon-180x180.png">
+	<link rel="icon" type="image/png" href="/res/static/brand/favicon-192x192.png" sizes="192x192">
+	<link rel="icon" type="image/png" href="/res/static/brand/favicon-48x48.png" sizes="48x48">
+	<link rel="apple-touch-icon" href="/res/static/brand/favicon-180x180.png" sizes="180x180">
+	<meta name="msapplication-TileImage" content="/res/static/brand/favicon-192x192.png" />
+	<meta name="theme-color" content="#ff9700">
 
 	<link rel="manifest" href="/manifest.json">
-
-	<meta name="theme-color" content="#ff9700">
 
 	<!-- FONTS -->
 	<link rel="preload" href="/res/static/fonts/Inter/Inter-VariableFont_slnt_wght.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
 	{{ linkCssSlice "preload" .P.Css }}
 	{{ template "prtls/head.script" . }}
-	{{ linkLibSlice .P.HeadLib }}
+	{{ linkLibSlice .P.LibHead }}
 
 </head>
 

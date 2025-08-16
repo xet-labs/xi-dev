@@ -1,30 +1,40 @@
 package cfg
 
-import (
-	"xi/app/model"
-)
+import "xi/app/model"
 
-type Lib struct{}
+// --------------------
+// Runtime config (mutable)
+// --------------------
+var global = &model.Config{}
 
+// Direct pointers for convenience
 var (
-	global = &model.Config{}
-	App    = &global.App
-	Build  = &global.Build
-	Db     = &global.Db
-	View   = &global.View
+	App   = &global.App
+	Brand = &global.Brand
+	Db    = &global.Db
+	View  = &global.View
 )
 
-func GetStatic() any { return globalStatic }
+// Static BuildConf (never changes at runtime)
+var Build = model.BuildConf{
+	Date:     BuildDate,
+	Name:     BuildName,
+	Revision: BuildRevision,
+	Version:  BuildVersion,
+}
 
-func Set(cfg model.Config) { *global = cfg }
 
+// Get returns current runtime config
 func Get() *model.Config { return global }
 
-func Update(cfg model.Config) {
+// Set replaces the entire config (except Build, which stays static)
+func Set(cfg model.Config) {
+	cfg.Build = Build         // enforce static build info
 	*global = cfg
+}
 
-	// App = &global.App
-	// Build = &global.Build
-	// Db = &global.Db
-	// View = &global.View
+// Update merges in a new config but keeps Build static
+func Update(cfg model.Config) {
+	cfg.Build = Build
+	*global = cfg
 }

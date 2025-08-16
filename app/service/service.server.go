@@ -14,7 +14,7 @@ func InitServer(app *gin.Engine) error {
 
 	log.Info().Msgf("\a\033[1;94mApp running \033[0;34m'http://localhost:%s'%s\033[0m\n", appPort,
 		func() string {
-			if url := cfg.App.Url; url != "" {
+			if url := cfg.Brand.Url; url != "" {
 				return ", '" + url + "'"
 			}
 			return ""

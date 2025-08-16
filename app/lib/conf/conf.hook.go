@@ -57,5 +57,4 @@ func (c *ConfLib) ConfPostView() {
 		log.Error().Err(err).Msg("Config Postview: failed to sync")
 		return
 	}
-	return
 }
