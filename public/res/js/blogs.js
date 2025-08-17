@@ -39,7 +39,7 @@ function renderBlogsCard(blog) {
 <article class="card" data-href="${blogUrl}" tabindex="0" role="link" aria-label="Read more about ${blog.title || blog.short_title}">
   <figure class="card-hero">
     <a href="${blogUrl}">
-      <img src="${blog.featured_img[0]}" alt="${blog.title}" loading="lazy" class="lazyload">
+      <img src="${blog.featured_img}" alt="${blog.title}" loading="lazy" class="lazyload">
     </a>
   </figure>
 

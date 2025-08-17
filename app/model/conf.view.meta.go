@@ -3,17 +3,19 @@ package model
 import "time"
 
 type PageMeta struct {
-	Type string `json:"type,omitempty"` // WebSite, BlogPosting, Product, NewsArticle, Article
 	// Basic SEO
+	// -- WebSite, WebPage, Article, BlogPosting, NewsArticle, Product, Offer, Person, Organization, FAQPage
+	Type        string   `json:"type,omitempty"` 
 	Title       string   `json:"title,omitempty"`
 	URL         string   `json:"url,omitempty"`
 	Canonical   string   `json:"canonical,omitempty"`
+	ShortLink   string   `json:"short_link,omitempty"`
 	Description string   `json:"description,omitempty"`
 	Tagline     string   `json:"tagline,omitempty"`
-	Image      Image  `json:"images,omitempty"`
+	Img         Image    `json:"images,omitempty"`
 	Tags        []string `json:"tags,omitempty"`
 	Hrefs       []HrefLang
-	Locale      string   `json:"locale,omitempty"` // en_US etc (for og:locale)
+	Locale      string `json:"locale,omitempty"` // en_US etc (for og:locale)
 	Robots      string `json:"robots,omitempty"` // e.g., "index, follow"
 	Referrer    string // default "no-referrer-when-downgrade"
 

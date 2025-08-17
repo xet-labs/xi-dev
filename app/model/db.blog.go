@@ -14,7 +14,7 @@ type Blog struct {
 	Title        string           `gorm:"column:title"                  json:"title"`
 	Headline     string           `gorm:"column:short_title"            json:"headline"`
 	Description  string           `gorm:"column:description"            json:"description"`
-	FeaturedImg  util.StringArray `gorm:"column:featured_img"           json:"featured_img"`
+	FeaturedImg  string           `gorm:"column:featured_img"           json:"featured_img"`
 	Content      string           `gorm:"column:content"                json:"content"`
 	Slug         string           `gorm:"column:slug"                   json:"slug"`
 	Path         string           `gorm:"column:path"                   json:"path"`

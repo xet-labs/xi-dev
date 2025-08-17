@@ -45,7 +45,7 @@
 </div>
 
 <figure class="blog-hero">
-    <img src="{{ index .P.Data.B.FeaturedImg 0 }}#blog-hero" alt="{{ .P.Data.B.Title }}" fetchpriority="high" decoding="async" loading="eager">
+    <img src="{{ .P.Data.B.FeaturedImg }}#blog-hero" alt="{{ .P.Data.B.Title }}" fetchpriority="high" decoding="async" loading="eager">
 </figure>
 
 {{ end }}

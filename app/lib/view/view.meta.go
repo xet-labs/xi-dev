@@ -1,4 +1,4 @@
-package htmlfn
+package view
 
 import (
 	"maps"
@@ -17,12 +17,13 @@ import (
 // <link rel="alternate" type="application/json" href="/api/posts/123.json" />
 // <link rel='shortlink' href='https://blueminch.com/' />
 
-func GenMeta(m model.PageMeta) string {
+func (v *ViewLib) GenMeta(m model.PageMeta) string {
 
 	var b strings.Builder
 
 	// computed
 	title := metaTitle(m)
+	metaType(&m)
 
 	// --- Basic meta ---
 	add(&b, `<title>%s</title>`, title)
@@ -36,32 +37,32 @@ func GenMeta(m model.PageMeta) string {
 	}
 
 	// hreflang alternates
-	for _, h := range m.Hrefs {
-		if h.Lang != "" && h.URL != "" {
-			fmt.Fprintf(&b, `<link rel="alternate" hreflang="%s" href="%s">\n`, e(h.Lang), e(h.URL))
-		}
-	}
+	// for _, h := range m.Hrefs {
+	// 	if h.Lang != "" && h.URL != "" {
+	// 		fmt.Fprintf(&b, `<link rel="alternate" hreflang="%s" href="%s">\n`, e(h.Lang), e(h.URL))
+	// 	}
+	// }
 
 	// --- Open Graph ---
-	add(&b, `<meta property="og:type" content="%s">`, ogType(m))
+	add(&b, `<meta property="og:type" content="%s">`, m.OG.Type)
 	add(&b, `<meta property="og:locale" content="%s">`, m.Locale)
 	add(&b, `<meta property="og:site_name" content="%s">`, cfg.Brand.Name)
 	add(&b, `<meta property="og:title" content="%s">`, StrFallback(m.OG.Title, title))
 	add(&b, `<meta property="og:description" content="%s">`, StrFallback(m.OG.Description, m.Description))
 	add(&b, `<meta property="og:url" content="%s">`, StrFallback(m.OG.URL, m.URL))
-	add(&b, `<meta property="og:image" content="%s">`, m.Image.URL)
-	add(&b, `<meta property="og:image:alt" content="%s">`, StrFallback(m.Image.Alt, m.Title))
+	add(&b, `<meta property="og:image" content="%s">`, m.Img.URL)
+	add(&b, `<meta property="og:image:alt" content="%s">`, StrFallback(m.Img.Alt, m.Title))
 
 	// --- Twitter ---
-	add(&b, `<meta name="twitter:card" content="%s">`, StrNotEmptyThen("summary_large_image", m.Image.URL))
+	add(&b, `<meta name="twitter:card" content="%s">`, StrNotEmptyThen("summary_large_image", m.Img.URL))
 	add(&b, `<meta name="twitter:site" content="%s">`, m.Twitter.Site)
 	add(&b, `<meta name="twitter:creator" content="%s">`, m.Twitter.Creator)
 	add(&b, `<meta property="twitter:domain" value="%s">`, cfg.Brand.Domain)
 	add(&b, `<meta name="twitter:title" content="%s">`, StrFallback(m.OG.Title, title))
 	add(&b, `<meta name="twitter:description" content="%s">`, StrFallback(m.OG.Description, m.Description))
 	add(&b, `<meta name="twitter:url" content="%s">`, StrFallback(m.OG.URL, m.URL))
-	add(&b, `<meta name="twitter:image:src" content="%s">`, m.Image.URL)
-	add(&b, `<meta name="twitter:image:alt" content="%s">`, StrFallback(m.Image.Alt, m.Title))
+	add(&b, `<meta name="twitter:image:src" content="%s">`, m.Img.URL)
+	add(&b, `<meta name="twitter:image:alt" content="%s">`, StrFallback(m.Img.Alt, m.Title))
 
 	// Twitter extra labels (label1/data1 ... or arbitrary kv)
 	if len(m.Twitter.Extra) > 0 {
@@ -69,10 +70,10 @@ func GenMeta(m model.PageMeta) string {
 		for k, v := range m.Twitter.Extra {
 			fmt.Fprintf(&b, `<meta name="%s" content="%s">`+"\n", e(k), e(v))
 		}
-
-	} else if isArticle(m.Type) {
-		add(&b, "Written by", `<meta name="twitter:label1" content="%s">`)
-		add(&b, "@"+strings.TrimPrefix(m.Author.Name, "@"), `<meta name="twitter:data1" content="%s">`)
+	}
+	if isArticle(m.Type) {
+		add(&b, `<meta name="twitter:label1" content="%s">`, StrNotEmptyThen("Written by", m.Author.Name))
+		add(&b, `<meta name="twitter:data1" content="%s">`, "@" + m.Author.Name)
 
 		add(&b, `<meta name="twitter:label2" content="%s">`, StrNotEmptyThen("Category", m.Category))
 		add(&b, `<meta name="twitter:data2" content="%s">`, m.Category)
@@ -99,7 +100,7 @@ func GenMeta(m model.PageMeta) string {
 	if len(ld) > 0 {
 		b.WriteString(`<script type="application/ld+json">`)
 		b.Write(ld)
-		b.WriteString(`</script>\n`)
+		b.WriteString(`</script>`)
 	}
 
 	return b.String()
@@ -130,7 +131,8 @@ func ldJSON(m model.PageMeta) []byte {
 		addIfNotEmptyTo(root, "dateModified", m.UpdatedAt.UTC().Format(time.RFC3339Nano))
 		addSliceIfNotEmpty(root, "articleSection", m.Tags)
 		
-		authorMap := root["author"].(map[string]any)
+		root["author"] = map[string]any{} // create new map
+    	authorMap := root["author"].(map[string]any)
 		authorMap["@type"] = "Person"
 		addIfNotEmptyTo(authorMap, "name", m.Author.Name)
 		addIfNotEmptyTo(authorMap, "description", m.Author.Description)
@@ -171,7 +173,6 @@ func ldJSON(m model.PageMeta) []byte {
 	buf := &bytes.Buffer{}
 	enc := json.NewEncoder(buf)
 	enc.SetEscapeHTML(false)
-	enc.SetIndent("", "  ")
 	_ = enc.Encode(root)
 	return buf.Bytes()
 }
@@ -181,7 +182,7 @@ func metaTitle(m model.PageMeta) string {
 	base := m.Title
 
 	// add author if provided
-	if isArticle(m.Type) {
+	if isArticle(m.Type) && m.Author.Name != "" {
 		base = base + " | by " + m.Author.Name
 	}
 
@@ -198,14 +199,19 @@ func metaTitle(m model.PageMeta) string {
 	return base
 }
 
-func ogType(m model.PageMeta) string {
+func metaType(m *model.PageMeta) {
+	if m.Type == "" {
+		m.Type = "WebSite"
+	}
 	switch strings.ToLower(StrFallback(m.OG.Type, m.Type)) {
-	case "blogposting", "newsarticle", "article":
-		return "article"
+	case "article", "blogposting", "newsarticle":
+		m.OG.Type = "article"
 	case "product":
-		return "product"
+		m.OG.Type ="product"
+	case "profile":
+		m.OG.Type ="profile"
 	default:
-		return "website"
+		m.OG.Type = "website"
 	}
 }
 

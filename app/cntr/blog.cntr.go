@@ -44,8 +44,9 @@ func (b *BlogCntr) Index(c *gin.Context) {
 
 	// Build data
 	P := cfg.View.Pages["blogs"]
+	P.Meta.URL = c.Request.URL.String()
 	P.Data = map[string]any{
-		"Url": c.Request.URL.String(),
+		"Meta": template.HTML(lib.View.GenMeta(P.Meta)),
 	}
 
 	lib.View.OutHtmlLyt(c, P, rdbKey) // Cache renderer
@@ -79,13 +80,29 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	}
 
 	P := cfg.View.Pages["blog"]
+	b.PrepMeta(&P.Meta, blog, c)
 	P.Data = map[string]any{
 		"B":       blog,
 		"Content": template.HTML(blog.Content),
-		"Url":     c.Request.URL.String(),
+		"Meta": template.HTML(lib.View.GenMeta(P.Meta)),
 	}
 
 	lib.View.OutHtmlLyt(c, P, rdbKey)
+}
+
+func (b *BlogCntr) PrepMeta(meta *model.PageMeta, raw model.Blog, c *gin.Context){
+	meta.Type = "Article" 
+	meta.Title = raw.Title
+	meta.URL = lib.Url.Full(c)
+	meta.Description = raw.Description
+	meta.Author.Name = raw.User.Name
+	meta.Img.URL = raw.FeaturedImg
+	meta.Tags = raw.Tags
+	meta.CreatedAt = raw.CreatedAt
+	meta.UpdatedAt = raw.UpdatedAt
+	// meta.Category = raw.Tags
+	// meta.ShortLink = "/blog/" + string(raw.UID) + string(raw.ID)
+	// meta.ShortLink = "/blog/" + strconv.FormatUint(uint64(raw.UID), 10) + strconv.FormatUint(uint64(raw.ID), 10)
 }
 
 // POST api/blog/uid/id
