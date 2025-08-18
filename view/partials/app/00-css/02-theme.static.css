@@ -1,4 +1,4 @@
-:root{
+:root {
     /* Callouts */
     --callout-border-width: 0px;
     --callout-border-opacity: 0.25;
@@ -43,7 +43,9 @@
 }
 
 /* --Theme static vars-- */
-:root{color-scheme: light;
+/* html[data-theme='light'], */
+:root {
+    color-scheme: light;
     --mono-rgb: var(--mono-rgb-0);
     --mono-rgb-inv: var(--mono-rgb-100);
     --colr-red-rgb: 233, 49, 71;
@@ -85,7 +87,10 @@
     --text-accent: var(--colr-accent);
     --bg-mod-cover: rgba(220, 220, 220, 0.4);
 }
-.dark{color-scheme: dark;
+
+/* html[data-theme='dark'], */
+.dark {
+    color-scheme: dark;
     --mono-rgb: var(--mono-rgb-100);
     --mono-rgb-inv: var(--mono-rgb-0);
     --colr-red-rgb: 251, 70, 76;

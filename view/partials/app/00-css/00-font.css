@@ -32,9 +32,6 @@
     --p-space: 1rem;
     --hx-space: calc(var(--p-space) * 2.6);
 }
-.dark {
-    /* --p-wght: 360; */
-}
 
 p { margin-block: var(--p-space); unicode-bidi: plaintext; }
 h1, h2, h3, h4, h5, h6 { margin-block: var(--p-space); }

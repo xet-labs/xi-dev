@@ -1,9 +1,13 @@
 .blog-head-tags {
-    display: flex;
+    display: none;
     flex-direction: row;
 
     margin: 0 0 1em;
     gap: .35em;
+   
+    &:has(a){
+        display: flex;
+    }
 }
 .blog .blog-head-tags a {
     /* --blog-tag-brdr-rad: .75em; */
@@ -33,7 +37,8 @@
 .blog h1,
 .blog .blog-head-title {
     margin: var(--blog-h1-mr-yt, var(--blog-h1-mr-y, var(--p-space))) 0 var(--blog-h1-mr-yb, var(--blog-h1-mr-y, var(--p-space)));
-    margin-top: var(--p-space);
+    /* margin-top: var(--p-space); */
+    margin-top: 0;
     line-height: 1.25;
     font-weight: 650;
     /* padding: 0; */

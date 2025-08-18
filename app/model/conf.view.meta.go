@@ -5,14 +5,15 @@ import "time"
 type PageMeta struct {
 	// Basic SEO
 	// -- WebSite, WebPage, Article, BlogPosting, NewsArticle, Product, Offer, Person, Organization, FAQPage
-	Type        string   `json:"type,omitempty"` 
+	Type        string   `json:"type,omitempty"`
 	Title       string   `json:"title,omitempty"`
-	URL         string   `json:"url,omitempty"`
 	Canonical   string   `json:"canonical,omitempty"`
 	ShortLink   string   `json:"short_link,omitempty"`
+	URL         string   `json:"url,omitempty"`
 	Description string   `json:"description,omitempty"`
+	AltJson     string   `json:"alt_json,omitempty"`
 	Tagline     string   `json:"tagline,omitempty"`
-	Img         Image    `json:"images,omitempty"`
+	Img         Img      `json:"img,omitempty"`
 	Tags        []string `json:"tags,omitempty"`
 	Hrefs       []HrefLang
 	Locale      string `json:"locale,omitempty"` // en_US etc (for og:locale)
@@ -47,7 +48,7 @@ type PageBrand struct {
 	TitleSuffixSep string `json:"title_suffix_sep,omitempty"`
 }
 
-type Image struct {
+type Img struct {
 	URL string `json:"url,omitempty"`
 	Alt string `json:"alt,omitempty"`
 }
@@ -68,7 +69,7 @@ type Publisher struct {
 type Author struct {
 	Name        string `json:"name,omitempty"`
 	URL         string `json:"url,omitempty"`
-	Image       string `json:"image,omitempty"`
+	Img         string `json:"img,omitempty"`
 	JobTitle    string `json:"jobTitle,omitempty"`
 	Description string `json:"description,omitempty"`
 	SameAs      string `json:"sameAs,omitempty"` // single URL or CSV
@@ -78,7 +79,7 @@ type OG struct {
 	Type        string            `json:"type,omitempty"`
 	Title       string            `json:"title,omitempty"`
 	Description string            `json:"description,omitempty"`
-	Image       string            `json:"image,omitempty"`
+	Img         string            `json:"img,omitempty"`
 	URL         string            `json:"url,omitempty"`
 	Extra       map[string]string `json:"extra,omitempty"`
 }
@@ -89,6 +90,6 @@ type Twitter struct {
 	Site        string            `json:"site,omitempty"`    // @handle
 	Creator     string            `json:"creator,omitempty"` // @author
 	Card        string            `json:"card,omitempty"`    // summary, summary_large_image
-	Image       string            `json:"image,omitempty"`
+	Img         string            `json:"img,omitempty"`
 	Extra       map[string]string `json:"extra,omitempty"` // label1/data1... or any kv
 }

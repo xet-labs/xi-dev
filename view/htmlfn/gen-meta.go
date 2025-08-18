@@ -1,11 +1,11 @@
-package view
+package htmlfn
 
 import (
-	"maps"
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"html"
+	"html/template"
+	"maps"
 	"strings"
 	"time"
 
@@ -13,11 +13,7 @@ import (
 	"xi/app/model"
 )
 
-// <link rel="alternate" type="application/json+oembed" href="/oembed?url=https://mysite.com/page" />
-// <link rel="alternate" type="application/json" href="/api/posts/123.json" />
-// <link rel='shortlink' href='https://blueminch.com/' />
-
-func (v *ViewLib) GenMeta(m model.PageMeta) string {
+func GenMeta(m model.PageMeta) template.HTML {
 
 	var b strings.Builder
 
@@ -27,11 +23,13 @@ func (v *ViewLib) GenMeta(m model.PageMeta) string {
 
 	// --- Basic meta ---
 	add(&b, `<title>%s</title>`, title)
-	add(&b, `<meta name="robots" content="%s">`, m.Robots)
-	add(&b, `<meta name="referrer" content="%s">`, m.Referrer)
 	add(&b, `<link rel="canonical" href="%s">`, m.URL)
+	add(&b, `<link rel="shortlink" href="%s">`, m.ShortLink)
+	add(&b, `<link rel="alternate" type="application/json" href="%s">`, m.AltJson)
 	add(&b, `<meta name="title" content="%s">`, title)
 	add(&b, `<meta name="description" content="%s">`, m.Description)
+	add(&b, `<meta name="robots" content="%s">`, m.Robots)
+	add(&b, `<meta name="referrer" content="%s">`, m.Referrer)
 	if len(m.Tags) > 0 {
 		add(&b, `<meta name="keywords" content="%s">`, strings.Join(m.Tags, ", "))
 	}
@@ -96,14 +94,14 @@ func (v *ViewLib) GenMeta(m model.PageMeta) string {
 	}
 
 	// --- JSON-LD ---
-	ld := ldJSON(m)
-	if len(ld) > 0 {
+	
+	if ld := ldJSON(m); len(ld) > 0 {
 		b.WriteString(`<script type="application/ld+json">`)
 		b.Write(ld)
 		b.WriteString(`</script>`)
 	}
 
-	return b.String()
+	return template.HTML(b.String())
 }
 
 // ------- JSON-LD builder -------
@@ -120,8 +118,8 @@ func ldJSON(m model.PageMeta) []byte {
 	}
 
 	addIfNotEmptyTo(root, "description", m.Description)
-	addIfNotEmptyTo(root, "image", m.Author.Image)
-	addSliceIfNotEmpty(root, "keyword", m.Tags)
+	addIfNotEmptyTo(root, "image", m.Author.Img)
+	addSliceIfNotEmpty(root, "keywords", m.Tags)
 
 	// Article-like specifics
 	if isArticle(m.Type) {
@@ -136,7 +134,7 @@ func ldJSON(m model.PageMeta) []byte {
 		authorMap["@type"] = "Person"
 		addIfNotEmptyTo(authorMap, "name", m.Author.Name)
 		addIfNotEmptyTo(authorMap, "description", m.Author.Description)
-		addIfNotEmptyTo(authorMap, "image", m.Author.Image)
+		addIfNotEmptyTo(authorMap, "image", m.Author.Img)
 		addIfNotEmptyTo(authorMap, "jobTitle", m.Author.JobTitle)
 		addIfNotEmptyTo(authorMap, "sameAs", m.Author.SameAs)
 		addIfNotEmptyTo(authorMap, "url", m.Author.URL)
@@ -169,12 +167,11 @@ func ldJSON(m model.PageMeta) []byte {
 
 	// Allow raw LD to merge (shallow)
 	maps.Copy(root, m.LD)
-
-	buf := &bytes.Buffer{}
-	enc := json.NewEncoder(buf)
-	enc.SetEscapeHTML(false)
-	_ = enc.Encode(root)
-	return buf.Bytes()
+	
+	if b, err := json.Marshal(root); err == nil {
+		return b
+	}
+	return []byte{} 
 }
 
 // metaTitle builds the final page <title>
@@ -189,9 +186,6 @@ func metaTitle(m model.PageMeta) string {
 	// append brand suffix if enabled
 	if m.Brand.IncTitleSuffix != nil && *m.Brand.IncTitleSuffix {
 		if m.Publisher.Name != "" {
-			if m.Brand.TitleSuffixSep == "" {
-				m.Brand.TitleSuffixSep = " | "
-			}
 			return base + m.Brand.TitleSuffixSep + m.Publisher.Name
 		}
 	}
@@ -221,13 +215,6 @@ func isArticle(t string) bool {
 		return true
 	}
 	return false
-}
-
-func boolOr(a, def bool) bool {
-	if a {
-		return true
-	}
-	return def
 }
 
 func addIfNotEmptyTo(m map[string]any, key string, val string) {

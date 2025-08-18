@@ -6,12 +6,18 @@ type UrlLib struct {}
 
 var Url = & UrlLib{}
 
-func (u *UrlLib) Full(c *gin.Context) string {
+func (u *UrlLib) Host(c *gin.Context) string {
     scheme := "http"
     if c.Request.TLS != nil {
         scheme = "https"
     }
 
     // c.Request.Host includes host + port
-    return scheme + "://" + c.Request.Host + c.Request.RequestURI
+    return scheme + "://" + c.Request.Host
+}
+
+func (u *UrlLib) Full(c *gin.Context) string {
+
+    // c.Request.Host includes host + port
+    return u.Host(c) + c.Request.RequestURI
 }

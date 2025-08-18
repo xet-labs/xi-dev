@@ -7,7 +7,7 @@ import (
 
 // ListFilesWithExt returns a slice of file paths with the given extension from baseDir recursively.
 // Example: ListFilesWithExt("static/css", ".css")
-func (f *FileLib) GetExt(ext string, baseDirs ...string) ([]string, error) {
+func (f *FileLib) GetWithExt(ext string, baseDirs ...string) ([]string, error) {
 	var files []string
 
 	for _, baseDir := range baseDirs {
@@ -24,7 +24,7 @@ func (f *FileLib) GetExt(ext string, baseDirs ...string) ([]string, error) {
 	return files, nil
 }
 
-func (f *FileLib) GetExts(exts []string, baseDirs ...string) ([]string, error) {
+func (f *FileLib) GetWithExts(exts []string, baseDirs ...string) ([]string, error) {
 	var files []string
 	extMap := make(map[string]bool, len(exts))
 

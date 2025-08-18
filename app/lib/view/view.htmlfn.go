@@ -15,6 +15,7 @@ import (
 
 var HtmlFn = template.FuncMap{
 	"formatTime":   htmlfn.FormatTime,
+	"genMeta":      htmlfn.GenMeta,
 	"isSlice":      htmlfn.IsSlice,
 	"len":          htmlfn.Len,
 	"linkCss":      htmlfn.LinkCss,
@@ -30,7 +31,7 @@ var HtmlFn = template.FuncMap{
 }
 
 func (v *ViewLib) NewTmpl(name, ext string, dirs ...string) *template.Template {
-	files, err := file.File.GetExt(ext, dirs...)
+	files, err := file.File.GetWithExt(ext, dirs...)
 	if err != nil {
 		log.Error().Err(err).Str("cli", name).Str("template-dir", util.Util.QuoteSlice(dirs)).
 			Msg("View NewTmpl: couldnt get template files")

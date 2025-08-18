@@ -23,17 +23,17 @@
     --bg-mod: var(--colr-30);
     --bg-mod: rgba(var(--mono-rgb), 0.075);
     --bg-mod-hov: rgba(var(--mono-rgb), 0.075);
-    
 
-    
+
+
     --colr-txt-faint: var(--text-faint);
     --colr-txt-mute: var(--text-muted);
     --colr-txt-normal: var(--text-normal);
-    
+
     --colr-divider: rgba(var(--mono-rgb), 0.075);
     --colr-outln: rgba(var(--mono-rgb), 0.125);
     --colr-brdr: rgba(var(--mono-rgb), 0.09);
-    
+
     --underlay-bg: rgba(var(--mono-rgb-0), 0.05);
 
     --icon-brdr: none;
@@ -70,12 +70,14 @@
 
     --signuplogin-submit-colr: #3b57e3;
     --signuplogin-input-focus-brdr-colr: var(--signuplogin-submit-colr);
-    
+
     --input-brdr-colr: #4040408f;
 }
 
 /* --Theme-- */
-:root {color-scheme: light;
+/* html[data-theme='light'], */
+:root {
+    color-scheme: light;
     --bg: #fff;
     --bg: #f7f7f7;
     /* --bg: #f8f8f8; */
@@ -90,7 +92,9 @@
     --pre-bg: #18181b;
 }
 
-.dark {color-scheme: dark;
+/* html[data-theme='dark'], */
+.dark {
+    color-scheme: dark;
     /* --bg: #121417; --colr-txt: #D4D4D4; */
     /* --bg: #121212; --colr-txt: #E0E0E0; */
     --bg: #0d0d0e;
