@@ -115,31 +115,41 @@
         "file": "view/pages/home.part.html",
         "menu": "Home",
         "meta": {
+          "title": "Xet Industries",
           "canonical": "https://xetindustries.com/",
           "description": "A Collaborative Platform for Makers, Creators, and Developers."
         }
       },
-      "blogs": {
+      "blog": {
         "route": "/blog",
         "layout": "layout/blogs",
         "menu": "Blog",
         "sub_brand": "Blog",
-        "title": "Blog",
+        "css": [
+          "/res/css/app.css",
+          "/res/css/blogs.css"
+        ],
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",
           "/res/js/blogs.js"
         ],
         "meta": {
+          "title": "Blog",
           "description": "Discover Insightful Articles, Expert Tips and Inspiring Ideas. Write, Share and Connect with a thriving like-minded community.",
           "canonical": "https://xetindustries.com/blog"
         }
       },
-      "blog": {
+      "blogs": {
+        "enable": false,
         "route": "/blog/*",
         "layout": "layout/blog",
         "menu": "Blog",
         "sub_brand": "Blog",
+        "css": [
+          "/res/css/app.css",
+          "/res/css/blog.css"
+        ],
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",
