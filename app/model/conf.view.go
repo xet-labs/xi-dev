@@ -11,9 +11,9 @@ type ViewConf struct {
 }
 
 type PageParam struct {
-	Enable     bool           `json:"enabled,omitempty"`
+	Enable     bool           `json:"enable,omitempty"`
 	Route      string         `json:"route,omitempty"`
-	RenderType string         `json:"render_type"`
+	Render string         `json:"render"`
 	File       string         `json:"file,omitempty"`
 	Layout     string         `json:"layout,omitempty"`
 	FullHtml   string         `json:"full_html,omitempty"`

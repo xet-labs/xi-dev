@@ -43,10 +43,10 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	defer b.mu.RUnlock()
 
 	// Build data
-	P := cfg.View.Pages["blogs"]
-	P.Meta.URL = lib.Util.Url.Full(c)
+	p := cfg.View.Pages["blog"]
+	p.Meta.URL = lib.Util.Url.Full(c)
 
-	lib.View.OutHtmlLyt(c, P, rdbKey) // Cache renderer
+	lib.View.OutHtmlLyt(c, p, rdbKey) // Cache renderer
 }
 
 func (b *BlogCntr) Show(c *gin.Context) {
@@ -76,17 +76,17 @@ func (b *BlogCntr) Show(c *gin.Context) {
 		return
 	}
 
-	P := cfg.View.Pages["blog"]
-	b.PrepMeta(&P.Meta, blog, c)
-	P.Rt = map[string]any{
+	p := cfg.View.Pages["blogs"]
+	b.PrepMeta(c, &p.Meta, blog)
+	p.Rt = map[string]any{
 		"B":       blog,
 		"Content": template.HTML(blog.Content),
 	}
 
-	lib.View.OutHtmlLyt(c, P, rdbKey)
+	lib.View.OutHtmlLyt(c, p, rdbKey)
 }
 
-func (b *BlogCntr) PrepMeta(meta *model.PageMeta, raw model.Blog, c *gin.Context){
+func (b *BlogCntr) PrepMeta(c *gin.Context, meta *model.PageMeta, raw model.Blog){
 	meta.Type = "Article" 
 	meta.Title = raw.Title
 	meta.URL = lib.Util.Url.Full(c)
