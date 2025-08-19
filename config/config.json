@@ -22,7 +22,7 @@
     "rdb_prefix": "${APP_ABBR:-redis}",
     "conn": {
       "db": {
-        "enable": true,
+        "enable": "${DB_ENABLE:-true}",
         "db": "${DB:-XI}",
         "user": "${DB_USER:-XI_u}",
         "pass": "${DB_PASS}",
@@ -48,10 +48,8 @@
     }
   },
   "view": {
-    "css_dir": [
-      "view/partials"
-    ],
-    "template_dir": [
+    "css_base_dir": "view/partials",
+    "template_dirs": [
       "view/layout",
       "view/partials",
       "view/pages"
@@ -121,27 +119,15 @@
           "description": "A Collaborative Platform for Makers, Creators, and Developers."
         }
       },
-      "blogs": {
-        "route": "/blog",
-        "layout": "layout/blogs",
-        "menu": "Blog",
-        "sub_brand": "Blog",
-        "title": "Blog",
-        "js99": [
-          "/res/js/jquery/jquery.min.js",
-          "/res/js/app.js",
-          "/res/js/blogs.js"
-        ],
-        "meta": {
-          "description": "Discover Insightful Articles, Expert Tips and Inspiring Ideas. Write, Share and Connect with a thriving like-minded community.",
-          "canonical": "https://xetindustries.com/blog"
-        }
-      },
       "blog": {
         "route": "/blog/*",
         "layout": "layout/blog",
         "menu": "Blog",
         "sub_brand": "Blog",
+        "css": [
+          "/res/css/app.css",
+          "/res/css/blog.css"
+        ],
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",
@@ -151,6 +137,26 @@
         "lib99": [
           "hljs"
         ]
+      },
+      "blogs": {
+        "route": "/blog",
+        "layout": "layout/blogs",
+        "menu": "Blog",
+        "sub_brand": "Blog",
+        "title": "Blog",
+        "css": [
+          "/res/css/app.css",
+          "/res/css/blogs.css"
+        ],
+        "js99": [
+          "/res/js/jquery/jquery.min.js",
+          "/res/js/app.js",
+          "/res/js/blogs.js"
+        ],
+        "meta": {
+          "description": "Discover Insightful Articles, Expert Tips and Inspiring Ideas. Write, Share and Connect with a thriving like-minded community.",
+          "canonical": "https://xetindustries.com/blog"
+        }
       }
     }
   }

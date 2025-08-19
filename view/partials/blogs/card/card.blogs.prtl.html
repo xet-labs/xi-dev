@@ -1,17 +1,17 @@
 {{ define "prtls/blogs.card" }}
 
-<article class="card" data-href="{{ .B.url }}" tabindex="0" role="link" aria-label="Read more about {{ .B.title }}">
+<article class="card" data-href="{{ .P.Rt.B.url }}" tabindex="0" role="link" aria-label="Read more about {{ .P.Rt.B.title }}">
 		
     <figure class="card-hero">
-        <a href="{{ .B.url }}">
-            <img src="{{ .B.FeaturedImg }}" alt="{{ .B.title }}" loading="lazy">
+        <a href="{{ .P.Rt.B.url }}">
+            <img src="{{ .P.Rt.B.FeaturedImg }}" alt="{{ .P.Rt.B.title }}" loading="lazy">
         </a>
     </figure>
     
     <div class="card-info">
 
-        <h2 class="card-title" title="{{ .B.title }}">
-            <a href="{{ .B.url }}">{{ .B.headline }}</a>
+        <h2 class="card-title" title="{{ .P.Rt.B.title }}">
+            <a href="{{ .P.Rt.B.url }}">{{ .P.Rt.B.headline }}</a>
         </h2>
 
         <p class="card-exrpt">{{ .Description }}</p>
@@ -19,18 +19,18 @@
         <div class="card-meta-wrap">
             <div class="card-meta">
 
-                <a href="/@{{ .B.username }}" class="meta-author-img">
+                <a href="/@{{ .P.Rt.B.username }}" class="meta-author-img">
                     <figure>
-                        <img src="{{ .B.profile_img }}" alt="{{ .B.name }}" loading="lazy" fetchpriority="low">
+                        <img src="{{ .P.Rt.B.profile_img }}" alt="{{ .P.Rt.B.name }}" loading="lazy" fetchpriority="low">
                     </figure>
                 </a>
 
                 <div class="meta-info">
 
                     <div class="meta-author">
-                        <a href="/@{{ .B.username }}" title="@{{ .B.username }}">{{ .B.name }}</a>
+                        <a href="/@{{ .P.Rt.B.username }}" title="@{{ .P.Rt.B.username }}">{{ .P.Rt.B.name }}</a>
 
-                        {{ if .B.verified }}
+                        {{ if .P.Rt.B.verified }}
                             <i class="icon meta-verified" title="Verified">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" viewBox="0 0 24 24" focusable="false" aria-hidden="true" style="pointer-events: none; display: inherit;">
                                     <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zM9.8 17.3l-4.2-4.1L7 11.8l2.8 2.7L17 7.4l1.4 1.4-8.6 8.5z"></path>
@@ -39,7 +39,7 @@
                         {{ end }}
                     </div>
 
-                    <div class="meta-time"> <time>{{ .B.timeAgo }}</time> </div>
+                    <div class="meta-time"> <time>{{ .P.Rt.B.timeAgo }}</time> </div>
                 
                 </div>
 

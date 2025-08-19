@@ -65,7 +65,7 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 
 	// Prep data
 	P := cfg.View.Pages["auth"]
-	P.Data["url"] = c.Request.URL.String()
+	P.Rt["url"] = c.Request.URL.String()
 
 	// Cache renderer
 	lib.View.OutHtmlLyt(c, P, rdbKey)
@@ -86,7 +86,7 @@ func (a *AuthCntr) Logins(c *gin.Context) {
 
 	// Build data
 	P := cfg.View.Pages["auths"]
-	P.Data["url"] = c.Request.URL.String()
+	P.Rt["url"] = c.Request.URL.String()
 
 	// Cache renderer
 	lib.View.OutHtmlLyt(c, P, rdbKey)
@@ -130,7 +130,7 @@ func (a *AuthCntr) ShowLogin(c *gin.Context) {
 
 	// Prep data
 	P := cfg.View.Pages["auth"]
-	P.Data["url"] = c.Request.URL.String()
+	P.Rt["url"] = c.Request.URL.String()
 
 	// Cache renderer
 	lib.View.OutHtmlLyt(c, P, rdbKey)

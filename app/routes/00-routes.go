@@ -8,9 +8,10 @@ import (
 )
 
 type RouteStruct struct{}
-var(
+
+var (
 	Route = &RouteStruct{}
-	r *gin.Engine
+	r     *gin.Engine
 )
 
 // Initializes all routes and templates
@@ -19,9 +20,10 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 	r = engine
 
 	// Register templates
-	r.SetHTMLTemplate(lib.View.NewTmpl("main", ".html", cfg.View.TemplateDir...))
+	r.SetHTMLTemplate(lib.View.NewTmpl("main", ".html", cfg.View.TemplateDirs...))
 
 	// Register routes
+	rt.registerMm()
 	rt.registerStatic()
 	rt.registerCore()
 	rt.registerBlog()

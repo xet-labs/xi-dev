@@ -1,33 +1,33 @@
 {{ define "prtls/blog.header" }}
 <div class="blog-head">
     <div class="blog-head-tags">
-        {{ range $i, $tag := slice .P.Data.B.Tags 0 4 }}
+        {{ range $i, $tag := slice .P.Rt.B.Tags 0 4 }}
         <a href="{{ $tag }}">
             <span style="color: var(--colr-txt-2);"></span>{{ $tag }}
         </a>
         {{ end }}
     </div>
 
-    <h1 class="blog-head-title" title="{{ .P.Data.B.Title }}">{{ .P.Data.B.Title }}</h1>
+    <h1 class="blog-head-title" title="{{ .P.Rt.B.Title }}">{{ .P.Rt.B.Title }}</h1>
 
     <div class="blog-head-meta">
-        <a href="/@{{ .P.Data.B.User.Username }}" title="{{ .P.Data.B.User.Name }}" class="author-img-wrap">
+        <a href="/@{{ .P.Rt.B.User.Username }}" title="{{ .P.Rt.B.User.Name }}" class="author-img-wrap">
             <figure>
-                <img src="{{ .P.Data.B.User.ProfileImg }}#profile-img" alt="{{ .P.Data.B.User.Name }}" loading="lazy"
+                <img src="{{ .P.Rt.B.User.ProfileImg }}#profile-img" alt="{{ .P.Rt.B.User.Name }}" loading="lazy"
                     decoding="async">
             </figure>
         </a>
 
         <div class="meta-info">
             <div class="meta-author">
-                <a href="/@{{ .P.Data.B.User.Username }}" title="@{{ .P.Data.B.User.Username }}">
-                    {{ .P.Data.B.User.Name }}
+                <a href="/@{{ .P.Rt.B.User.Username }}" title="@{{ .P.Rt.B.User.Username }}">
+                    {{ .P.Rt.B.User.Name }}
                 </a>
 
                 <span class="seperator"></span>
                 <a href="" class="meta-follow">Follow</a>
 
-                {{ if .P.Data.B.User.Verified }}
+                {{ if .P.Rt.B.User.Verified }}
                 <i class="icon meta-verified" title="Verified">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1.15em" viewBox="0 0 24 24" focusable="false"
                         aria-hidden="true" style="pointer-events: none; display: inherit;">
@@ -40,13 +40,13 @@
             </div>
 
             <div class="meta-time">
-                <time>{{ formatTime .P.Data.B.CreatedAt "January 2, 2006, 3:04 PM" }}</time>
+                <time>{{ formatTime .P.Rt.B.CreatedAt "January 2, 2006, 3:04 PM" }}</time>
             </div>
         </div>
     </div>
 
     <figure class="blog-hero">
-        <img src="{{ .P.Data.B.FeaturedImg }}#blog-hero" alt="{{ .P.Data.B.Title }}" fetchpriority="high"
+        <img src="{{ .P.Rt.B.FeaturedImg }}#blog-hero" alt="{{ .P.Rt.B.Title }}" fetchpriority="high"
             decoding="async" loading="eager">
     </figure>
 

@@ -78,7 +78,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 
 	P := cfg.View.Pages["blog"]
 	b.PrepMeta(&P.Meta, blog, c)
-	P.Data = map[string]any{
+	P.Rt = map[string]any{
 		"B":       blog,
 		"Content": template.HTML(blog.Content),
 	}

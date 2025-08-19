@@ -15,5 +15,5 @@ type ViewLib struct {
 }
 
 var View = &ViewLib{
-	templates: cfg.View.TemplateDir,
+	templates: cfg.View.TemplateDirs,
 }

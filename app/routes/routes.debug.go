@@ -9,10 +9,10 @@ import (
 
 func (rt *RouteStruct) registerDebug() {
 	r.GET("/d", cntr.Debug(r))
-	r.GET("/d/j", func(c *gin.Context) {
+	r.GET("/d/c", func(c *gin.Context) {
 		c.Data(200, "application/json", lib.Conf.AllJsonPretty())
 	})
-	r.GET("/d/js", func(c *gin.Context) {
+	r.GET("/d/cs", func(c *gin.Context) {
 		c.Data(200, "application/json", lib.Conf.AllJsonStructPretty())
 	})
 }

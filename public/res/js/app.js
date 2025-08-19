@@ -1,6 +1,3 @@
-// CSRF token
-$.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
-
 document.addEventListener("DOMContentLoaded", function () {
   // === Inject SVGs from [data-svg-src] ===
   document.querySelectorAll("[data-svg-src]").forEach(el => {

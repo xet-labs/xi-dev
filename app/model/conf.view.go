@@ -1,13 +1,17 @@
 package model
 
 type ViewConf struct {
-	CssDir      []string             `json:"css_dir,omitempty"`
-	TemplateDir []string             `json:"template_dir,omitempty"`
-	Default     PageParam            `json:"default,omitempty"`
-	Pages       map[string]PageParam `json:"pages,omitempty"`
+	CssDir       string               `json:"css_dir,omitempty"`
+	CssDirs      []string             `json:"css_dirs,omitempty"`
+	CssBaseDir   string               `json:"css_base_dir,omitempty"`
+	TemplateDir  string               `json:"template_dir,omitempty"`
+	TemplateDirs []string             `json:"template_dirs,omitempty"`
+	Default      PageParam            `json:"default,omitempty"`
+	Pages        map[string]PageParam `json:"pages,omitempty"`
 }
 
 type PageParam struct {
+	Enable     bool           `json:"enabled,omitempty"`
 	Route      string         `json:"route,omitempty"`
 	RenderType string         `json:"render_type"`
 	File       string         `json:"file,omitempty"`
@@ -25,7 +29,8 @@ type PageParam struct {
 	Lib99      []string       `json:"lib99,omitempty"`
 	NavMenu    []MenuItem     `json:"nav_menu,omitempty"`
 	Meta       PageMeta       `json:"meta"`
-	Data       map[string]any `json:"data"`
+	Extra      map[string]any `json:"data"`
+	Rt          map[string]any `json:"-"` // Runtime data
 }
 
 type MenuItem struct {

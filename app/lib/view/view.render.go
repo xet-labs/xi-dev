@@ -84,6 +84,12 @@ func (v *ViewLib) OutHtmlLyt(c *gin.Context, P model.PageParam, args ...string) 
 }
 
 func (v *ViewLib) OutCss(c *gin.Context, css []byte, args ...string) bool {
+	// Handle empty content
+	if len(css) == 0 {
+		c.Status(http.StatusNoContent) // 204
+		return true
+	}
+
 	argsLen := len(args)
 
 	// Minify the CSS
