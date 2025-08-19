@@ -4,8 +4,6 @@ import "github.com/gin-gonic/gin"
 
 type UrlLib struct {}
 
-var Url = & UrlLib{}
-
 func (u *UrlLib) Host(c *gin.Context) string {
     scheme := "http"
     if c.Request.TLS != nil {

@@ -16,7 +16,7 @@ type CssRes struct {
 	data    map[string][]string // key: baseName, value: list of CSS file paths
 	BaseDir string
 	RdbTTL  time.Duration
-	
+
 	once sync.Once
 	mu   sync.RWMutex
 }
@@ -32,9 +32,8 @@ func (r *CssRes) Get(c *gin.Context) {
 	rdbKey := c.Request.RequestURI
 	base := cfg.View.CssBaseDir + "/" + strings.TrimSuffix(c.Param("name"), ".css")
 
-	// Return cache
 	if lib.View.OutCache(c, rdbKey).Css() {
-		return
+		return 	// Send cache
 	}
 
 	if _, ok := r.data[base]; !ok {
@@ -42,7 +41,7 @@ func (r *CssRes) Get(c *gin.Context) {
 			files []string
 			err   error
 		)
-		files, err = lib.File.GetWithExt(".css", base)
+		files, err = lib.Util.File.GetWithExt(".css", base)
 		if err != nil {
 			log.Error().Err(err).Str("Dir", base).Msg("Controller CSS files")
 			return
@@ -52,6 +51,6 @@ func (r *CssRes) Get(c *gin.Context) {
 		r.data[base] = files
 		r.mu.Unlock()
 	}
-	
-	lib.View.OutCss(c, lib.File.MergeByte(r.data[base]), rdbKey)
+
+	lib.View.OutCss(c, lib.Util.File.MergeByte(r.data[base]), rdbKey)
 }

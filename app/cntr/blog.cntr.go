@@ -44,7 +44,7 @@ func (b *BlogCntr) Index(c *gin.Context) {
 
 	// Build data
 	P := cfg.View.Pages["blogs"]
-	P.Meta.URL = lib.Url.Full(c)
+	P.Meta.URL = lib.Util.Url.Full(c)
 
 	lib.View.OutHtmlLyt(c, P, rdbKey) // Cache renderer
 }
@@ -89,14 +89,14 @@ func (b *BlogCntr) Show(c *gin.Context) {
 func (b *BlogCntr) PrepMeta(meta *model.PageMeta, raw model.Blog, c *gin.Context){
 	meta.Type = "Article" 
 	meta.Title = raw.Title
-	meta.URL = lib.Url.Full(c)
-	meta.AltJson = lib.Url.Host(c) + "/api" + c.Request.RequestURI
+	meta.URL = lib.Util.Url.Full(c)
+	meta.AltJson = lib.Util.Url.Host(c) + "/api" + c.Request.RequestURI
 	meta.Description = raw.Description
-	meta.Img.URL = lib.Url.Host(c) + raw.FeaturedImg
+	meta.Img.URL = lib.Util.Url.Host(c) + raw.FeaturedImg
 	meta.Tags = raw.Tags
 	meta.Author.Name = raw.User.Name
 	meta.Author.Img = raw.User.ProfileImg
-	meta.Author.URL = lib.Url.Host(c) + "/@" + raw.User.Username
+	meta.Author.URL = lib.Util.Url.Host(c) + "/@" + raw.User.Username
 	meta.CreatedAt = raw.CreatedAt
 	meta.UpdatedAt = raw.UpdatedAt
 	// meta.Category = raw.Tags

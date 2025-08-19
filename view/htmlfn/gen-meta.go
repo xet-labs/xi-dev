@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"xi/app/lib/util"
 	"xi/app/lib/cfg"
 	"xi/app/model"
 )
@@ -45,22 +46,22 @@ func GenMeta(m model.PageMeta) template.HTML {
 	add(&b, `<meta property="og:type" content="%s">`, m.OG.Type)
 	add(&b, `<meta property="og:locale" content="%s">`, m.Locale)
 	add(&b, `<meta property="og:site_name" content="%s">`, cfg.Brand.Name)
-	add(&b, `<meta property="og:title" content="%s">`, StrFallback(m.OG.Title, title))
-	add(&b, `<meta property="og:description" content="%s">`, StrFallback(m.OG.Description, m.Description))
-	add(&b, `<meta property="og:url" content="%s">`, StrFallback(m.OG.URL, m.URL))
+	add(&b, `<meta property="og:title" content="%s">`, util.Str.Fallback(m.OG.Title, title))
+	add(&b, `<meta property="og:description" content="%s">`, util.Str.Fallback(m.OG.Description, m.Description))
+	add(&b, `<meta property="og:url" content="%s">`, util.Str.Fallback(m.OG.URL, m.URL))
 	add(&b, `<meta property="og:image" content="%s">`, m.Img.URL)
-	add(&b, `<meta property="og:image:alt" content="%s">`, StrFallback(m.Img.Alt, m.Title))
+	add(&b, `<meta property="og:image:alt" content="%s">`, util.Str.Fallback(m.Img.Alt, m.Title))
 
 	// --- Twitter ---
-	add(&b, `<meta name="twitter:card" content="%s">`, StrNotEmptyThen("summary_large_image", m.Img.URL))
+	add(&b, `<meta name="twitter:card" content="%s">`, util.Str.NotEmptyThen("summary_large_image", m.Img.URL))
 	add(&b, `<meta name="twitter:site" content="%s">`, m.Twitter.Site)
 	add(&b, `<meta name="twitter:creator" content="%s">`, m.Twitter.Creator)
 	add(&b, `<meta property="twitter:domain" value="%s">`, cfg.Brand.Domain)
-	add(&b, `<meta name="twitter:title" content="%s">`, StrFallback(m.OG.Title, title))
-	add(&b, `<meta name="twitter:description" content="%s">`, StrFallback(m.OG.Description, m.Description))
-	add(&b, `<meta name="twitter:url" content="%s">`, StrFallback(m.OG.URL, m.URL))
+	add(&b, `<meta name="twitter:title" content="%s">`, util.Str.Fallback(m.OG.Title, title))
+	add(&b, `<meta name="twitter:description" content="%s">`, util.Str.Fallback(m.OG.Description, m.Description))
+	add(&b, `<meta name="twitter:url" content="%s">`, util.Str.Fallback(m.OG.URL, m.URL))
 	add(&b, `<meta name="twitter:image:src" content="%s">`, m.Img.URL)
-	add(&b, `<meta name="twitter:image:alt" content="%s">`, StrFallback(m.Img.Alt, m.Title))
+	add(&b, `<meta name="twitter:image:alt" content="%s">`, util.Str.Fallback(m.Img.Alt, m.Title))
 
 	// Twitter extra labels (label1/data1 ... or arbitrary kv)
 	if len(m.Twitter.Extra) > 0 {
@@ -70,16 +71,16 @@ func GenMeta(m model.PageMeta) template.HTML {
 		}
 	}
 	if isArticle(m.Type) {
-		add(&b, `<meta name="twitter:label1" content="%s">`, StrNotEmptyThen("Written by", m.Author.Name))
-		add(&b, `<meta name="twitter:data1" content="%s">`, "@" + m.Author.Name)
+		add(&b, `<meta name="twitter:label1" content="%s">`, util.Str.NotEmptyThen("Written by", m.Author.Name))
+		add(&b, `<meta name="twitter:data1" content="%s">`, "@"+m.Author.Name)
 
-		add(&b, `<meta name="twitter:label2" content="%s">`, StrNotEmptyThen("Category", m.Category))
+		add(&b, `<meta name="twitter:label2" content="%s">`, util.Str.NotEmptyThen("Category", m.Category))
 		add(&b, `<meta name="twitter:data2" content="%s">`, m.Category)
 
 		add(&b, `<meta name="twitter:label3" content="%s">`, PtrNotNilThen("Published on", m.CreatedAt))
 		add(&b, `<meta name="twitter:data3" content="%s">`, m.CreatedAt.UTC().Format(time.RFC3339Nano))
 
-		add(&b, `<meta name="twitter:label4" content="%s">`, StrNotEmptyThen("Reading time", m.ReadingTime))
+		add(&b, `<meta name="twitter:label4" content="%s">`, util.Str.NotEmptyThen("Reading time", m.ReadingTime))
 		add(&b, `<meta name="twitter:data4" content="%s">`, m.ReadingTime)
 	}
 
@@ -94,7 +95,7 @@ func GenMeta(m model.PageMeta) template.HTML {
 	}
 
 	// --- JSON-LD ---
-	
+
 	if ld := ldJSON(m); len(ld) > 0 {
 		b.WriteString(`<script type="application/ld+json">`)
 		b.Write(ld)
@@ -117,31 +118,31 @@ func ldJSON(m model.PageMeta) []byte {
 		"mainEntityOfPage": m.URL,
 	}
 
-	addIfNotEmptyTo(root, "description", m.Description)
-	addIfNotEmptyTo(root, "image", m.Author.Img)
-	addSliceIfNotEmpty(root, "keywords", m.Tags)
+	util.Map.AddIfNotEmpty(root, "description", m.Description)
+	util.Map.AddIfNotEmpty(root, "image", m.Author.Img)
+	util.Map.AddIfNotEmptySlice(root, "keywords", m.Tags)
 
 	// Article-like specifics
 	if isArticle(m.Type) {
-		addIfNotEmptyTo(root, "headline", title)
-		addIfNotEmptyTo(root, "dateCreated", m.CreatedAt.UTC().Format(time.RFC3339Nano))
-		addIfNotEmptyTo(root, "datePublished", m.CreatedAt.UTC().Format(time.RFC3339Nano))
-		addIfNotEmptyTo(root, "dateModified", m.UpdatedAt.UTC().Format(time.RFC3339Nano))
-		addSliceIfNotEmpty(root, "articleSection", m.Tags)
-		
+		util.Map.AddIfNotEmpty(root, "headline", title)
+		util.Map.AddIfNotEmpty(root, "dateCreated", m.CreatedAt.UTC().Format(time.RFC3339Nano))
+		util.Map.AddIfNotEmpty(root, "datePublished", m.CreatedAt.UTC().Format(time.RFC3339Nano))
+		util.Map.AddIfNotEmpty(root, "dateModified", m.UpdatedAt.UTC().Format(time.RFC3339Nano))
+		util.Map.AddIfNotEmptySlice(root, "articleSection", m.Tags)
+
 		root["author"] = map[string]any{} // create new map
-    	authorMap := root["author"].(map[string]any)
+		authorMap := root["author"].(map[string]any)
 		authorMap["@type"] = "Person"
-		addIfNotEmptyTo(authorMap, "name", m.Author.Name)
-		addIfNotEmptyTo(authorMap, "description", m.Author.Description)
-		addIfNotEmptyTo(authorMap, "image", m.Author.Img)
-		addIfNotEmptyTo(authorMap, "jobTitle", m.Author.JobTitle)
-		addIfNotEmptyTo(authorMap, "sameAs", m.Author.SameAs)
-		addIfNotEmptyTo(authorMap, "url", m.Author.URL)
+		util.Map.AddIfNotEmpty(authorMap, "name", m.Author.Name)
+		util.Map.AddIfNotEmpty(authorMap, "description", m.Author.Description)
+		util.Map.AddIfNotEmpty(authorMap, "image", m.Author.Img)
+		util.Map.AddIfNotEmpty(authorMap, "jobTitle", m.Author.JobTitle)
+		util.Map.AddIfNotEmpty(authorMap, "sameAs", m.Author.SameAs)
+		util.Map.AddIfNotEmpty(authorMap, "url", m.Author.URL)
 
 		// convenience mirrors
-		addIfNotEmptyTo(root, "creator", m.Author.Name)
-		addIfNotEmptyTo(root, "editor", m.Author.Name)
+		util.Map.AddIfNotEmpty(root, "creator", m.Author.Name)
+		util.Map.AddIfNotEmpty(root, "editor", m.Author.Name)
 	}
 
 	// Access
@@ -153,9 +154,9 @@ func ldJSON(m model.PageMeta) []byte {
 
 	// Publisher
 	pub := map[string]any{}
-	addIfNotEmptyTo(pub, "name", m.Publisher.Name)
-	addIfNotEmptyTo(pub, "url", m.Publisher.URL)
-	addIfNotEmptyTo(pub, "alternateName", m.Publisher.AltName)
+	util.Map.AddIfNotEmpty(pub, "name", m.Publisher.Name)
+	util.Map.AddIfNotEmpty(pub, "url", m.Publisher.URL)
+	util.Map.AddIfNotEmpty(pub, "alternateName", m.Publisher.AltName)
 
 	if m.Publisher.Logo != "" {
 		pub["logo"] = map[string]any{"@type": "ImageObject", "url": m.Publisher.Logo}
@@ -167,11 +168,11 @@ func ldJSON(m model.PageMeta) []byte {
 
 	// Allow raw LD to merge (shallow)
 	maps.Copy(root, m.LD)
-	
+
 	if b, err := json.Marshal(root); err == nil {
 		return b
 	}
-	return []byte{} 
+	return []byte{}
 }
 
 // metaTitle builds the final page <title>
@@ -197,13 +198,13 @@ func metaType(m *model.PageMeta) {
 	if m.Type == "" {
 		m.Type = "WebSite"
 	}
-	switch strings.ToLower(StrFallback(m.OG.Type, m.Type)) {
+	switch strings.ToLower(util.Str.Fallback(m.OG.Type, m.Type)) {
 	case "article", "blogposting", "newsarticle":
 		m.OG.Type = "article"
 	case "product":
-		m.OG.Type ="product"
+		m.OG.Type = "product"
 	case "profile":
-		m.OG.Type ="profile"
+		m.OG.Type = "profile"
 	default:
 		m.OG.Type = "website"
 	}
@@ -217,37 +218,9 @@ func isArticle(t string) bool {
 	return false
 }
 
-func addIfNotEmptyTo(m map[string]any, key string, val string) {
-	if val != "" {
-		m[key] = val
-	}
-}
-
-func addSliceIfNotEmpty(m map[string]any, key string, vals []string) {
-	if len(vals) > 0 {
-		m[key] = vals
-	}
-}
-
 func PtrNotNilThen[T any](val string, ptr *T) string {
 	if ptr != nil {
 		return val
-	}
-	return ""
-}
-func StrNotEmptyThen(val, str string) string {
-	if str != "" {
-		return val
-	}
-	return ""
-}
-
-func StrFallback(vals ...string) string {
-	for _, v := range vals {
-		if v == "" {
-			continue
-		}
-		return v
 	}
 	return ""
 }

@@ -8,7 +8,6 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"xi/app/lib/file"
 	"xi/app/lib/util"
 	"xi/view/htmlfn"
 )
@@ -31,9 +30,9 @@ var HtmlFn = template.FuncMap{
 }
 
 func (v *ViewLib) NewTmpl(name, ext string, dirs ...string) *template.Template {
-	files, err := file.File.GetWithExt(ext, dirs...)
+	files, err := util.File.GetWithExt(ext, dirs...)
 	if err != nil {
-		log.Error().Err(err).Str("cli", name).Str("template-dir", util.Util.QuoteSlice(dirs)).
+		log.Error().Err(err).Str("cli", name).Str("template-dir", util.Str.QuoteSlice(dirs)).
 			Msg("View NewTmpl: couldnt get template files")
 	}
 
@@ -54,6 +53,5 @@ func (v *ViewLib) NewTmpl(name, ext string, dirs ...string) *template.Template {
 		}
 		v.RawTcli = rawTcli
 	}
-
 	return tcli
 }

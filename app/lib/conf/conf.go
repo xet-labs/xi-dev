@@ -42,7 +42,7 @@ type ConfLib struct {
 var (
 	Conf = &ConfLib{
 		FilesDefault: []string{
-			"config/default/config.json",
+			"app/data/config/config.json",
 			"config/config.json",
 		},
 	}
@@ -100,7 +100,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 		noConfigKillSwitch := func() {
 			// On initial run if no config file has loaded and this is the last config file with err, exit
 			if !c.hasInitialized && len(newFilesLoaded) == 0 && i == len(c.Files)-1 {
-				log.Fatal().Str("files", util.Util.QuoteSlice(c.Files)).
+				log.Fatal().Str("files", util.Str.QuoteSlice(c.Files)).
 					Msg("Startup aborted: no valid configuration could be loaded from any source")
 			}
 		}
@@ -166,7 +166,7 @@ func (c *ConfLib) InitCore(filePath ...string) error {
 
 	c.ConfPostView()
 
-	log.Info().Str("files", util.Util.QuoteSlice(newFilesLoaded)).Msgf("Config %s", okStatus)
+	log.Info().Str("files", util.Str.QuoteSlice(newFilesLoaded)).Msgf("Config %s", okStatus)
 	c.hasInitialized = true
 
 	return nil
