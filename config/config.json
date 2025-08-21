@@ -110,9 +110,10 @@
     },
     "pages": {
       "home": {
-        "route": "/",
-        "title": "XetIndustries",
-        "file": "view/pages/home.part.html",
+        "route": "/home",
+        "layout": "layout/default",
+        "render": "",
+        "content_file": "view/pages/home.part.html",
         "menu": "Home",
         "meta": {
           "title": "Xet Industries",
@@ -121,18 +122,20 @@
         }
       },
       "blog": {
-        "route": "/blog",
-        "layout": "layout/blogs",
+        "route": "/blogs",
+        "layout": "layout/blog",
+        "render": "",
+        "content_file": "view/pages/blog.part.html",
         "menu": "Blog",
         "sub_brand": "Blog",
         "css": [
           "/res/css/app.css",
-          "/res/css/blogs.css"
+          "/res/css/blog.css"
         ],
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",
-          "/res/js/blogs.js"
+          "/res/js/blog.js"
         ],
         "meta": {
           "title": "Blog",
@@ -143,12 +146,12 @@
       "blogs": {
         "enable": false,
         "route": "/blog/*",
-        "layout": "layout/blog",
+        "layout": "layout/blogs",
         "menu": "Blog",
         "sub_brand": "Blog",
         "css": [
           "/res/css/app.css",
-          "/res/css/blog.css"
+          "/res/css/blogs.css"
         ],
         "js99": [
           "/res/js/jquery/jquery.min.js",

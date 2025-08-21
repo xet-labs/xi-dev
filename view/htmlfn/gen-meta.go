@@ -14,13 +14,13 @@ import (
 	"xi/app/model"
 )
 
-func GenMeta(m model.PageMeta) template.HTML {
+func GenMeta(m *model.PageMeta) template.HTML {
 
 	var b strings.Builder
 
 	// computed
 	title := metaTitle(m)
-	metaType(&m)
+	metaType(m)
 
 	// --- Basic meta ---
 	add(&b, `<title>%s</title>`, title)
@@ -77,7 +77,7 @@ func GenMeta(m model.PageMeta) template.HTML {
 		add(&b, `<meta name="twitter:label2" content="%s">`, util.Str.NotEmptyThen("Category", m.Category))
 		add(&b, `<meta name="twitter:data2" content="%s">`, m.Category)
 
-		add(&b, `<meta name="twitter:label3" content="%s">`, PtrNotNilThen("Published on", m.CreatedAt))
+		add(&b, `<meta name="twitter:label3" content="%s">`, util.StrIfPtrNotNil("Published on", &m.CreatedAt))
 		add(&b, `<meta name="twitter:data3" content="%s">`, m.CreatedAt.UTC().Format(time.RFC3339Nano))
 
 		add(&b, `<meta name="twitter:label4" content="%s">`, util.Str.NotEmptyThen("Reading time", m.ReadingTime))
@@ -107,7 +107,7 @@ func GenMeta(m model.PageMeta) template.HTML {
 
 // ------- JSON-LD builder -------
 
-func ldJSON(m model.PageMeta) []byte {
+func ldJSON(m *model.PageMeta) []byte {
 	// computed
 	title := metaTitle(m)
 
@@ -176,7 +176,7 @@ func ldJSON(m model.PageMeta) []byte {
 }
 
 // metaTitle builds the final page <title>
-func metaTitle(m model.PageMeta) string {
+func metaTitle(m *model.PageMeta) string {
 	base := m.Title
 
 	// add author if provided
@@ -216,13 +216,6 @@ func isArticle(t string) bool {
 		return true
 	}
 	return false
-}
-
-func PtrNotNilThen[T any](val string, ptr *T) string {
-	if ptr != nil {
-		return val
-	}
-	return ""
 }
 
 func add(b *strings.Builder, f, v string) {

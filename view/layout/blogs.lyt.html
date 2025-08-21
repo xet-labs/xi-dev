@@ -2,36 +2,33 @@
 
 {{ template "prtls/head" . }}
 
-<body>
+<body class="blog">
 
 	{{ linkJsSlice "preload" .P.Js }}
 	{{ linkLibSlice .P.Lib }}
-    {{ template "prtls/nav" . }}
+	{{ template "prtls/nav" . }}
 
-    <main>
+	<main>
 
-        <h1 class="nodis"> {{ .P.Rt.description }} </h1>
+		<div class="wrap">
+			<article class="blog-con con">
+				<header class="blog-head">
+					{{ template "prtls/blog.header" . }}
+				</header>
 
-        <div class="blogs-wrap wrap">
-            <div class="blogs con">
-                <div class="blogs-category">
-                    <div class="category-menu">
-                        <a href="#">Server</a>
-                    </div>
-                    <a href="#">See All</a>
-                </div>
+				<section class="blog-content">
+					{{ .P.Rt.Content }}
+				</section>
 
-                <div class="blogs-grid" id="BlogCards"></div>
+				<div class="blog-foot">
+					<hr class="line-x">
+				</div>
+			</article>
+		</div>
+		
+	</main>
 
-                <div class="bouncy-loader" id="blogCards_loading">
-                    <div></div><div></div><div></div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    {{ template "prtls/footer" . }}
+	{{ template "prtls/footer" . }}
 	{{ linkJsSlice "preload" .P.Js99 }}
 	{{ linkLibSlice .P.Lib99 }}
 

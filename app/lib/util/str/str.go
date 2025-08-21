@@ -3,15 +3,15 @@ import "strings"
 
 type StrLib struct{}
 
-func (s *StrLib) Fallback(val, fallback string) string {
-	if val != "" {
-		return val
+func (s *StrLib) Fallback(str, fallback string) string {
+	if str != "" {
+		return str
 	}
 	return fallback
 }
 
-func (s *StrLib) Fallbacks(vals ...string) string {
-	for _, v := range vals {
+func (s *StrLib) Fallbacks(strs ...string) string {
+	for _, v := range strs {
 		if v == "" {
 			continue
 		}

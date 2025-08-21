@@ -2,9 +2,11 @@ package view
 
 import (
 	"html/template"
+	"sync"
+
+	"xi/app/lib/cfg"
 
 	"github.com/gin-gonic/gin"
-	"xi/app/lib/cfg"
 )
 
 type ViewLib struct {
@@ -12,6 +14,9 @@ type ViewLib struct {
 	Tcli      *template.Template // Current Template Cli
 	RawTcli   *template.Template // Clean Template Cli
 	templates []string
+
+	once sync.Once
+	mu   sync.RWMutex
 }
 
 var View = &ViewLib{

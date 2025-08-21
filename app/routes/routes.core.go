@@ -7,5 +7,5 @@ import (
 
 func (rt *RouteStruct) registerCore() {
 	home := cfg.View.Pages["home"]
-	r.GET(home.Route, cntr.Page.Tcnt("home", home.File))
+	r.GET("/", cntr.Page.Tcnt("home", home.ContentFile))
 }

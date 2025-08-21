@@ -44,7 +44,7 @@ function renderBlogsCard(blog) {
   </figure>
 
   <div class="card-info">
-    <h2 class="card-title" title="${blog.title}">
+    <h2 class="card-title" title="${blogTitle}">
       <a href="${blogUrl}">${blogHeadline}</a>
     </h2>
     <p class="card-exrpt">${blog.description}</p>

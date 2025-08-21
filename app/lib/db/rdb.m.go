@@ -18,7 +18,7 @@ func (r *RedisLib) Set(k string, v any, ttl time.Duration) error {
 	}
 
 	if err := r.client.Set(r.ctx, r.key(k), v, ttl).Err(); err != nil {
-		log.Warn().Msgf("Rdb SET ERR: '%s': %v", k, err)
+		log.Warn().Err(err).Str("key", k).Msg("Rdb SET")
 		return err
 	}
 	return nil
@@ -31,7 +31,7 @@ func (r *RedisLib) Get(k string) (string, error) {
 
 	v, err := r.client.Get(r.ctx, r.key(k)).Result()
 	if err != nil {
-		log.Warn().Msgf("Rdb GET ERR: '%s': %v", k, err)
+		log.Warn().Err(err).Str("key", k).Msg("Rdb GET")
 	}
 	return v, err
 }
@@ -46,7 +46,7 @@ func (r *RedisLib) GetBytes(k string) ([]byte, error) {
 func (r *RedisLib) SetJson(k string, v any, ttl time.Duration) error {
 	val, err := json.Marshal(v)
 	if err != nil {
-		log.Error().Msgf("Rdb SetJson: json marshal failed: %v", err)
+		log.Error().Err(err).Str("key", k).Msg("Rdb SetJson: json marshal")
 		return err
 	}
 	return r.Set(k, val, ttl)

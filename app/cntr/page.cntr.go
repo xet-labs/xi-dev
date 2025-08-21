@@ -88,8 +88,8 @@ func (p *PageCntr) renderTcnt(c *gin.Context, title, content string) ([]byte, er
 }
 
 // Combines global and per-page config data
-func (p *PageCntr) buildData(c *gin.Context, title string) model.PageParam {
+func (p *PageCntr) buildData(c *gin.Context, title string) *model.PageParam {
 	P := cfg.View.Pages[title]
 	P.Rt = map[string]any{}
-	return P
+	return &P
 }

@@ -17,6 +17,8 @@ type AppConf struct {
 	SslCertFiles []string `json:"ssl_cert_files,omitempty"`
 	TlsCert      string   `json:"tls_cert,omitempty"`
 	TlsCertFiles []string `json:"tls_cert_files,omitempty"`
+
+	ForceCachePage bool 	`json:"force_cache_Page,omitempty"`
 }
 
 type BrandConf struct {

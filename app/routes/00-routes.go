@@ -23,9 +23,8 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 	r.SetHTMLTemplate(lib.View.NewTmpl("main", ".html", cfg.View.TemplateDirs...))
 
 	// Register routes
-	rt.registerMm()
-	rt.registerStatic()
 	rt.registerCore()
+	rt.registerDynamic()
 	rt.registerBlog()
 	rt.registerAuth()
 	rt.registerDebug()

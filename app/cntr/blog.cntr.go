@@ -33,7 +33,7 @@ var Blog = &BlogCntr{
 
 // GET /blog
 func (b *BlogCntr) Index(c *gin.Context) {
-	rdbKey := "/blog"
+	rdbKey := c.Request.RequestURI
 
 	if lib.View.OutCache(c, rdbKey).Html() {
 		return
@@ -46,20 +46,22 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	p := cfg.View.Pages["blog"]
 	p.Meta.URL = lib.Util.Url.Full(c)
 
-	lib.View.OutHtmlLyt(c, p, rdbKey) // Cache renderer
+	lib.View.OutHtmlLyt(c, &p, rdbKey) // Cache renderer
 }
 
 func (b *BlogCntr) Show(c *gin.Context) {
-	rawUID := c.Param("uid") // @username or UID
-	rawID := c.Param("id")   // blog ID or slug
-	rdbKey := "/blog/" + rawUID + "/" + rawID
-
+	rdbKey := c.Request.RequestURI
+	
 	if lib.View.OutCache(c, rdbKey).Html() {
 		return
 	} // Try cache
-
+		
 	b.mu.Lock()
 	defer b.mu.Unlock()
+	
+	// On cache miss fetch data from DB
+	rawUID := c.Param("uid") // @username or UID
+	rawID := c.Param("id")   // blog ID or slug
 
 	blog := model.Blog{}
 	if err := BlogApi.Validate(rawUID, rawID); err != nil {
@@ -77,16 +79,16 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	}
 
 	p := cfg.View.Pages["blogs"]
-	b.PrepMeta(c, &p.Meta, blog)
+	b.PrepMeta(c, &p.Meta, &blog)
 	p.Rt = map[string]any{
 		"B":       blog,
 		"Content": template.HTML(blog.Content),
 	}
 
-	lib.View.OutHtmlLyt(c, p, rdbKey)
+	lib.View.OutHtmlLyt(c, &p, rdbKey)
 }
 
-func (b *BlogCntr) PrepMeta(c *gin.Context, meta *model.PageMeta, raw model.Blog){
+func (b *BlogCntr) PrepMeta(c *gin.Context, meta *model.PageMeta, raw *model.Blog){
 	meta.Type = "Article" 
 	meta.Title = raw.Title
 	meta.URL = lib.Util.Url.Full(c)
