@@ -46,7 +46,7 @@ func (b *BlogCntr) Index(c *gin.Context) {
 	p := cfg.View.Pages["blog"]
 	p.Meta.URL = lib.Util.Url.Full(c)
 
-	lib.View.OutHtmlLyt(c, &p, rdbKey) // Cache renderer
+	lib.View.OutHtmlLyt(c, p, rdbKey) // Cache renderer
 }
 
 func (b *BlogCntr) Show(c *gin.Context) {
@@ -85,7 +85,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 		"Content": template.HTML(blog.Content),
 	}
 
-	lib.View.OutHtmlLyt(c, &p, rdbKey)
+	lib.View.OutHtmlLyt(c, p, rdbKey)
 }
 
 func (b *BlogCntr) PrepMeta(c *gin.Context, meta *model.PageMeta, raw *model.Blog){

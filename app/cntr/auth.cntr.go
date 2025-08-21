@@ -70,7 +70,7 @@ func (a *AuthCntr) ShowSignup(c *gin.Context) {
 	}
 
 	// Cache renderer
-	lib.View.OutHtmlLyt(c, &p, rdbKey)
+	lib.View.OutHtmlLyt(c, p, rdbKey)
 }
 
 func (a *AuthCntr) ShowSignout(c *gin.Context) {}
@@ -93,7 +93,7 @@ func (a *AuthCntr) Logins(c *gin.Context) {
 	}
 
 	// Cache renderer
-	lib.View.OutHtmlLyt(c, &p, rdbKey)
+	lib.View.OutHtmlLyt(c, p, rdbKey)
 }
 
 func (a *AuthCntr) Login(c *gin.Context) {
@@ -137,7 +137,7 @@ func (a *AuthCntr) ShowLogin(c *gin.Context) {
 	}
 
 	// Cache renderer
-	lib.View.OutHtmlLyt(c, &p, rdbKey)
+	lib.View.OutHtmlLyt(c, p, rdbKey)
 }
 
 func (a *AuthCntr) ShowLogout(c *gin.Context) {}

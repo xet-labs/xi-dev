@@ -6,9 +6,9 @@ import (
 )
 
 func (rt *RouteStruct) registerDynamic() {
-	for page := range cfg.View.Pages {
-		if cfg.View.Pages[page].Enable == nil || *cfg.View.Pages[page].Enable{
-			r.GET(cfg.View.Pages[page].Route, lib.View.OutPageHandler(cfg.View.Pages[page]))
+	for _, page := range cfg.View.Pages {
+		if page.Enable == nil || *page.Enable{
+			r.GET(page.Route, lib.View.OutPageHandler(page))
 		}
 	}
 }

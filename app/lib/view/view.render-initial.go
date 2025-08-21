@@ -52,9 +52,9 @@ func (v *ViewLib) OutHtmlLyt(c *gin.Context, p *model.PageParam, args ...string)
 	return true
 }
 
-func (v *ViewLib) OutPageHandler(p model.PageParam, args ...string) gin.HandlerFunc {
+func (v *ViewLib) OutPageHandler(p *model.PageParam, args ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		v.OutPage(c, &p, args...)
+		v.OutPage(c, p, args...)
 	}
 }
 

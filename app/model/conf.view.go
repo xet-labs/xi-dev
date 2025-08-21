@@ -6,8 +6,8 @@ type ViewConf struct {
 	CssBaseDir   string               `json:"css_base_dir,omitempty"`
 	TemplateDir  string               `json:"template_dir,omitempty"`
 	TemplateDirs []string             `json:"template_dirs,omitempty"`
-	Default      PageParam            `json:"default,omitempty"`
-	Pages        map[string]PageParam `json:"pages,omitempty"`
+	Default      *PageParam            `json:"default,omitempty"`
+	Pages        map[string]*PageParam `json:"pages,omitempty"`
 }
 
 type PageParam struct {
