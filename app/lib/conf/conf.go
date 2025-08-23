@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
 	"xi/app/lib/cfg"
 	"xi/app/lib/env"
 	"xi/app/lib/hook"
@@ -40,13 +39,7 @@ type ConfLib struct {
 }
 
 var (
-	Conf = &ConfLib{
-		FilesDefault: []string{
-			"app/data/config/config.json",
-			"config/config.json",
-		},
-	}
-
+	Conf = &ConfLib{}
 	reJsonEnv         = regexp.MustCompile(`\$\{([A-Z0-9_]+)(:-([^}]*))?\}`)
 	reJsonEnvPost     = regexp.MustCompile(`(?m)(,\s*)?__REMOVE__(,\s*)?|^__REMOVE__(,\s*)?`)
 	reJsonDoubleQuote = regexp.MustCompile(`""([^"\n\r]+?)""`)
@@ -54,6 +47,17 @@ var (
 	reJsonBoolStr     = regexp.MustCompile(`:\s*"(true|false|1|0)"`)
 	reJsonVar         = regexp.MustCompile(`\$\{([^}:]*)(:-([^}]*))?\}|\$\{\}`)
 )
+
+func init(){
+	confFiles, err := util.File.GetWithExt(".json", "config", "app/data/config")
+	if err != nil {
+		log.Fatal().Err(err).Msg("Config")
+	}
+	Conf.FilesDefault = util.Str.UniqueSort(append([]string{
+		"app/data/config/config.json",
+	}, confFiles...))
+
+}
 
 func (c *ConfLib) Init(filePath ...string) {
 	c.once.Do(func() {
@@ -374,10 +378,10 @@ func (c *ConfLib) Daemon() error {
 					return
 				}
 				if event.Op&(fsnotify.Write|fsnotify.Create|fsnotify.Remove|fsnotify.Rename) != 0 {
-					log.Info().Msgf("Config changed: %s (%s)", event.Name, event.Op)
+					log.Info().Str("event", event.Op.String()).Str("file", event.Name).Msg("Config changed")
 
 					if err := c.InitCore(); err != nil {
-						log.Warn().Msgf("Config reload failed: %v", err)
+						log.Warn().Err(err).Msg("Config reload failed")
 					}
 					// Sleep briefly to avoid partial writes
 					time.Sleep(100 * time.Millisecond)

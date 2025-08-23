@@ -33,13 +33,11 @@
     --colr-divider: rgba(var(--mono-rgb), 0.075);
     --colr-outln: rgba(var(--mono-rgb), 0.125);
     --colr-brdr: rgba(var(--mono-rgb), 0.09);
-
-    --underlay-bg: rgba(var(--mono-rgb-0), 0.05);
-
+    
     --icon-brdr: none;
     --icon-colr: var(--text-muted);
     --icon-focus-colr: var(--colr-txt);
-
+    
     --underlay-bg: var(--bg-mod-cover);
 }
 
@@ -51,26 +49,26 @@
     --accent-h: 76;
     --accent-s: 76%;
     --accent-l: 53%;
-
+    
     --shadow-s: 0 1px 3px 0 #0000001a, 0 1px 2px 0 #0000000f;
     --shadow-m: 0 4px 6px -1px #0000001a, 0 2px 4px -1px #0000000f;
     --shadow-l: 0 10px 15px -3px #7c7c7c1a, 0 4px 6px -2px #6666660d;
     /* mix-blend-mode: exclusion; */
-
+    
     --selection-colr: inherit;
     --selection-bg: hsla(var(--colr-accent-hsl), .8);
     --selection-bg: var(--colr-accent);
-
+    
     --scrollbar-bg: rgba(var(--mono-rgb), 0.05);
     --scrollbar-bg: transparent;
     --scrollbar-thumb-bg: rgba(var(--mono-rgb), 0.1);
     --scrollbar-hov-thumb-bg: rgba(var(--mono-rgb), 0.2);
-
+    
     --pre-colr: #d4d4d4;
-
+    
     --signuplogin-submit-colr: #3b57e3;
     --signuplogin-input-focus-brdr-colr: var(--signuplogin-submit-colr);
-
+    
     --input-brdr-colr: #4040408f;
 }
 
@@ -90,6 +88,7 @@
     --colr-a: #0b5fd3;
     --colr-a-hov: #0b5fd3;
     --pre-bg: #18181b;
+    --underlay-bg: rgb(255 255 255);
 }
 
 /* html[data-theme='dark'], */
@@ -105,12 +104,13 @@
     /* --bg: #111116; */
     /* --bg: #000; */
     --colr-txt-1: #9ca3af;
-
+    
     --colr-primary: #4e3bf5;
 
     --colr-a: #4A90E2;
     --colr-a-hov: #4A90E2;
     --pre-bg: var(--bg-05);
+    --underlay-bg: rgb(10, 10, 10);
 }
 
 

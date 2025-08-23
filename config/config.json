@@ -55,9 +55,6 @@
       "view/pages"
     ],
     "default": {
-      "data": {
-        "title": "XetIndustries"
-      },
       "layout": "layout/default",
       "nav_menu": [
         {
@@ -86,7 +83,9 @@
       ],
       "js99": [
         "/res/js/jquery/jquery.min.js",
-        "/res/js/app.js"
+        "/res/js/app.js",
+        "/res/js/util/content-src",
+        "/res/js/util/theme.js"
       ],
       "meta": {
         "referrer": "no-referrer-when-downgrade",
@@ -110,9 +109,8 @@
     },
     "pages": {
       "home": {
-        "route": "/home",
-        "layout": "layout/default",
-        "render": "",
+        "route": "/",
+        "render": "file",
         "content_file": "view/pages/home.part.html",
         "menu": "Home",
         "meta": {
@@ -122,9 +120,8 @@
         }
       },
       "blog": {
-        "route": "/blogs",
-        "layout": "layout/blog",
-        "render": "",
+        "route": "/blog",
+        "render": "file",
         "content_file": "view/pages/blog.part.html",
         "menu": "Blog",
         "sub_brand": "Blog",
@@ -135,6 +132,8 @@
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",
+          "/res/js/util/content-src",
+          "/res/js/util/theme.js",
           "/res/js/blog.js"
         ],
         "meta": {
@@ -156,8 +155,11 @@
         "js99": [
           "/res/js/jquery/jquery.min.js",
           "/res/js/app.js",
-          "/res/util/copy-code.util.js",
-          "/res/util/h2-clickable.util.js"
+          "/res/js/util/content-src",
+          "/res/js/util/theme.js",
+          "/res/js/util/code-copy.util.js",
+          "/res/js/util/clickable-h2.util.js",
+          "/res/js/blogs.js"
         ],
         "lib99": [
           "hljs"

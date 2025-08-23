@@ -40,7 +40,7 @@ type PageMeta struct {
 	LDPost map[string]any `json:"ld_post,omitempty"`
 	LD     map[string]any `json:"ld,omitempty"`
 
-	Brand PageBrand `json:"brand"`
+	Brand PageBrand `json:"brand,omitempty"`
 }
 
 type PageBrand struct {

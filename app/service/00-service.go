@@ -10,4 +10,5 @@ func Init() {
 	lib.Env.Init()
 	lib.Conf.Init()
 	lib.Db.Init()
+	Stats.MemD(60*5)
 }

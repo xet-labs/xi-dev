@@ -1,9 +1,14 @@
-# Go build
+# Build
 /build/
 /dist/
 *.log
 
-# Binaries for programs and plugins
+# Config
+config/*.tmp.json
+.env
+*.local
+
+# Binaries and plugins
 *.out
 *.test
 *.exe
@@ -14,20 +19,17 @@
 *.db
 
 # Dependency files
-/tmp/
+*.tmp
+*.tmp.*
+tmp
 /bin/
 /vendor/bin
 
 # OS/IDE's
-.cjl-kondo/
+Thumbs.db
+.clj-kondo/
 .idea/
 .lsp/
 .vscode/
-
-*.swp
 .DS_Store
-Thumbs.db
-
-# Config
-.env
-*.local
+*.swp

@@ -10,18 +10,17 @@ import (
 
 // InitServer start the web server
 func InitServer(app *gin.Engine) error {
-	appPort := cfg.App.Port
 
-	log.Info().Msgf("\a\033[1;94mApp running \033[0;34m'http://localhost:%s'%s\033[0m\n", appPort,
+	log.Info().Msgf("\a\033[1;94mApp running \033[0;34m'http://localhost:%s'%s\033[0m\n", cfg.App.Port,
 		func() string {
-			if url := cfg.Brand.Url; url != "" {
-				return ", '" + url + "'"
+			if cfg.Brand.Url != "" {
+				return ", '" + cfg.Brand.Url + "'"
 			}
 			return ""
 		}())
 
 	// Start Web-Server
-	if err := app.Run(":" + appPort); err != nil {
+	if err := app.Run(":" + cfg.App.Port); err != nil {
 		log.Error().Msgf("Failed to start server: %v", err)
 		return err
 	}

@@ -27,8 +27,8 @@ func (rt *RouteStruct) Init(engine *gin.Engine) {
 	rt.registerDynamic()
 	rt.registerBlog()
 	rt.registerAuth()
-	rt.registerDebug()
 	rt.registerRes()
+	rt.registerDebug()
 
 	// Optional: Middleware (e.g. gzip)
 	// r.Use(gzip.Gzip(gzip.DefaultCompression))

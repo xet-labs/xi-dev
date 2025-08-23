@@ -37,4 +37,8 @@ func Set(cfg model.Config) {
 func Update(cfg model.Config) {
 	cfg.Build = Build
 	*global = cfg
+	App   = &global.App
+	Brand = &global.Brand
+	Db    = &global.Db
+	View  = &global.View
 }

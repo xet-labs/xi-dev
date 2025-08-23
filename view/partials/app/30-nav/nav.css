@@ -80,7 +80,7 @@ nav .menu a {
     &:hover {
         color: var(--menu-hov-colr, var(--colr-txt));
         background: var(--menu-hov-bg, var(--bg-075));
-        transition: all 0s ease;
+        transition: color, background .16s ease;
     }
     &:active {
         background: var(--menu-active-bg, var(--bg-1));

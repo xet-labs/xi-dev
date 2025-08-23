@@ -5,7 +5,7 @@ import (
 )
 
 func (rt *RouteStruct) registerBlog() {
-	blogApi := r.Group("api/blog")
+	blogApi := r.Group("api/blog") // route /api/blog
 	{
 		blogApi.GET("", cntr.BlogApi.Index)
 		blogApi.GET("/:uid/:id", cntr.BlogApi.Show)
@@ -14,12 +14,12 @@ func (rt *RouteStruct) registerBlog() {
 		blogApi.DELETE("/:uid/:id", cntr.BlogApi.Delete)
 	}
 
-	blog := r.Group("/blog")
+	// r.GET("", cntr.Blog.Index)         // route /blog
+	blogs := r.Group("/blog/:uid/:id") // route /blog/*
 	{
-		blog.GET("", cntr.Blog.Index)
-		blog.GET("/:uid/:id", cntr.Blog.Show)
-		blog.POST("/:uid/:id", cntr.Blog.Post)
-		blog.PUT("/:uid/:id", cntr.Blog.Put)
-		blog.DELETE("/:uid/:id", cntr.Blog.Delete)
+		blogs.GET("", cntr.Blog.Show)
+		blogs.POST("", cntr.Blog.Post)
+		blogs.PUT("", cntr.Blog.Put)
+		blogs.DELETE("", cntr.Blog.Delete)
 	}
 }

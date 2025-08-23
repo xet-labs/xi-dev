@@ -6,13 +6,13 @@
     opacity: var(--underlay-opacity, 0);
     cursor: var(--underlay-cursor, none);
     
-    top: 0;bottom: 0;left: 0;right: 0;
+    /* top: 0;bottom: 0;left: 0;right: 0;
     width: 100vw;
-    height: 100vh;
-    
+    height: 100vh; */
+    inset: 0;
     background: var(--underlay-bg, var(--bg-mod-cover));
-    backdrop-filter: blur(var(--underlay-blur, 30px));
-    transition: opacity var(--underlay-trns-durn, 0.16s) ease;
+    backdrop-filter: blur(var(--underlay-blur, 0px));
+    transition: opacity var(--underlay-trns-durn, .12s) ease;
 }
 
 /* body:has(.underlay-show-btn:checked) .underlay, */
@@ -20,10 +20,10 @@
 .underlay-show-btn:checked~.underlay {
     pointer-events: var(--underlay-active-pointer, initial);
     --underlay-display: var(--underlay-active-display, flex);
-    --underlay-opacity: var(--underlay-active-opacity, 1);
+    --underlay-opacity: var(--underlay-active-opacity, .8);
     --underlay-cursor: var(--underlay-active-cursor, crosshair);
 
-    transition: opacity var(--underlay-active-trns-durn, var(--underlay-trns-durn, 0.16s)) ease;
+    transition: opacity var(--underlay-active-trns-durn, var(--underlay-trns-durn, .16s)) ease;
 }
 
 .underlay-show-btn,

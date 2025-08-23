@@ -50,6 +50,7 @@
     background: var(--icon-bg, transparent);
     border-radius: var(--icon-bg-brdr-rad, var(--icon-brdr-rad));
     transform: translate(-50%, -50%) scale(var(--icon-bg-scale));
+    transition: color, background .16s ease;
 }
 .icon::after {
     opacity: var(--icon-brdr-opacity, 0);
@@ -57,7 +58,6 @@
     border: var(--icon-brdr, var(--icon-brdr-x, 1.5px) solid var(--icon-brdr-colr, var(--colr-txt)));
     transform: translate(-50%, -50%) scale(var(--icon-brdr-scale, var(--icon-bg-scale)));
     transition: transform var(--icon-brdr-trns, 0.08s ease);
-
 }
 .icon.hover,
 .icon:hover {

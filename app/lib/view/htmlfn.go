@@ -5,11 +5,10 @@ import (
 	"html/template"
 	"net/url"
 	"strings"
+	"xi/app/lib/util"
+	"xi/app/lib/view/htmlfn"
 
 	"github.com/rs/zerolog/log"
-
-	"xi/app/lib/util"
-	"xi/view/htmlfn"
 )
 
 var HtmlFn = template.FuncMap{

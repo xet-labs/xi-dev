@@ -1,7 +1,29 @@
 package str
-import "strings"
+
+import (
+	"sort"
+	"strings"
+)
 
 type StrLib struct{}
+
+func (s *StrLib) Unique(in []string) []string {
+	seen := make(map[string]struct{}, len(in))
+	out := make([]string, 0, len(in))
+	for _, v := range in {
+		if _, ok := seen[v]; !ok {
+			seen[v] = struct{}{}
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
+func (s *StrLib) UniqueSort(in []string) []string {
+	out := s.Unique(in)   // reuse unique logic
+	sort.Strings(out)     // sort in place
+	return out
+}
 
 func (s *StrLib) Fallback(str, fallback string) string {
 	if str != "" {

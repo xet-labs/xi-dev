@@ -13,30 +13,35 @@ import (
 )
 
 type CssRes struct {
-	data    map[string][]string // key: baseName, value: list of CSS file paths
+	Files    map[string][]string // key: baseName, value: list of CSS file paths
 	BaseDir string
 	RdbTTL  time.Duration
 
+	CacheFilePath bool
 	once sync.Once
 	mu   sync.RWMutex
 }
 
 var Css = &CssRes{
-	data:    make(map[string][]string),
+	Files:    make(map[string][]string),
 	BaseDir: cfg.View.CssBaseDir,
 	RdbTTL:  12 * time.Hour,
+
+	CacheFilePath: false,
 }
 
 // Css handler: serves combined+cssMin CSS (Redis cached)
 func (r *CssRes) Get(c *gin.Context) {
 	rdbKey := c.Request.RequestURI
 	base := cfg.View.CssBaseDir + "/" + strings.TrimSuffix(c.Param("name"), ".css")
+	
+	log.Info().Str("filepath", base).Msg("Css")
 
 	if lib.View.OutCache(c, rdbKey).Css() {
 		return 	// Send cache
 	}
 
-	if _, ok := r.data[base]; !ok {
+	if _, ok := r.Files[base]; !r.CacheFilePath || !ok {
 		var (
 			files []string
 			err   error
@@ -48,9 +53,9 @@ func (r *CssRes) Get(c *gin.Context) {
 		}
 
 		r.mu.Lock()
-		r.data[base] = files
+		r.Files[base] = files
 		r.mu.Unlock()
 	}
 
-	lib.View.OutCss(c, lib.Util.File.MergeByte(r.data[base]), rdbKey)
+	lib.View.OutCss(c, lib.Util.File.MergeByte(r.Files[base]), rdbKey)
 }

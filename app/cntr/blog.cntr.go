@@ -32,33 +32,15 @@ var Blog = &BlogCntr{
 }
 
 // GET /blog
-func (b *BlogCntr) Index(c *gin.Context) {
-	rdbKey := c.Request.RequestURI
-
-	if lib.View.OutCache(c, rdbKey).Html() {
-		return
-	} // Try cache
-
-	b.mu.RLock()
-	defer b.mu.RUnlock()
-
-	// Build data
-	p := cfg.View.Pages["blog"]
-	p.Meta.URL = lib.Util.Url.Full(c)
-
-	lib.View.OutHtmlLyt(c, p, rdbKey) // Cache renderer
-}
+// func (b *BlogCntr) Index(c *gin.Context) {}
 
 func (b *BlogCntr) Show(c *gin.Context) {
 	rdbKey := c.Request.RequestURI
-	
+
 	if lib.View.OutCache(c, rdbKey).Html() {
 		return
 	} // Try cache
-		
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	
+
 	// On cache miss fetch data from DB
 	rawUID := c.Param("uid") // @username or UID
 	rawID := c.Param("id")   // blog ID or slug
@@ -69,6 +51,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 		return
 	}
 
+	b.mu.Lock()
 	if err := BlogApi.ShowCore(&blog, rawUID, rawID); err != nil { // Fallback to DB
 		status := http.StatusNotFound
 		if err == ErrInvalidUID {
@@ -77,6 +60,7 @@ func (b *BlogCntr) Show(c *gin.Context) {
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
+	b.mu.Unlock()
 
 	p := cfg.View.Pages["blogs"]
 	b.PrepMeta(c, &p.Meta, &blog)
@@ -88,8 +72,8 @@ func (b *BlogCntr) Show(c *gin.Context) {
 	lib.View.OutHtmlLyt(c, p, rdbKey)
 }
 
-func (b *BlogCntr) PrepMeta(c *gin.Context, meta *model.PageMeta, raw *model.Blog){
-	meta.Type = "Article" 
+func (b *BlogCntr) PrepMeta(c *gin.Context, meta *model.PageMeta, raw *model.Blog) {
+	meta.Type = "Article"
 	meta.Title = raw.Title
 	meta.URL = lib.Util.Url.Full(c)
 	meta.AltJson = lib.Util.Url.Host(c) + "/api" + c.Request.RequestURI

@@ -27,7 +27,7 @@ nav .nav-sidemenu {
    
     top: 0; right: 0;
     transform: var(--nav-sidemenu-transform, translate(.25em, 0) scale(1));
-    transition: all .12s ease;
+    transition: .08s ease;
 
     background: var(--nav-bg, var(--bg));
     border-radius: var(--nav-sidemenu-brdr-rad, var(--radius-s));
@@ -41,7 +41,7 @@ body:has(#id-nav-sidemenuOpen-btn:checked) .nav-sidemenu {
     opacity: 1;
     pointer-events: initial;
     transform: translate(0, 0) scale(1);
-    transition: all .08s ease;
+    transition: .12s ease;
 }
 nav .nav-sidemenu-head {
     display: flex;

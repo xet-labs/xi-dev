@@ -6,11 +6,10 @@
 <head>
 	<script>
 	(function() {
-		const theme = localStorage.getItem('theme') || 'light';
-		document.documentElement.setAttribute('data-theme', theme);
+		document.documentElement.classList.add(localStorage.getItem('theme') || 'light');
+		document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
 	})();
 	</script>
-	<script>document.documentElement.classList.add(localStorage.getItem("theme"));</script>
 
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />

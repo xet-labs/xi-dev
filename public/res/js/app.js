@@ -1,47 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // === Inject SVGs from [data-svg-src] ===
-  document.querySelectorAll("[data-svg-src]").forEach(el => {
-    const url = el.getAttribute("data-svg-src");
-    if (url) {
-      fetch(url)
-        .then(res => res.text())
-        .then(svg => {
-          el.innerHTML = svg;
-        })
-        .catch(err => console.warn("SVG load failed:", url, err));
-    }
-  });
-
-  // === Theme toggle (light/dark) ===
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark" || savedTheme === "light") {
-    document.documentElement.classList.add(savedTheme);
-  }
-
-  const themeSwitch = document.getElementById("id-themeswitch");
-  if (themeSwitch) {
-    themeSwitch.addEventListener("click", function () {
-      document.documentElement.classList.toggle("dark");
-      const theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
-      localStorage.setItem("theme", theme);
-    });
-  }
-
-  // === Navigate via [data-href] on click or Enter key ===
-  document.addEventListener('click', e => {
-    const el = e.target.closest('[data-href]');
-    if (el && !e.target.closest('a, button')) {
-      window.location.href = el.dataset.href;
-    }
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      const el = e.target.closest('[data-href]');
-      if (el) {
-        window.location.href = el.dataset.href;
-      }
-    }
-  });
+document.addEventListener("DOMContentLoaded", () => {
 
   // === Fix modal flicker for login/signup switch ===
   const loginBtn = document.getElementById('id-login-btn');

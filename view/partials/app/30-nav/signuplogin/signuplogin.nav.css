@@ -2,7 +2,6 @@
     display: none;
 }
 nav .signuplogin-wrap {
-    /* --underlay-blur: 0px; */
     display: flex;
     gap: var(--nav-icons-gap, 1.25em);
 }
@@ -20,20 +19,20 @@ nav .signuplogin-wrap {
     width: min(var(--signuplogin-x, 400px), 80%);
     max-height: min(var(--signuplogin-y-max, 90vh), 100%);
     left: 50%; top: 50%;
-    transform: translate3d(-50%, -50%, 0) scale(.978);
+    transform: translate3d(-50%, -50%, 0) scale(.975);
 
     background: var(--signuplogin-bg, var(--bg));
     box-shadow: var(--signuplogin-shadow, 0 8px 32px rgba(var(--mono-rgb-0), 0.1));
     /* box-shadow: inset 0 0 0 1px var(--nav-sidemenu-shadow, var(--colr-outln, transparent)); */
     border: 1px solid var(--nav-signuplogin-brdr-colr, var(--colr-outln, transparent));
     border-radius: var(--radius-xxl);
-    transition: .12s ease;
+    transition: .08s ease;
 }
 body:has(#id-login-btn:checked, #id-signup-btn:checked) .signuplogin-main {
     opacity: 1;
     pointer-events: initial;
     transform: translate3d(-50%, -50%, 0) scale(1);
-    transition: .08s ease;
+    transition: .12s ease;
 }
 .signuplogin {
     overflow: hidden;
